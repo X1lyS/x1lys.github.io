@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://example.com/2024/05/03/%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86/001.svg">
 <meta property="article:published_time" content="2024-05-02T17:03:16.000Z">
-<meta property="article:modified_time" content="2024-05-03T04:44:15.682Z">
+<meta property="article:modified_time" content="2024-05-03T04:52:33.114Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="信息搜集">
 <meta name="twitter:card" content="summary_large_image">
@@ -388,22 +388,22 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> re<br><br><span class="hljs-comment"># 定义IPv4地址的正则表达式，用于匹配端口号并去除</span><br>ipv4_pattern = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">r&#x27;(\d&#123;1,3&#125;(\.\d&#123;1,3&#125;)&#123;3&#125;)(:\d+)?&#x27;</span>)<br><br><span class="hljs-comment"># 定义IPv6地址的检测正则表达式</span><br>ipv6_pattern = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">r&#x27;([0-9a-fA-F:]+:+)+[0-9a-fA-F]+&#x27;</span>)<br><br><span class="hljs-comment"># 用于存储处理后的IP地址</span><br>processed_ips = []<br><br><span class="hljs-comment"># 读取input.txt文件中的每一行</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;input.txt&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> file:<br>    lines = file.readlines()<br><br><span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:<br>    line = line.strip()  <span class="hljs-comment"># 去除两端空白字符</span><br><br>    <span class="hljs-comment"># 分割可能存在的由逗号分隔的IPv4地址</span><br>    ipv4_addresses = line.split(<span class="hljs-string">&#x27;,&#x27;</span>)<br><br>    <span class="hljs-keyword">for</span> addr <span class="hljs-keyword">in</span> ipv4_addresses:<br>        <span class="hljs-comment"># 检测IPv6地址，如果是，则跳过这条数据</span><br>        <span class="hljs-keyword">if</span> ipv6_pattern.<span class="hljs-keyword">match</span>(addr):<br>            <span class="hljs-keyword">continue</span><br><br>        <span class="hljs-comment"># 检测IPv4地址，如果后面跟着端口号，则去除端口号</span><br>        <span class="hljs-keyword">match</span> = ipv4_pattern.<span class="hljs-keyword">match</span>(addr)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">match</span>:<br>            processed_ips.append(<span class="hljs-keyword">match</span>.group(<span class="hljs-number">1</span>))  <span class="hljs-comment"># 只添加IP部分，去除端口号</span><br><br><span class="hljs-comment"># 将处理后的结果写入output.txt文件</span><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;output.txt&#x27;</span>, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> file:<br>    <span class="hljs-keyword">for</span> ip <span class="hljs-keyword">in</span> processed_ips:<br>        file.write(ip + <span class="hljs-string">&#x27;\n&#x27;</span>)<br><br></code></pre></td></tr></table></figure>
 
 <p>现在通过fofa和domain.py得到了三份数据</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">**subdomain1.txt    没有协议头的子域名数据<br><br>url1.txt          有http和https的url数据<br><br>ip1.txt           ip数据**<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">subdomain1.txt    没有协议头的子域名数据<br><br>url1.txt          有http和https的url数据<br><br>ip1.txt           ip数据<br></code></pre></td></tr></table></figure>
 
 <h3 id="处理oneforall资产格式"><a href="#处理oneforall资产格式" class="headerlink" title="处理oneforall资产格式"></a><strong>处理oneforall资产格式</strong></h3><p>数据格式很统一，不用处理，保存一下就好了</p>
 <p>现在通过oneforall得到了三份数据</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">**subdomain2.txt    没有协议头的子域名数据<br><br>url2.txt          有http和https的url数据<br><br>ip2.txt           ip数据**<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">subdomain2.txt    没有协议头的子域名数据<br><br>url2.txt          有http和https的url数据<br><br>ip2.txt           ip数据<br></code></pre></td></tr></table></figure>
 
 <h3 id="合并"><a href="#合并" class="headerlink" title="合并"></a><strong>合并</strong></h3><p>(把两份数据合并在一起)</p>
 <p>合并得到</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">**subdomain3.txt    没有协议头的子域名数据<br><br>url3.txt          有http和https的url数据<br><br>ip3.txt           ip数据**<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">subdomain3.txt    没有协议头的子域名数据<br><br>url3.txt          有http和https的url数据<br><br>ip3.txt           ip数据<br></code></pre></td></tr></table></figure>
 
 <h3 id="去重"><a href="#去重" class="headerlink" title="去重"></a><strong>去重</strong></h3><p>(因为肯定有重复的，太多重复数据会拖慢后面扫描的时间，所以要对三份数据去重)</p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.iamwawa.cn/quchong.html">去重工具</a></li>
 </ul>
 <p>去重后得到</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">**subdomain.txt    没有协议头的子域名数据<br><br>url.txt          有http和https的url数据<br><br>ip.txt           ip数据**<br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs bash">subdomain.txt    没有协议头的子域名数据<br><br>url.txt          有http和https的url数据<br><br>ip.txt           ip数据<br></code></pre></td></tr></table></figure>
 
 <h3 id="使用Eeyes整理c段"><a href="#使用Eeyes整理c段" class="headerlink" title="使用Eeyes整理c段"></a>使用<a target="_blank" rel="noopener" href="https://github.com/EdgeSecurityTeam/Eeyes">Eeyes</a>整理c段</h3><p>(这里就体现了为什么要整理出subdomain.txt了，因为这里整理c段要用)</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">Eeyes.exe -l subdomain.txt<br></code></pre></td></tr></table></figure>
@@ -437,7 +437,7 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">web.txt 合并后的url数据<br></code></pre></td></tr></table></figure>
 
 <h3 id="测活"><a href="#测活" class="headerlink" title="测活"></a><strong>测活</strong></h3><p>(搜集了这么多资产，不一定都是存活的，于是要进行探测活性，不然后面对着一个挂了的网站测试，不是浪费时间吗)</p>
-<p>对<strong>web.txt</strong>使用**<a target="_blank" rel="noopener" href="https://github.com/EdgeSecurityTeam/EHole">Ehole</a>**测试url资产的活性</p>
+<p>对<strong>web.txt</strong>使用<a target="_blank" rel="noopener" href="https://github.com/EdgeSecurityTeam/EHole">Ehole</a>测试url资产的活性</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">ehole.exe -l web.txt -json export.json<br></code></pre></td></tr></table></figure>
 
 <p>使用<strong>Ehole</strong>得到</p>
@@ -446,7 +446,7 @@
 <p>再把<strong>export.json另存一份为target2.txt备用</strong></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">target2.txt 存活的url资产(txt格式)<br></code></pre></td></tr></table></figure>
 
-<h3 id="处理Ehole的数据"><a href="#处理Ehole的数据" class="headerlink" title="处理Ehole的数据"></a><strong>处理Ehole的数据</strong></h3><p>对<strong>export.json</strong>使用**<a target="_blank" rel="noopener" href="https://www.sublimetext.com/">sublime</a>**进行正则提取url资产</p>
+<h3 id="处理Ehole的数据"><a href="#处理Ehole的数据" class="headerlink" title="处理Ehole的数据"></a><strong>处理Ehole的数据</strong></h3><p>对<strong>export.json</strong>使用<a target="_blank" rel="noopener" href="https://www.sublimetext.com/">sublime</a>进行正则提取url资产</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python">http://[^\<span class="hljs-string">&quot;]*</span><br><span class="hljs-string">https://[^\&quot;]*</span><br></code></pre></td></tr></table></figure>
 
 <p>得到</p>
@@ -486,7 +486,7 @@
 <ul>
 <li>识别</li>
 </ul>
-<p>使用**<a target="_blank" rel="noopener" href="https://www.wappalyzer.com/">Wappalyzer</a>**浏览器插件识别</p>
+<p>使用<a target="_blank" rel="noopener" href="https://www.wappalyzer.com/">Wappalyzer</a>浏览器插件识别</p>
 <h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><ul>
 <li>介绍</li>
 </ul>
