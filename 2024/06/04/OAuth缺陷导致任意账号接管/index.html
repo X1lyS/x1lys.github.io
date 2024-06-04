@@ -16,17 +16,17 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="OAuth缺陷导致任意账号接管  原文地址: src漏洞挖掘 OAuth缺陷接管账号  漏洞产生点 个人账号界面微信号绑定功能处  怎么发现的 对OAuth的特征有形成了一定的心理表征，能敏锐的识别出来使用了OAuth，思考可能会存在认证缺陷问题 对二维码验证过程与数据包之间的联系有一定的认知 多尝试，不要嫌麻烦，大胆尝试，细致耐心  漏洞类型 属于OAuth认证框架的缺陷，也可以说是CSRF，访">
+    <meta name="description" content="原文地址: src漏洞挖掘 OAuth缺陷接管账号  漏洞产生点 个人账号界面微信号绑定功能处  怎么发现的 对OAuth的特征有形成了一定的心理表征，能敏锐的识别出来使用了OAuth，思考可能会存在认证缺陷问题 对二维码验证过程与数据包之间的联系有一定的认知 多尝试，不要嫌麻烦，大胆尝试，细致耐心  漏洞类型 属于OAuth认证框架的缺陷，也可以说是CSRF，访问控制缺失  漏洞细节 使用A">
 <meta property="og:type" content="article">
 <meta property="og:title" content="OAuth缺陷导致任意账号接管">
 <meta property="og:url" content="https://example.com/2024/06/04/OAuth%E7%BC%BA%E9%99%B7%E5%AF%BC%E8%87%B4%E4%BB%BB%E6%84%8F%E8%B4%A6%E5%8F%B7%E6%8E%A5%E7%AE%A1/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="OAuth缺陷导致任意账号接管  原文地址: src漏洞挖掘 OAuth缺陷接管账号  漏洞产生点 个人账号界面微信号绑定功能处  怎么发现的 对OAuth的特征有形成了一定的心理表征，能敏锐的识别出来使用了OAuth，思考可能会存在认证缺陷问题 对二维码验证过程与数据包之间的联系有一定的认知 多尝试，不要嫌麻烦，大胆尝试，细致耐心  漏洞类型 属于OAuth认证框架的缺陷，也可以说是CSRF，访">
+<meta property="og:description" content="原文地址: src漏洞挖掘 OAuth缺陷接管账号  漏洞产生点 个人账号界面微信号绑定功能处  怎么发现的 对OAuth的特征有形成了一定的心理表征，能敏锐的识别出来使用了OAuth，思考可能会存在认证缺陷问题 对二维码验证过程与数据包之间的联系有一定的认知 多尝试，不要嫌麻烦，大胆尝试，细致耐心  漏洞类型 属于OAuth认证框架的缺陷，也可以说是CSRF，访问控制缺失  漏洞细节 使用A">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://example.com/2024/06/04/OAuth%E7%BC%BA%E9%99%B7%E5%AF%BC%E8%87%B4%E4%BB%BB%E6%84%8F%E8%B4%A6%E5%8F%B7%E6%8E%A5%E7%AE%A1/1.png">
 <meta property="og:image" content="https://example.com/2024/06/04/OAuth%E7%BC%BA%E9%99%B7%E5%AF%BC%E8%87%B4%E4%BB%BB%E6%84%8F%E8%B4%A6%E5%8F%B7%E6%8E%A5%E7%AE%A1/2.png">
 <meta property="article:published_time" content="2024-06-04T15:14:56.000Z">
-<meta property="article:modified_time" content="2024-06-04T15:30:33.216Z">
+<meta property="article:modified_time" content="2024-06-04T15:32:27.363Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="网络安全 渗透测试">
 <meta name="twitter:card" content="summary_large_image">
@@ -269,7 +269,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          514 字
+          503 字
         
       </span>
     
@@ -338,7 +338,7 @@
             
               <div class="markdown-body">
                 
-                <h1 id="OAuth缺陷导致任意账号接管"><a href="#OAuth缺陷导致任意账号接管" class="headerlink" title="OAuth缺陷导致任意账号接管"></a>OAuth缺陷导致任意账号接管</h1><blockquote>
+                <blockquote>
 <p> 原文地址: <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Bht-vvsXSl8Ios8X74-q3g">src漏洞挖掘 OAuth缺陷接管账号</a></p>
 </blockquote>
 <h2 id="漏洞产生点"><a href="#漏洞产生点" class="headerlink" title="漏洞产生点"></a>漏洞产生点</h2><ul>
