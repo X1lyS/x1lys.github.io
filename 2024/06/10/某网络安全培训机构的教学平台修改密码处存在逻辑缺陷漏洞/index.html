@@ -35,7 +35,7 @@
 <meta property="og:image" content="https://example.com/2024/06/10/%E6%9F%90%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%9F%B9%E8%AE%AD%E6%9C%BA%E6%9E%84%E7%9A%84%E6%95%99%E5%AD%A6%E5%B9%B3%E5%8F%B0%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%A4%84%E5%AD%98%E5%9C%A8%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E/10.png">
 <meta property="og:image" content="https://example.com/2024/06/10/%E6%9F%90%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%9F%B9%E8%AE%AD%E6%9C%BA%E6%9E%84%E7%9A%84%E6%95%99%E5%AD%A6%E5%B9%B3%E5%8F%B0%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%A4%84%E5%AD%98%E5%9C%A8%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E/11.png">
 <meta property="article:published_time" content="2024-06-10T09:20:27.000Z">
-<meta property="article:modified_time" content="2024-06-10T09:31:54.306Z">
+<meta property="article:modified_time" content="2024-06-10T09:34:10.909Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="记一次奇葩漏洞">
 <meta name="twitter:card" content="summary_large_image">
@@ -391,7 +391,7 @@
 <img src="/2024/06/10/%E6%9F%90%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%9F%B9%E8%AE%AD%E6%9C%BA%E6%9E%84%E7%9A%84%E6%95%99%E5%AD%A6%E5%B9%B3%E5%8F%B0%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%A4%84%E5%AD%98%E5%9C%A8%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E/9.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol start="6">
-<li><strong>到此已经证明漏洞存在，但是光是修改自己的密码，没有任何危害，于是又辛苦要到了一个另外的账号，想测试CRSF，打一套组合拳使得低危变高危</strong></li>
+<li><strong>到此已经证明漏洞存在，但是光是修改自己的密码，没有任何危害，于是又辛苦要到了一个另外的账号，想测试CSRF，打一套组合拳使得低危变高危</strong></li>
 <li>抓最后修改提交密码的数据包，发现使用PUT，json格式提交数据，使用json传参的话对同源策略限制很死，CSRF基本没戏，尝试强制修改传参方式为普通表单提交，正常响应，但是经测试发现受害者的密码还是没有被修改成功，猜测是后端只允许json格式提交数据，于是到这里就没戏了，因为有同源策略的限制，除非又在该站点的同源站点发现XSS，利用XSS执行CSRF的POC打出组合拳</li>
 </ol>
 <img src="/2024/06/10/%E6%9F%90%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%9F%B9%E8%AE%AD%E6%9C%BA%E6%9E%84%E7%9A%84%E6%95%99%E5%AD%A6%E5%B9%B3%E5%8F%B0%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%A4%84%E5%AD%98%E5%9C%A8%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E/10.png" srcset="/img/loading.gif" lazyload class="">
