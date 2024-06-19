@@ -16,32 +16,32 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="审计环境 phpstudy 2018 php-5.4.45 + Apache phpstrom 2018 Seay代审系统工具 CMS源码：淡然点图标系统  审计过程 先对主页进行刷新，触发sql语句执行，从而在mysql监控工具中截获到sql语句     观察sql语句中是否有可能可控的变量，经分析，”127.0.0.1“处可能是可控变量     跟进这条sql语句，验证该处的”127.0.0.">
+    <meta name="description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【PHP代码审计项目】系列是一些用来学习练手的CMS的审计笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  审计环境 phpstudy 2018 php-5.4.45 Apache 2.">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PHP-代码审计项目-淡然点图标系统-SQL_XFF注入">
-<meta property="og:url" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:title" content="PHP-代码审计项目-BlueCMS-前台盲注">
+<meta property="og:url" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="审计环境 phpstudy 2018 php-5.4.45 + Apache phpstrom 2018 Seay代审系统工具 CMS源码：淡然点图标系统  审计过程 先对主页进行刷新，触发sql语句执行，从而在mysql监控工具中截获到sql语句     观察sql语句中是否有可能可控的变量，经分析，”127.0.0.1“处可能是可控变量     跟进这条sql语句，验证该处的”127.0.0.">
+<meta property="og:description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【PHP代码审计项目】系列是一些用来学习练手的CMS的审计笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  审计环境 phpstudy 2018 php-5.4.45 Apache 2.">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/1.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/2.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/3.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/4.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/5.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/6.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/7.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/8.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/9.png">
-<meta property="article:published_time" content="2024-06-19T03:56:33.000Z">
-<meta property="article:modified_time" content="2024-06-19T08:11:35.526Z">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/1.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/2.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/3.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/4.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/5.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/6.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/7.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/8.png">
+<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/9.png">
+<meta property="article:published_time" content="2024-06-19T07:48:55.000Z">
+<meta property="article:modified_time" content="2024-06-19T08:11:48.565Z">
 <meta property="article:author" content="X1ly?S">
-<meta property="article:tag" content="淡然点图标系统-SQL_XFF注入">
+<meta property="article:tag" content="BlueCMS-前台盲注">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/1.png">
+<meta name="twitter:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/1.png">
   
   
   
-  <title>PHP-代码审计项目-淡然点图标系统-SQL_XFF注入 - X1ly?S Blog</title>
+  <title>PHP-代码审计项目-BlueCMS-前台盲注 - X1ly?S Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -248,7 +248,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="PHP-代码审计项目-淡然点图标系统-SQL_XFF注入"></span>
+            <span id="subtitle" data-typed-text="PHP-代码审计项目-BlueCMS-前台盲注"></span>
           
         </div>
 
@@ -264,8 +264,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-06-19 11:56" pubdate>
-          2024年6月19日 中午
+        <time datetime="2024-06-19 15:48" pubdate>
+          2024年6月19日 下午
         </time>
       </span>
     
@@ -276,7 +276,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          436 字
+          301 字
         
       </span>
     
@@ -287,7 +287,7 @@
         
         
         
-          4 分钟
+          3 分钟
         
       </span>
     
@@ -332,7 +332,7 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">PHP-代码审计项目-淡然点图标系统-SQL_XFF注入</h1>
+            <h1 id="seo-header">PHP-代码审计项目-BlueCMS-前台盲注</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
@@ -345,69 +345,58 @@
             
               <div class="markdown-body">
                 
-                <h2 id="审计环境"><a href="#审计环境" class="headerlink" title="审计环境"></a>审计环境</h2><ul>
+                <blockquote>
+<p>前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【PHP代码审计项目】系列是一些用来学习练手的CMS的审计笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……</p>
+</blockquote>
+<h2 id="审计环境"><a href="#审计环境" class="headerlink" title="审计环境"></a>审计环境</h2><ul>
 <li>phpstudy 2018</li>
-<li>php-5.4.45 + Apache</li>
+<li>php-5.4.45</li>
+<li>Apache 2.4.23</li>
 <li>phpstrom 2018</li>
-<li>Seay代审系统工具</li>
-<li>CMS源码：淡然点图标系统</li>
+<li>CMS源码：BlueCMS</li>
 </ul>
-<h2 id="审计过程"><a href="#审计过程" class="headerlink" title="审计过程"></a>审计过程</h2><ol>
-<li>先对主页进行刷新，触发sql语句执行，从而在mysql监控工具中截获到sql语句</li>
-</ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/1.png" srcset="/img/loading.gif" lazyload class="">
-
-<ol start="2">
-<li>观察sql语句中是否有可能可控的变量，经分析，”127.0.0.1“处可能是可控变量</li>
-</ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/2.png" srcset="/img/loading.gif" lazyload class="">
-
-<ol start="3">
-<li>跟进这条sql语句，验证该处的”127.0.0.1”是否可控，复制这条语句，在phpstrom打开该源码项目，全局搜索(ctrl + shfit + f)引号部分</li>
-</ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">&quot;SELECT * FROM  `dd` WHERE  `ip` LIKE &quot;        # <span class="hljs-string">&#x27;127.0.0.1&#x27;</span>LIMIT <span class="hljs-number">0</span> , <span class="hljs-number">30</span><br></code></pre></td></tr></table></figure>
-
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/3.png" srcset="/img/loading.gif" lazyload class="">
-
-<ol start="4">
-<li>成功定位到了具体文件 php&#x2F;function.php，进一步跟进代码</li>
-</ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/4.png" srcset="/img/loading.gif" lazyload class="">
-
-<ol start="5">
-<li>可以看到是在ywdd函数中执行了sql语句，传入了$ip参数，为了看$ip怎么来的，是否可控？需要继续跟进ywdd函数怎么实现的</li>
-</ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/5.png" srcset="/img/loading.gif" lazyload class="">
-
-<ol start="6">
-<li>全局搜索或者转到ywdd()函数实现，可以看到 ywdd(getIP()) 说明$IP是来自getIP()函数的返回值，但getIP()怎么返回的？返回的具体是什么？还是不知道，继续跟进getIP()的函数声明</li>
-</ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/6.png" srcset="/img/loading.gif" lazyload class="">
-
-<ol start="7">
-<li><p><strong>可以看到，只要XFF头设置了，就把$realip变量赋值为XFF头，并作为getIP()的返回值！也就是说ywdd()中的$sql语句中的$ip是接受的XFF头，而我们知道XFF头是我们可以伪造的，是可控的，并且此处没有对XFF头进行任何过滤！于是SQL_XFF注入漏洞产生。对XFF构造sql语句，即可完成注入</strong></p>
-</li>
-<li><p>简单的数据流</p>
-</li>
-</ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/7.png" srcset="/img/loading.gif" lazyload class="">
-
-<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">$<span class="hljs-keyword">SQL</span><span class="hljs-operator">=</span>&quot;SELECT * FROM  `dd` WHERE  `ip` LIKE  &#x27;&quot;.$ip.&quot;&#x27;LIMIT 0 , 30&quot;;<br></code></pre></td></tr></table></figure>
+<h2 id="审计过程"><a href="#审计过程" class="headerlink" title="审计过程"></a>审计过程</h2><img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/1.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol>
-<li>抓包</li>
-<li>修改XFF头，加单引号，成功报错</li>
+<li>使用正则表达式在phpstrom全局搜索sql语句，找可控变量</li>
 </ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/8.png" srcset="/img/loading.gif" lazyload class="">
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">update</span><span class="hljs-operator">|</span><span class="hljs-keyword">select</span><span class="hljs-operator">|</span><span class="hljs-keyword">insert</span><span class="hljs-operator">|</span><span class="hljs-keyword">delete</span><span class="hljs-operator">|</span>).<span class="hljs-operator">*</span>?where.<span class="hljs-operator">*</span><span class="hljs-operator">=</span><br></code></pre></td></tr></table></figure>
+
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/2.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="2">
+<li>跟进代码，看$ad_id是否可控</li>
+</ol>
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/3.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol start="3">
-<li>手工注入</li>
+<li>可以看到，GET方式接收变量，接收时没有任何过滤，继续跟进getone()，看是否有过滤</li>
 </ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">X<span class="hljs-operator">-</span>Forwarded<span class="hljs-operator">-</span><span class="hljs-keyword">For</span>: <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span><span class="hljs-string">&#x27;union select 1,user(),3,database(),5 #</span><br></code></pre></td></tr></table></figure>
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/4.png" srcset="/img/loading.gif" lazyload class="">
 
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/9.png" srcset="/img/loading.gif" lazyload class="">
+<ol start="4">
+<li>getone()没有过滤，继续跟进query()</li>
+</ol>
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/5.png" srcset="/img/loading.gif" lazyload class="">
 
+<ol start="5">
+<li>query()也没有过滤</li>
+</ol>
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/6.png" srcset="/img/loading.gif" lazyload class="">
 
+<h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><ol>
+<li>那么就很简单了，直接访问，构造sql语句开始注入，加单引号，成功报错</li>
+</ol>
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/7.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="2">
+<li>尝试联合注入，但是没有回显位，上sqlmap盲注直接抬走哈哈</li>
+</ol>
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/8.png" srcset="/img/loading.gif" lazyload class="">
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">python sqlmap.py <span class="hljs-operator">-</span>u http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>localhost<span class="hljs-operator">/</span>cms<span class="hljs-operator">/</span>bluecms<span class="hljs-operator">/</span>ad_js.php?ad_id<span class="hljs-operator">=</span><span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/9.png" srcset="/img/loading.gif" lazyload class="">
                 
               </div>
             
@@ -440,7 +429,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/" class="print-no-link">#淡然点图标系统-SQL_XFF注入</a>
+        <a href="/tags/BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/" class="print-no-link">#BlueCMS-前台盲注</a>
       
     </div>
   
@@ -454,18 +443,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/" title="PHP-代码审计项目-BlueCMS-前台盲注">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">PHP-代码审计项目-BlueCMS-前台盲注</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/06/18/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-Day-1/" title="PHP-代码审计-Day-1">
-                        <span class="hidden-mobile">PHP-代码审计-Day-1</span>
+                      <a href="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/" title="PHP-代码审计项目-淡然点图标系统-SQL_XFF注入">
+                        <span class="hidden-mobile">PHP-代码审计项目-淡然点图标系统-SQL_XFF注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
