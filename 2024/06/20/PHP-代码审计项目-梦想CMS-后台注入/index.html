@@ -16,32 +16,34 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【PHP代码审计项目】系列是一些用来学习练手的CMS的审计笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  审计环境 phpstudy 2018 php-5.4.45 Apache 2.">
+    <meta name="description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【PHP代码审计项目】系列是一些用来学习练手的CMS的审计笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  审计环境 phpstudy 2018 php-5.4.45 + Apache">
 <meta property="og:type" content="article">
-<meta property="og:title" content="PHP-代码审计项目-BlueCMS-前台盲注">
-<meta property="og:url" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/index.html">
+<meta property="og:title" content="PHP-代码审计项目-梦想CMS-后台注入">
+<meta property="og:url" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【PHP代码审计项目】系列是一些用来学习练手的CMS的审计笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  审计环境 phpstudy 2018 php-5.4.45 Apache 2.">
+<meta property="og:description" content="前言：俺开始学代码审计了，之前一直在黑盒方面学习，黑盒漏洞挖掘，没有接触过白盒，于是开始学习代码审计。【PHP代码审计项目】系列是一些用来学习练手的CMS的审计笔记，写的不好，但是也是一个记录吧，多年之后再看也是会感慨万千吧哈哈，最后学习完了代码审计我会写一个总结性的文章，还望各位大佬师傅轻喷，欢迎随时指教小弟……  审计环境 phpstudy 2018 php-5.4.45 + Apache">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/1.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/2.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/3.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/4.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/5.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/6.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/7.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/8.png">
-<meta property="og:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/9.png">
-<meta property="article:published_time" content="2024-06-19T07:48:55.000Z">
-<meta property="article:modified_time" content="2024-06-19T08:11:48.565Z">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/1.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/2.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/3.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/4.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/5.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/6.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/7.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/8.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/9.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/10.png">
+<meta property="og:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/11.png">
+<meta property="article:published_time" content="2024-06-19T16:08:52.000Z">
+<meta property="article:modified_time" content="2024-06-19T16:15:16.114Z">
 <meta property="article:author" content="X1ly?S">
-<meta property="article:tag" content="BlueCMS-前台盲注">
+<meta property="article:tag" content="梦想CMS-后台注入">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/1.png">
+<meta name="twitter:image" content="https://example.com/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/1.png">
   
   
   
-  <title>PHP-代码审计项目-BlueCMS-前台盲注 - X1ly?S Blog</title>
+  <title>PHP-代码审计项目-梦想CMS-后台注入 - X1ly?S Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -248,7 +250,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="PHP-代码审计项目-BlueCMS-前台盲注"></span>
+            <span id="subtitle" data-typed-text="PHP-代码审计项目-梦想CMS-后台注入"></span>
           
         </div>
 
@@ -264,8 +266,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-06-19 15:48" pubdate>
-          2024年6月19日 下午
+        <time datetime="2024-06-20 00:08" pubdate>
+          2024年6月20日 凌晨
         </time>
       </span>
     
@@ -276,7 +278,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          301 字
+          674 字
         
       </span>
     
@@ -287,7 +289,7 @@
         
         
         
-          3 分钟
+          6 分钟
         
       </span>
     
@@ -332,12 +334,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">PHP-代码审计项目-BlueCMS-前台盲注</h1>
+            <h1 id="seo-header">PHP-代码审计项目-梦想CMS-后台注入</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年6月19日 下午
+                    本文最后更新于 2024年6月20日 凌晨
                   
                 
               </p>
@@ -350,53 +352,72 @@
 </blockquote>
 <h2 id="审计环境"><a href="#审计环境" class="headerlink" title="审计环境"></a>审计环境</h2><ul>
 <li>phpstudy 2018</li>
-<li>php-5.4.45</li>
-<li>Apache 2.4.23</li>
+<li>php-5.4.45 + Apache</li>
 <li>phpstrom 2018</li>
-<li>CMS源码：BlueCMS</li>
+<li>CMS源码：梦想CMS-v1.4</li>
 </ul>
-<h2 id="审计过程"><a href="#审计过程" class="headerlink" title="审计过程"></a>审计过程</h2><img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/1.png" srcset="/img/loading.gif" lazyload class="">
+<h2 id="审计过程"><a href="#审计过程" class="headerlink" title="审计过程"></a>审计过程</h2><img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/1.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol>
-<li>使用正则表达式在phpstrom全局搜索sql语句，找可控变量</li>
+<li>根据提示，找到目标文件 BookAction.class.php</li>
 </ol>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">update</span><span class="hljs-operator">|</span><span class="hljs-keyword">select</span><span class="hljs-operator">|</span><span class="hljs-keyword">insert</span><span class="hljs-operator">|</span><span class="hljs-keyword">delete</span><span class="hljs-operator">|</span>).<span class="hljs-operator">*</span>?where.<span class="hljs-operator">*</span><span class="hljs-operator">=</span><br></code></pre></td></tr></table></figure>
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/2.png" srcset="/img/loading.gif" lazyload class="">
 
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/2.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/3.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol start="2">
-<li>跟进代码，看$ad_id是否可控</li>
+<li>其中，”获取回复数据”的代码段，肯定涉及了数据库操作，并且使用GET或者POST方式接收参数id，也就是说id可控！但是需要进一步跟进代码，看怎么执行的sql语句，中途是否有过滤？</li>
 </ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/3.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/4.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol start="3">
-<li>可以看到，GET方式接收变量，接收时没有任何过滤，继续跟进getone()，看是否有过滤</li>
+<li>跟进getReply()，跳转到它的函数声明</li>
 </ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/4.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/5.png" srcset="/img/loading.gif" lazyload class="">
 
+<p>对数组参数$id做了一些处理，implode()把数组参数id转换为以逗号分隔的字符串$id，再把$id拼接”uid in ()”之中，赋值给$param，作为SQL语句中的<code>WHERE</code> 子句的字符串，调用父类方法selectModel()，把$param传入。到此$id被传入了selectModel()中，且还未被过滤</p>
 <ol start="4">
-<li>getone()没有过滤，继续跟进query()</li>
+<li>继续跟进selectModel()</li>
 </ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/5.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/6.png" srcset="/img/loading.gif" lazyload class="">
 
+<p>接收$param空数组，如果设置了field键就把当前对象的field属性赋值为传入的对应值，调用父类中的数据库查询方法selectDB()，传入三个参数，应该是三个查询条件，$this-&gt;tab[‘0’] 取出表名，$this-&gt;field 某个字段值，$param 来自于$id。到此$id还是没有被过滤，被传入了selectDB()中</p>
 <ol start="5">
-<li>query()也没有过滤</li>
+<li>继续跟进selectDB()</li>
 </ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/6.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/7.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>只关注$param数据流向，$param被传入到where()中，赋值给了$sqlStr变量，最终$sqlStr变量直接被拼接到了$sql语句中，仍然没有任何过滤，就直接进行数据库查询！</p>
+<ol start="6">
+<li>但是还不知道where()，函数是怎么处理$param的，继续跟进where()</li>
+</ol>
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/8.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>可以看到，还是没有进行任何过滤，只是获取了把$param数组的一些字段值赋给了一些变量，用来在$sql语句中拼接查询</p>
+<ol start="7">
+<li>到此，$id没有进行任何过滤处理，且可控，直接被改入了$sql语句查询，sql注入漏洞产生，添加一句</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">echo</span> <span class="hljs-variable">$sql</span>;<br></code></pre></td></tr></table></figure>
+
+<p>输出sql执行语句，方便调试</p>
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/9.png" srcset="/img/loading.gif" lazyload class="">
 
 <h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><ol>
-<li>那么就很简单了，直接访问，构造sql语句开始注入，加单引号，成功报错</li>
+<li>构造url</li>
 </ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/7.png" srcset="/img/loading.gif" lazyload class="">
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-attr">http</span>:<span class="hljs-comment">//localhost/cms/lmxcms1.4/admin.php?m=Book&amp;a=reply&amp;id=111</span><br></code></pre></td></tr></table></figure>
 
 <ol start="2">
-<li>尝试联合注入，但是没有回显位，上sqlmap盲注直接抬走哈哈</li>
+<li>回显显示，id可控</li>
 </ol>
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/8.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/10.png" srcset="/img/loading.gif" lazyload class="">
 
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">python sqlmap.py <span class="hljs-operator">-</span>u http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span>localhost<span class="hljs-operator">/</span>cms<span class="hljs-operator">/</span>bluecms<span class="hljs-operator">/</span>ad_js.php?ad_id<span class="hljs-operator">=</span><span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<ol start="3">
+<li>开始注入，有数据回显！</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">admin.php?m<span class="hljs-operator">=</span>Book<span class="hljs-operator">&amp;</span>a<span class="hljs-operator">=</span>reply<span class="hljs-operator">&amp;</span>id<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<span class="hljs-operator">%</span><span class="hljs-number">20</span><span class="hljs-keyword">union</span><span class="hljs-operator">%</span><span class="hljs-number">20</span><span class="hljs-keyword">select</span><span class="hljs-operator">%</span><span class="hljs-number">201</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-keyword">user</span>(),<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span>,<span class="hljs-number">9</span><span class="hljs-comment">--%20+</span><br></code></pre></td></tr></table></figure>
 
-<img src="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/9.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/11.png" srcset="/img/loading.gif" lazyload class="">
                 
               </div>
             
@@ -429,7 +450,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/" class="print-no-link">#BlueCMS-前台盲注</a>
+        <a href="/tags/%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/" class="print-no-link">#梦想CMS-后台注入</a>
       
     </div>
   
@@ -443,18 +464,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/06/20/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%A2%A6%E6%83%B3CMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/" title="PHP-代码审计项目-梦想CMS-后台注入">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">PHP-代码审计项目-梦想CMS-后台注入</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-%E6%B7%A1%E7%84%B6%E7%82%B9%E5%9B%BE%E6%A0%87%E7%B3%BB%E7%BB%9F-SQL-XFF%E6%B3%A8%E5%85%A5/" title="PHP-代码审计项目-淡然点图标系统-SQL_XFF注入">
-                        <span class="hidden-mobile">PHP-代码审计项目-淡然点图标系统-SQL_XFF注入</span>
+                      <a href="/2024/06/19/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-BlueCMS-%E5%89%8D%E5%8F%B0%E7%9B%B2%E6%B3%A8/" title="PHP-代码审计项目-BlueCMS-前台盲注">
+                        <span class="hidden-mobile">PHP-代码审计项目-BlueCMS-前台盲注</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
