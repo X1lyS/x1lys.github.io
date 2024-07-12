@@ -1,0 +1,864 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="X1ly?S">
+  <meta name="keywords" content="网络安全 渗透测试">
+  
+    <meta name="description" content="Webpack源代码泄露漏洞研究Webpack简介Webpack 是一个用于现代JavaScript应用的模块打包器（module bundler）。它的主要功能是将项目中的各种资源（JavaScript、CSS、图片等）作为模块进行管理和打包，生成一个或多个bundle文件，以提高项目的加载和运行效率 Webpack功能简单看一眼就行，不用做细致研究： 1. 模块打包（Module Bundli">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Webpack源代码泄露漏洞研究">
+<meta property="og:url" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/index.html">
+<meta property="og:site_name" content="X1ly?S Blog">
+<meta property="og:description" content="Webpack源代码泄露漏洞研究Webpack简介Webpack 是一个用于现代JavaScript应用的模块打包器（module bundler）。它的主要功能是将项目中的各种资源（JavaScript、CSS、图片等）作为模块进行管理和打包，生成一个或多个bundle文件，以提高项目的加载和运行效率 Webpack功能简单看一眼就行，不用做细致研究： 1. 模块打包（Module Bundli">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/1.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/2.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/3.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/4.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/5.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/6.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/7.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/8.png">
+<meta property="og:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/9.png">
+<meta property="article:published_time" content="2024-07-12T05:58:26.000Z">
+<meta property="article:modified_time" content="2024-07-12T06:00:39.422Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="前端webpack泄露">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.com/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/1.png">
+  
+  
+  
+  <title>Webpack源代码泄露漏洞研究 - X1ly?S Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"|","loop":true,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","app_key":"M3h6WgzFRHqbQjc4e8jWn6Ix","server_url":"https://f0dhnqsc.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>X1ly?S Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Webpack源代码泄露漏洞研究"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        X1ly?S
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-12 13:58" pubdate>
+          2024年7月12日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Webpack源代码泄露漏洞研究</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年7月12日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="Webpack源代码泄露漏洞研究"><a href="#Webpack源代码泄露漏洞研究" class="headerlink" title="Webpack源代码泄露漏洞研究"></a>Webpack源代码泄露漏洞研究</h1><h2 id="Webpack简介"><a href="#Webpack简介" class="headerlink" title="Webpack简介"></a>Webpack简介</h2><p><strong>Webpack</strong> 是一个用于现代JavaScript应用的模块打包器（module bundler）。它的主要功能是将项目中的各种资源（JavaScript、CSS、图片等）作为模块进行管理和打包，生成一个或多个bundle文件，以提高项目的加载和运行效率</p>
+<h2 id="Webpack功能"><a href="#Webpack功能" class="headerlink" title="Webpack功能"></a>Webpack功能</h2><p>简单看一眼就行，不用做细致研究：</p>
+<h3 id="1-模块打包（Module-Bundling）"><a href="#1-模块打包（Module-Bundling）" class="headerlink" title="1. 模块打包（Module Bundling）"></a>1. 模块打包（Module Bundling）</h3><p>将多个模块及其依赖项打包成一个或多个bundle文件，优化加载性能。</p>
+<h3 id="2-代码拆分（Code-Splitting）"><a href="#2-代码拆分（Code-Splitting）" class="headerlink" title="2. 代码拆分（Code Splitting）"></a>2. 代码拆分（Code Splitting）</h3><p>将代码拆分为多个小块，以便按需加载，减少初始加载时间，提高应用程序性能。</p>
+<h3 id="3-加载器（Loaders）"><a href="#3-加载器（Loaders）" class="headerlink" title="3. 加载器（Loaders）"></a>3. 加载器（Loaders）</h3><p>允许Webpack处理非JavaScript文件（如CSS、图片、TypeScript等），并将它们转换为Webpack可以理解的模块，增强了对多种资源的支持。</p>
+<h3 id="4-插件（Plugins）"><a href="#4-插件（Plugins）" class="headerlink" title="4. 插件（Plugins）"></a>4. 插件（Plugins）</h3><p>扩展Webpack的功能，执行各种任务，如打包优化、资源管理和注入环境变量等，使得构建过程更加灵活和强大。</p>
+<h3 id="5-热模块替换（Hot-Module-Replacement-HMR）"><a href="#5-热模块替换（Hot-Module-Replacement-HMR）" class="headerlink" title="5. 热模块替换（Hot Module Replacement, HMR）"></a>5. 热模块替换（Hot Module Replacement, HMR）</h3><p>允许在应用程序运行时替换、添加或删除模块，而无需完全刷新页面，提高开发效率和用户体验。</p>
+<h3 id="6-样式和资源文件处理"><a href="#6-样式和资源文件处理" class="headerlink" title="6. 样式和资源文件处理"></a>6. 样式和资源文件处理</h3><p>处理和打包CSS、图片、字体等资源文件，确保它们能与JavaScript文件一起正常加载和使用。</p>
+<h3 id="7-样式提取（CSS-Extraction）"><a href="#7-样式提取（CSS-Extraction）" class="headerlink" title="7. 样式提取（CSS Extraction）"></a>7. 样式提取（CSS Extraction）</h3><p>将CSS从JavaScript文件中提取出来，生成独立的CSS文件，优化样式的加载和管理。</p>
+<h3 id="8-Tree-Shaking"><a href="#8-Tree-Shaking" class="headerlink" title="8. Tree Shaking"></a>8. Tree Shaking</h3><p>通过消除未使用的代码来减小打包后的文件大小，优化应用程序性能。</p>
+<h3 id="9-开发服务器（DevServer）"><a href="#9-开发服务器（DevServer）" class="headerlink" title="9. 开发服务器（DevServer）"></a>9. 开发服务器（DevServer）</h3><p>提供一个本地开发服务器，支持热加载和实时刷新，简化开发过程。</p>
+<h3 id="10-环境配置"><a href="#10-环境配置" class="headerlink" title="10. 环境配置"></a>10. 环境配置</h3><p>根据不同的构建环境（如开发环境和生产环境）进行配置，自动启用相应的优化选项。</p>
+<h2 id="Webpack-架构"><a href="#Webpack-架构" class="headerlink" title="Webpack 架构"></a>Webpack 架构</h2><p>简单看一眼就行，不用做细致研究：</p>
+<h3 id="1-Entry（入口模块）："><a href="#1-Entry（入口模块）：" class="headerlink" title="1. Entry（入口模块）："></a>1. Entry（入口模块）：</h3><ul>
+<li>Webpack 从指定的入口模块开始，创建一个模块依赖图。每个模块可以是 JavaScript 文件、CSS 文件、图像文件等。</li>
+</ul>
+<h3 id="2-Dependency-Graph（依赖图）："><a href="#2-Dependency-Graph（依赖图）：" class="headerlink" title="2. Dependency Graph（依赖图）："></a>2. Dependency Graph（依赖图）：</h3><ul>
+<li>Webpack 解析每个模块的依赖项，并将这些依赖项添加到依赖图中。依赖图描述了模块之间的依赖关系。</li>
+</ul>
+<h3 id="3-Loaders（加载器）："><a href="#3-Loaders（加载器）：" class="headerlink" title="3. Loaders（加载器）："></a>3. Loaders（加载器）：</h3><ul>
+<li>在解析模块时，Webpack 使用加载器将不同类型的文件转换为可以添加到依赖图中的模块。例如，<code>babel-loader</code> 将 ES6 转换为 ES5，<code>css-loader</code> 将 CSS 文件转换为 JavaScript 模块。</li>
+</ul>
+<h3 id="4-Plugins（插件）："><a href="#4-Plugins（插件）：" class="headerlink" title="4. Plugins（插件）："></a>4. Plugins（插件）：</h3><ul>
+<li>Webpack 插件提供了一种机制来扩展 Webpack 的功能。插件可以在整个构建过程中的各个阶段执行特定任务，如优化打包、注入环境变量、压缩代码等。</li>
+</ul>
+<h3 id="5-Output（输出模块）："><a href="#5-Output（输出模块）：" class="headerlink" title="5. Output（输出模块）："></a>5. Output（输出模块）：</h3><ul>
+<li>Webpack 将依赖图中的所有模块打包到一个或多个输出文件中，并将这些文件输出到指定的目录。</li>
+</ul>
+<h3 id="6-示例-Webpack-配置文件"><a href="#6-示例-Webpack-配置文件" class="headerlink" title="6. 示例 Webpack 配置文件"></a>6. 示例 Webpack 配置文件</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs js">javascript复制代码<span class="hljs-keyword">const</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>);<br><span class="hljs-keyword">const</span> <span class="hljs-title class_">HtmlWebpackPlugin</span> = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;html-webpack-plugin&#x27;</span>);<br><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-attr">entry</span>: <span class="hljs-string">&#x27;./src/index.js&#x27;</span>,<br>  <span class="hljs-attr">output</span>: &#123;<br>    <span class="hljs-attr">filename</span>: <span class="hljs-string">&#x27;bundle.js&#x27;</span>,<br>    <span class="hljs-attr">path</span>: path.<span class="hljs-title function_">resolve</span>(__dirname, <span class="hljs-string">&#x27;dist&#x27;</span>),<br>  &#125;,<br>  <span class="hljs-attr">mode</span>: <span class="hljs-string">&#x27;development&#x27;</span>,<br>  <span class="hljs-attr">module</span>: &#123;<br>    <span class="hljs-attr">rules</span>: [<br>      &#123;<br>        <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.js$/</span>,<br>        <span class="hljs-attr">exclude</span>: <span class="hljs-regexp">/node_modules/</span>,<br>        <span class="hljs-attr">use</span>: &#123;<br>          <span class="hljs-attr">loader</span>: <span class="hljs-string">&#x27;babel-loader&#x27;</span>,<br>        &#125;,<br>      &#125;,<br>      &#123;<br>        <span class="hljs-attr">test</span>: <span class="hljs-regexp">/\.css$/</span>,<br>        <span class="hljs-attr">use</span>: [<span class="hljs-string">&#x27;style-loader&#x27;</span>, <span class="hljs-string">&#x27;css-loader&#x27;</span>],<br>      &#125;,<br>    ],<br>  &#125;,<br>  <span class="hljs-attr">plugins</span>: [<br>    <span class="hljs-keyword">new</span> <span class="hljs-title class_">HtmlWebpackPlugin</span>(&#123;<br>      <span class="hljs-attr">template</span>: <span class="hljs-string">&#x27;./src/index.html&#x27;</span>,<br>    &#125;),<br>  ],<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Webpack对测试带来的阻碍"><a href="#Webpack对测试带来的阻碍" class="headerlink" title="Webpack对测试带来的阻碍"></a>Webpack对测试带来的阻碍</h2><h3 id="1-代码混淆和压缩"><a href="#1-代码混淆和压缩" class="headerlink" title="1. 代码混淆和压缩"></a>1. 代码混淆和压缩</h3><ul>
+<li>Webpack通常会对JavaScript代码进行混淆和压缩，使得代码难以阅读和理解。 </li>
+<li>这增加了逆向工程和代码审计的难度，安全测试人员很难追踪到具体的漏洞位置或理解代码的逻辑。</li>
+</ul>
+<h3 id="2-动态模块加载"><a href="#2-动态模块加载" class="headerlink" title="2. 动态模块加载"></a>2. 动态模块加载</h3><ul>
+<li>Webpack支持动态导入模块，允许在运行时按需加载代码。 </li>
+<li>动态加载的代码片段可能不会在初始页面加载时暴露出来，安全测试人员需要模拟特定的用户行为才能触发这些代码，增加了测试复杂性。</li>
+</ul>
+<h3 id="3-模块化和依赖管理"><a href="#3-模块化和依赖管理" class="headerlink" title="3. 模块化和依赖管理"></a>3. 模块化和依赖管理</h3><ul>
+<li>Webpack将项目中的各个文件模块化，创建了复杂的依赖关系图。 </li>
+<li>安全测试人员需要理解和分析这些模块之间的依赖关系，识别潜在的安全漏洞，这比分析单一文件的传统应用程序要复杂得多。</li>
+</ul>
+<h3 id="4-热模块替换（HMR）"><a href="#4-热模块替换（HMR）" class="headerlink" title="4. 热模块替换（HMR）"></a>4. 热模块替换（HMR）</h3><ul>
+<li>Webpack的热模块替换功能允许在不刷新页面的情况下替换、添加或删除模块。</li>
+<li>这可能会导致在动态内容更新过程中出现安全漏洞，安全测试人员需要特别关注这些动态更新的模块。</li>
+</ul>
+<h3 id="5-资源文件的处理"><a href="#5-资源文件的处理" class="headerlink" title="5. 资源文件的处理"></a>5. 资源文件的处理</h3><ul>
+<li>Webpack不仅处理JavaScript文件，还处理CSS、图片等其他资源文件。</li>
+<li>这些非JavaScript资源文件的打包和加载方式可能会引入额外的安全风险，例如CSS注入或文件上传漏洞，测试人员需要额外关注这些资源文件的处理方式。</li>
+</ul>
+<h3 id="6-Source-Maps"><a href="#6-Source-Maps" class="headerlink" title="6. Source Maps"></a>6. Source Maps</h3><ul>
+<li>虽然Source Maps可以帮助调试，但在生产环境中通常会被禁用或混淆。</li>
+<li>缺乏Source Maps使得逆向工程和调试变得更加困难，安全测试人员难以还原和理解混淆后的代码。</li>
+</ul>
+<h2 id="Webpack源代码泄露漏洞"><a href="#Webpack源代码泄露漏洞" class="headerlink" title="Webpack源代码泄露漏洞"></a>Webpack源代码泄露漏洞</h2><h3 id="1-漏洞成因"><a href="#1-漏洞成因" class="headerlink" title="1. 漏洞成因"></a>1. 漏洞成因</h3><p>Webpack 会为打包后的代码生成 Source Map 文件，以便在运行时可以调试源代码。然而，如果开发人员在生产环境中没有正确地配置 SourceMap，攻击者就可能获得敏感信息，例如源代码和服务器配置等。</p>
+<p><strong>漏洞配置：</strong></p>
+<p>(1) 在生产环境中开启 SourceMap 功能：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-comment">// ...</span><br>  <span class="hljs-attr">devtool</span>: <span class="hljs-string">&#x27;source-map&#x27;</span>,<br>&#125;;<span class="hljs-number">1.2</span><span class="hljs-number">.3</span><span class="hljs-number">.4</span><span class="hljs-number">.5</span>.<br></code></pre></td></tr></table></figure>
+
+<p>(2) 配置 Web 服务器，以便通过 HTTP 获取 SourceMap 文件：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-comment"># nginx configuration</span><br><span class="hljs-section">location</span> /static/ &#123;<br>  <span class="hljs-attribute">add_header</span> <span class="hljs-string">&#x27;Access-Control-Allow-Origin&#x27;</span> <span class="hljs-string">&#x27;*&#x27;</span>;<br>  <span class="hljs-comment"># 设置为源映射文件所在的目录</span><br>  <span class="hljs-attribute">alias</span> <span class="hljs-string">&#x27;/path/to/source-maps/&#x27;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-漏洞发现"><a href="#2-漏洞发现" class="headerlink" title="2. 漏洞发现"></a>2. 漏洞发现</h3><h4 id="1-直接F12控制台查看source"><a href="#1-直接F12控制台查看source" class="headerlink" title="(1) 直接F12控制台查看source"></a>(1) 直接F12控制台查看source</h4><p><strong>F12-&gt;Sources—&gt; Page—&gt; Webpack:&#x2F;&#x2F;</strong></p>
+<p>在源代码面板可能直接看到webpack的目录，直接泄露了前端源代码</p>
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/1.png" srcset="/img/loading.gif" lazyload class="">
+
+<blockquote>
+<p><strong>一般的源代码查看</strong>：通过 <code>F12</code> 查看的是压缩和混淆后的代码，通常难以阅读和理解，且通常不会包含敏感信息。</p>
+<p><strong>Webpack 项目源码泄漏</strong>：通过 <code>Webpack://</code> 查看的是未压缩和未混淆的原始源代码，易于阅读和理解，且可能包含敏感信息和注释。</p>
+</blockquote>
+<h4 id="2-寻找-js-map文件"><a href="#2-寻找-js-map文件" class="headerlink" title="(2) 寻找.js.map文件"></a>(2) 寻找.js.map文件</h4><p>.js.map 文件包含了从压缩和混淆后的代码到原始源代码的映射关系，能够帮助攻击者理解和分析网站的源代码。通过 Source Map 文件，攻击者可以反向映射回原始的源代码，查看详细的代码逻辑和实现细节。这可能会暴露敏感信息，如 API 密钥、配置参数、业务逻辑、以及开发者注释等。</p>
+<p><strong>寻找方式</strong></p>
+<ul>
+<li>F12看js源码结尾处，或者全局搜索.js.map</li>
+</ul>
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/2.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>Ctrl+Shift+F</p>
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/3.png" srcset="/img/loading.gif" lazyload class="">
+
+<ul>
+<li>burp抓包寻找，同理</li>
+<li>FindSomeThing插件</li>
+</ul>
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/4.png" srcset="/img/loading.gif" lazyload class="">
+
+<h3 id="3-工具推荐"><a href="#3-工具推荐" class="headerlink" title="3. 工具推荐"></a>3. 工具推荐</h3><h4 id="1-Packer-Fuzzer"><a href="#1-Packer-Fuzzer" class="headerlink" title="(1) Packer-Fuzzer"></a>(1) Packer-Fuzzer</h4><p><a target="_blank" rel="noopener" href="https://github.com/rtcatc/Packer-Fuzzer">https://github.com/rtcatc/Packer-Fuzzer</a></p>
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/5.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/6.png" srcset="/img/loading.gif" lazyload class="">
+
+<h4 id="2-SourceDetector"><a href="#2-SourceDetector" class="headerlink" title="(2) SourceDetector"></a>(2) SourceDetector</h4><p>SourceDetector是一个谷歌浏览器插件，此插件可以自动的判断网站是否存在js.map文件，并且能够利用该插件直接下载到js.map的webpack项目源码</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/LuckyZmj/SourceDetector-dist">https://github.com/LuckyZmj/SourceDetector-dist</a></li>
+</ul>
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/7.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/8.png" srcset="/img/loading.gif" lazyload class="">
+
+<h4 id="3-reverse-sourcema"><a href="#3-reverse-sourcema" class="headerlink" title="(3) reverse-sourcema"></a>(3) reverse-sourcema</h4><ul>
+<li>安装工具</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">npm install --global reverse-sourcemap<br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>工具安装后，将网站 <code>js.map</code> 下载保存到一个文件夹内，使用该工具还原（以还原主 <code>js.map</code> 源码为例）</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">reverse-sourcemap --output-dir ./001 app.d61xxxxxxx7a4d0aa777.js.map<br></code></pre></td></tr></table></figure>
+
+<img src="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/9.png" srcset="/img/loading.gif" lazyload class="">
+
+<blockquote>
+<p>如果需要审计分析全部源码，则将网站所有 <code>js.map</code> 下载保存到本地文件夹内，配合使用 -v 参数指定所存放 <code>js.map</code> 文件夹路径，即可根据文件夹内所有 <code>js.map</code> 还原源码。</p>
+</blockquote>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><ul>
+<li>寻找敏感信息 password mail phone sfz key token 加密算法等等</li>
+<li>寻找隐藏的api</li>
+<li>JS代码审计</li>
+<li>……</li>
+</ul>
+<h2 id="漏洞防御与修复"><a href="#漏洞防御与修复" class="headerlink" title="漏洞防御与修复"></a>漏洞防御与修复</h2><h3 id="1-禁用生产环境的-Source-Map"><a href="#1-禁用生产环境的-Source-Map" class="headerlink" title="1. 禁用生产环境的 Source Map"></a>1. 禁用生产环境的 Source Map</h3><ul>
+<li>在生产环境中禁用 Source Map 生成，防止源码泄露。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js">javascript复制代码<span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-attr">mode</span>: <span class="hljs-string">&#x27;production&#x27;</span>,<br>  <span class="hljs-attr">devtool</span>: <span class="hljs-literal">false</span>, <span class="hljs-comment">// 禁用 source map</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-使用安全的-Source-Map-类型"><a href="#2-使用安全的-Source-Map-类型" class="headerlink" title="2. 使用安全的 Source Map 类型"></a>2. <strong>使用安全的 Source Map 类型</strong></h3><ul>
+<li>在开发环境中使用安全的 Source Map 类型，如 <code>eval-source-map</code>。</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js">javascript复制代码<span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-variable language_">module</span>.<span class="hljs-property">exports</span> = &#123;<br>  <span class="hljs-attr">mode</span>: <span class="hljs-string">&#x27;development&#x27;</span>,<br>  <span class="hljs-attr">devtool</span>: <span class="hljs-string">&#x27;eval-source-map&#x27;</span>,<br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-环境变量管理"><a href="#3-环境变量管理" class="headerlink" title="3. 环境变量管理"></a>3. <strong>环境变量管理</strong></h3><ul>
+<li>将敏感信息存储在环境变量中，而不是代码中。</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs javascript">javascript复制代码<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;dotenv&#x27;</span>).<span class="hljs-title function_">config</span>();<br><span class="hljs-keyword">const</span> apiKey = process.<span class="hljs-property">env</span>.<span class="hljs-property">API_KEY</span>;<br></code></pre></td></tr></table></figure>
+
+<h3 id="4-最小化代码暴露"><a href="#4-最小化代码暴露" class="headerlink" title="4. 最小化代码暴露"></a>4. <strong>最小化代码暴露</strong></h3><ul>
+<li>减少公开代码中暴露的敏感信息和 API，确保代码安全</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/WEB%E6%94%BB%E9%98%B2/" class="category-chain-item">WEB攻防</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%89%8D%E7%AB%AFwebpack%E6%B3%84%E9%9C%B2/" class="print-no-link">#前端webpack泄露</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/12/%E4%BA%91%E4%B8%BB%E6%9C%BA%E5%AF%86%E9%92%A5%E6%B3%84%E9%9C%B2/" title="云主机密钥泄露">
+                        <span class="hidden-mobile">云主机密钥泄露</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","appKey":"M3h6WgzFRHqbQjc4e8jWn6Ix","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":true},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
