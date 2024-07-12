@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>FFUF用法手册</title>
+    <link href="/2024/07/12/FFUF%E7%94%A8%E6%B3%95%E6%89%8B%E5%86%8C/"/>
+    <url>/2024/07/12/FFUF%E7%94%A8%E6%B3%95%E6%89%8B%E5%86%8C/</url>
+    
+    <content type="html"><![CDATA[<h1 id="FFUF-用法手册"><a href="#FFUF-用法手册" class="headerlink" title="FFUF 用法手册"></a>FFUF 用法手册</h1><blockquote><p>前言：FFUF是最好用的目录扫描、FUZZ的工具之一，经常使用且用法灵活多样，于是整理一个用法手册方便查询使用命令</p></blockquote><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>FFUF（Fast Unrestricted Web Fuzzer）是一个快速、灵活的Web应用程序扫描工具，用于发现隐藏在Web服务器中的路径或文件。它的主要功能是通过暴力猜测（brute-forcing）来查找目标主机上存在的文件或目录，从而帮助发现可能存在的安全漏洞或配置问题。</p><img src="/2024/07/12/FFUF%E7%94%A8%E6%B3%95%E6%89%8B%E5%86%8C/1.png" class=""><h2 id="主要特点和用途"><a href="#主要特点和用途" class="headerlink" title="主要特点和用途"></a>主要特点和用途</h2><ol><li><strong>快速和高效</strong>：FFUF专注于快速扫描和发现，利用并行化和异步请求以加快扫描速度。</li><li><strong>灵活的字典支持</strong>：支持自定义字典文件，可以根据实际情况灵活调整扫描策略。</li><li><strong>HTTP请求定制</strong>：可以通过设置HTTP头、Cookie、代理等来定制每次请求，以便在不同场景下进行测试。</li><li><strong>过滤器功能</strong>：支持根据HTTP状态码、响应内容长度等条件来过滤扫描结果，帮助缩小扫描范围。</li><li><strong>递归扫描</strong>：可以深入探索目标网站的子目录和链接，发现更深层次的潜在目标。</li><li><strong>JSON输出支持</strong>：结果可以以JSON格式输出，方便后续分析或集成到其他工具中。</li></ol><h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>需要自备对应的字典，十分自由灵活</p><h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><ul><li>-w：指定字典路径</li><li>-X：指定请求方法</li><li>-d：指定post传参数据</li><li>-b：指定cookie数据</li><li>-u：指定目标URL</li><li>-H：指定HTTP头部</li><li>-r：遵循重定向</li><li>-c：为输出着色</li><li>-p：请求之间的“延迟”秒数，或随机延迟范围。例如“0.1”或“0.1-2.0”</li><li>-timeout：指定超时时间</li><li>-sf：当 &gt; 95% 的响应返回 403 Forbidden 时停止（默认值：false）</li><li>-t：并发线程数。（默认值：40）</li><li>-v：详细输出，打印完整 URL 和重定向位置（如果有）以及结果。（默认值：false）</li><li>-fs：忽略为该大小的响应包</li><li>-fc：忽略为该状态码的响应包</li><li>-maxtime：指定最大执行时间</li><li>-maxtime-job：指定每个作业的最大时间</li><li>-recursion：启用递归扫描</li><li>-recursion-depth：指定递归扫描的深度</li><li>-recursion-strategy：递归策略“default”表示基于重定向，“greedy”表示对所有匹配项进行递归（默认值：default）</li><li>-mc all：显示所有成功匹配的内容</li><li>–input-cmd：指定了一个输入命令，用来生成FUZZ的替换值</li><li>-o：将输出写入文件</li><li>-of：输出文件格式。可用格式：json、ejson、html、md、csv、ecsv（或，所有格式均为“all”）（默认值：json）</li></ul><h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><h4 id="1-FUZZ-目录"><a href="#1-FUZZ-目录" class="headerlink" title="1. FUZZ 目录"></a>1. FUZZ 目录</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ffuf -w /path/to/wordlist -u https://target/FUZZ<br></code></pre></td></tr></table></figure><h4 id="2-FUZZ-HTTP头部"><a href="#2-FUZZ-HTTP头部" class="headerlink" title="2. FUZZ HTTP头部"></a>2. FUZZ HTTP头部</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ffuf -w /path/to/vhost/wordlist -u https://target -H <span class="hljs-string">&quot;Host: FUZZ&quot;</span> -fs 4242<br></code></pre></td></tr></table></figure><h4 id="3-FUZZ-参数名"><a href="#3-FUZZ-参数名" class="headerlink" title="3. FUZZ 参数名"></a>3. FUZZ 参数名</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ffuf -w /path/to/paramnames.txt -u https://target/script.php?FUZZ=test_value -fs 4242<br></code></pre></td></tr></table></figure><h4 id="4-FUZZ-参数值"><a href="#4-FUZZ-参数值" class="headerlink" title="4. FUZZ 参数值"></a>4. FUZZ 参数值</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ffuf -w /path/to/values.txt -u https://target/script.php?valid_name=FUZZ -<span class="hljs-built_in">fc</span> 401<br></code></pre></td></tr></table></figure><h4 id="5-FUZZ-POST-Data"><a href="#5-FUZZ-POST-Data" class="headerlink" title="5. FUZZ POST Data"></a>5. FUZZ POST Data</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ffuf -w /path/to/postdata.txt -X POST -d <span class="hljs-string">&quot;username=admin\&amp;password=FUZZ&quot;</span> -u https://target/login.php -<span class="hljs-built_in">fc</span> 401<br></code></pre></td></tr></table></figure><h4 id="6-FUZZ-最大时间后停止"><a href="#6-FUZZ-最大时间后停止" class="headerlink" title="6. FUZZ 最大时间后停止"></a>6. FUZZ 最大时间后停止</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ffuf -w /path/to/wordlist -u https://target/FUZZ -maxtime 60<br></code></pre></td></tr></table></figure><h4 id="7-FUZZ-递归"><a href="#7-FUZZ-递归" class="headerlink" title="7. FUZZ 递归"></a>7. FUZZ 递归</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">ffuf -w /path/to/wordlist -u https://target/FUZZ -maxtime-job 60 -recursion -recursion-depth 2<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>工具</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>FFUF用法手册</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Webpack源代码泄露漏洞研究</title>
     <link href="/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/"/>
     <url>/2024/07/12/Webpack%E6%BA%90%E4%BB%A3%E7%A0%81%E6%B3%84%E9%9C%B2%E6%BC%8F%E6%B4%9E%E7%A0%94%E7%A9%B6/</url>
@@ -457,7 +482,7 @@
   
   
   <entry>
-    <title>X1ly?S</title>
+    <title>关于</title>
     <link href="/"/>
     <url>/</url>
     
