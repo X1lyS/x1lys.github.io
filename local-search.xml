@@ -511,7 +511,7 @@
     <link href="/"/>
     <url>/</url>
     
-    <content type="html"><![CDATA[<h2 id="喜欢的音乐"><a href="#喜欢的音乐" class="headerlink" title="喜欢的音乐"></a>喜欢的音乐</h2><p>My Heart Will Go On</p><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=26524701&auto=1&height=66"></iframe><h2 id="喜欢的电影"><a href="#喜欢的电影" class="headerlink" title="喜欢的电影"></a>喜欢的电影</h2><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=330 height=86 src="//music.163.com/outchain/player?type=2&id=26524701&auto=1&height=66"></iframe><h2 id="喜欢的电影-1"><a href="#喜欢的电影-1" class="headerlink" title="喜欢的电影"></a>喜欢的电影</h2>]]></content>
+    <content type="html"><![CDATA[<h2 id="喜欢的音乐"><a href="#喜欢的音乐" class="headerlink" title="喜欢的音乐"></a>喜欢的音乐</h2><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=530 height=86 src="//music.163.com/outchain/player?type=2&id=26524701&auto=1&height=66"></iframe><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=530 height=86 src="//music.163.com/outchain/player?type=2&id=1968035768&auto=1&height=66"></iframe>]]></content>
     
   </entry>
   
