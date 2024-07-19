@@ -4,9 +4,9 @@
   
   
   <entry>
-    <title>SRC挖掘思路与案例一</title>
-    <link href="/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E4%B8%8E%E6%A1%88%E4%BE%8B%E4%B8%80/"/>
-    <url>/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E4%B8%8E%E6%A1%88%E4%BE%8B%E4%B8%80/</url>
+    <title>SRC挖掘思路与案例总结一</title>
+    <link href="/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E4%B8%8E%E6%A1%88%E4%BE%8B%E6%80%BB%E7%BB%93%E4%B8%80/"/>
+    <url>/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E4%B8%8E%E6%A1%88%E4%BE%8B%E6%80%BB%E7%BB%93%E4%B8%80/</url>
     
     <content type="html"><![CDATA[<ul><li><p>弱cookie导致的篡改 Cookie 实现任意用户伪造</p></li><li><p>前端检验关键数据(如：手机号)导致任意换绑从而任意用户密码重置</p></li><li><p>存储型XSS与换绑的验证码输出在前端的组合拳实现任意账户无感换绑</p></li><li><p>前端数据截图伪造与水平越权数据泄露的组合拳实现退款欺骗</p></li><li><p>OAuth缺陷导致CSRF任意用户换绑从而实现任意用户接管</p></li><li><p>四舍五入数据处理不当导致支付逻辑漏洞</p></li><li><p>四舍五入数据处理不当导致越权逻辑漏洞</p></li><li><p>并发漏洞导致的各种重放攻击</p></li><li><p>前端校验数据伪造数据导致的各种问题</p></li><li><p>用户名枚举时还可使用fuzz模块生成二到三位的简单用户名</p></li><li><p>用户名枚举时还可使用使用TOP中文名汉字字典</p></li><li><p>Goole黑语法搜寻学号，默认密码</p></li><li><p>Github语法找CMS源码，项目源码，敏感信息</p></li><li><p>熟悉目标的整个业务流程，功能点很重要</p></li><li><p>前端泄露调试器全局搜索key、security、ak、sk、password、username、&#x2F;*、&#x2F;&#x2F;、默认</p></li><li><p>F12 XHR 截取异步流量(接口信息) 获取请求的API接口</p></li><li><p>参数遍历寻找隐藏商品、赠品、附属商品实现0元购</p></li><li><p>越权测试时不要嫌麻烦，注册两个账号测试</p></li><li><p>尝试购买售罄的商品</p></li><li><p>优惠劵多次复用</p></li><li><p>看响应包长度时，看最大、最小、临界值</p></li><li><p>找未授权接口时，若大多数是404说明可能接口有前缀，F12翻找js进行前缀拼接；如果接口跳转，开启bp拦截，再次看发送是否加载新的接口</p></li><li><p>找未授权接口时，405 改POST、GET、OPTIONS、PUT、HAED</p></li><li><p>找未授权接口时，5xx可能是参数缺失，F12前端去找参数或者FUZZ参数</p></li><li><p>找未授权接口时，Unsupportted Media Type 不支持内容类型，FUZZ媒体类型</p><p>text&#x2F;html：HTML 文档<br>application&#x2F;json：JSON 数据<br>application&#x2F;xml：XML 数据<br>image&#x2F;jpeg：JPEG 图像<br>image&#x2F;png：PNG 图像<br>application&#x2F;pdf：PDF 文档<br>application&#x2F;octet-stream：二进制数据流<br>application&#x2F;x-www-form-urlencoded：用于表单数据的 URL 编码格式<br>multipart&#x2F;form-data：用于表单数据的多部分数据格式</p></li><li><p>找未授权接口时 403时，继续FUZZ 爆破次级目录，或者403 Bypass</p></li><li><p>爆破密码时有次数限制时，横向爆破用户名；爆破密码，达到错误阈值，再使用正确密码登录，看是否是虚假锁定</p></li><li><p>看前端是否对控制错误尝试的校验字段可控，从而绕过限制</p></li><li><p>校验过程与处理过程业务分离，导致通过一次校验后，得到处理过程，之后可跳过校验过程直接进行处理过程</p></li><li><p>验证码未绑定，只校验此时数据库中的该验证码是否有效，导致的任意用户登录</p></li><li><p>在代码层未考虑NULL的情况导致的验证码可删除从而绕过校验</p></li><li><p>仅仅只对输入校验过滤导致的二次注入、二次XSS</p></li><li><p>MySQL中insert into数据长度溢出时截断数据的特性导致的注册时的任意用户覆盖</p></li><li><p>没有流程凭证(session)，业务流程步骤未校验是否上一步骤是否完成，导致中间流程被跳过导致的未授权访问</p></li><li><p>流程凭证未绑定账号信息，导致的任意有效流程凭证可复用，从而实现任意用户密码重置</p></li><li><p>密保问题简单可猜解</p></li><li><p>密保问题答案泄露在前端</p></li><li><p>验证码4-5位可爆破</p></li><li><p>验证码回显在响应的set-cookie中</p></li><li><p>万能、默认验证码</p></li><li><p>未使用的token不过期，且不包含用户凭证信息，导致的任意用户越权操作</p></li><li><p>token可猜解，可预测，导致token伪造实现任意用户越权操作</p></li><li><p>邮箱密码重置链接中的凭证不包含账号信息或者叫凭证不会账号做校验，则可通过修改账号ID，实现任意用户密码重置</p></li><li><p>账号激活邮箱链接未加密且参数简单，无需登录他人邮箱就可以构造激活链接导致的任意用户注册</p></li></ul>]]></content>
     
@@ -23,19 +23,6 @@
       <tag>SRC挖掘思路与案例</tag>
       
     </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>拜读《白帽子讲web安全》系列-底层基础-HTTP-1</title>
-    <link href="/2024/07/18/%E6%8B%9C%E8%AF%BB%E3%80%8A%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2web%E5%AE%89%E5%85%A8%E3%80%8B%E7%B3%BB%E5%88%97-%E5%BA%95%E5%B1%82%E5%9F%BA%E7%A1%80-HTTP-1/"/>
-    <url>/2024/07/18/%E6%8B%9C%E8%AF%BB%E3%80%8A%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2web%E5%AE%89%E5%85%A8%E3%80%8B%E7%B3%BB%E5%88%97-%E5%BA%95%E5%B1%82%E5%9F%BA%E7%A1%80-HTTP-1/</url>
-    
-    <content type="html"><![CDATA[]]></content>
-    
-    
     
   </entry>
   
