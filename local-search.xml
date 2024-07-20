@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>SRC案例-一次移花接木的getshell</title>
+    <link href="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/"/>
+    <url>/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>声明：本案例来自J0神，此处只是做学习研究之用</p></blockquote><h2 id="漏洞发现"><a href="#漏洞发现" class="headerlink" title="漏洞发现"></a>漏洞发现</h2><ol><li>是一个提供⾳乐播放业务的资产</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/1.png" class=""><ol start="2"><li>F12简单看下⽬标信息环境</li></ol><ul><li><strong>ServerSoft:IIS 7.5 CMS:JYMusic(ThinkPHP)</strong></li></ul><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/2.png" class=""><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/3.png" class=""><ol start="3"><li>找到一处CSS资源⽂件，试了下文件解析漏洞，成功了：get一个IIS7.5的文件解析漏洞，那么现在只需要找到上传点+文件解析漏洞就能getshell 了</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/4.png" class=""><ol start="4"><li>尝试了修改头像处，发现对上传的文件进行了二次渲染，上传⼀些⼆次渲染后仍能执⾏的Webshell后，依然发现⽆法正常getshell，遂放弃这一点</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/5.png" class=""><ol start="5"><li>头像上传⾛不通那么只能另寻出路，来到分享⾳乐功能，但这里的功能用户自己上传文件修改成了⼈⼯邮箱审核，<strong>但是猜测上传接⼝还是存在的</strong>，于是根据目标CMS特征找到其他可以用户上传分享⾳乐(未改动)的网站，借用其接口，<strong>同一套CMS，二者接口肯定是一致的</strong></li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/6.png" class=""><ol start="6"><li>于是，通过fofa找到⼀个功能正常的站点，以下称为<a href="http://www.bbb.com,这个站点的分享音乐功能是正常的/">www.bbb.com，这个站点的分享⾳乐功能是正常的</a></li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/7.png" class=""><ol start="7"><li>直接上传含有一句话木马的⾳乐⽂件</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/8.png" class=""><ol start="8"><li>⽂件正常上传，但是没有返回上传路径，提交整个表单试试，提示没有分类数据</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/9.png" class=""><ol start="9"><li>没事直接前端加一个就行了，祭出神器F12给select标签加⼀个有value值的option。</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/10.png" class=""><ol start="10"><li>提示分享成功，查看审核列表也有了，编辑发现ID为23，⾸⻚随便点进去⼀个发现id为21。</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/11.png" class=""><ol start="11"><li>同时发现存在一个接⼝可以获取⾳乐上传路径，替换为ID&#x3D;23后取得路径</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/12.png" class=""><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/13.png" class=""><ol start="12"><li>这些是在<a href="http://www.bbb.com的分享音乐功能操作,已知可上传含有木马的mp3,可利用接口获取上传路径,但是我们的目标是先前的网站,由于先前的网站无法显式地上传文件,我们才去同类网站找上传接口的,现已找到,于是只需把在www.bbb.com的分享音乐功能操作,在先前的网站再做一遍就行了.直接把www.bbb.com上传音乐文件的请求,移花接木到www.aaa.com上(burp改包host和cookie,提交时改fileid)/">www.bbb.com的分享音乐功能操作，已知可上传含有木马的mp3，可利用接口获取上传路径，但是我们的目标是先前的网站，由于先前的网站无法显式地上传文件，我们才去同类网站找上传接口的，现已找到，于是只需把在www.bbb.com的分享音乐功能操作，在先前的网站再做一遍就行了。直接把www.bbb.com上传⾳乐⽂件的请求，移花接⽊到www.aaa.com上（burp改包host和cookie，提交时改fileid）</a></li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/14.png" class=""><ol start="13"><li>通过解析漏洞访问我们后缀名为MP3的webshell，成功getshell！</li></ol><img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/15.png" class="">]]></content>
+    
+    
+    <categories>
+      
+      <category>SRC挖掘案例</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>一次移花接木的getshell</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>SRC案例-用组合拳在SRC官网盗走你的个人信息</title>
     <link href="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/"/>
     <url>/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/</url>

