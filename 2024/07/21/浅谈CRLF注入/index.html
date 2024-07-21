@@ -1,0 +1,846 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="X1ly?S">
+  <meta name="keywords" content="网络安全 渗透测试">
+  
+    <meta name="description" content="简介CRLF（Carriage Return Line Feed）又称HRS（HTTP Response Splitting）是一种网络安全漏洞，利用的是在HTTP响应中未能正确处理用户输入的漏洞。CRLF注入攻击通过在用户输入中插入换行符（回车符和换行符），可能导致HTTP响应头被篡改，进而造成响应拆分、跨站脚本（XSS）或其他攻击。 漏洞原理CRLF（Carriage Return Line">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈CRLF注入">
+<meta property="og:url" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="X1ly?S Blog">
+<meta property="og:description" content="简介CRLF（Carriage Return Line Feed）又称HRS（HTTP Response Splitting）是一种网络安全漏洞，利用的是在HTTP响应中未能正确处理用户输入的漏洞。CRLF注入攻击通过在用户输入中插入换行符（回车符和换行符），可能导致HTTP响应头被篡改，进而造成响应拆分、跨站脚本（XSS）或其他攻击。 漏洞原理CRLF（Carriage Return Line">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/1.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/2.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/3.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/4.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/5.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/6.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/7.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/8.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/9.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/10.png">
+<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/11.png">
+<meta property="article:published_time" content="2024-07-21T06:25:59.000Z">
+<meta property="article:modified_time" content="2024-07-21T06:28:04.505Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="CRLF注入">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/1.png">
+  
+  
+  
+  <title>浅谈CRLF注入 - X1ly?S Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"|","loop":true,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","app_key":"M3h6WgzFRHqbQjc4e8jWn6Ix","server_url":"https://f0dhnqsc.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>X1ly?S Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="浅谈CRLF注入"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        X1ly?S
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-07-21 14:25" pubdate>
+          2024年7月21日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">浅谈CRLF注入</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年7月21日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>CRLF（Carriage Return Line Feed）又称HRS（HTTP Response Splitting）是一种网络安全漏洞，利用的是在HTTP响应中未能正确处理用户输入的漏洞。CRLF注入攻击通过在用户输入中插入换行符（回车符和换行符），可能导致HTTP响应头被篡改，进而造成响应拆分、跨站脚本（XSS）或其他攻击。</p>
+<h2 id="漏洞原理"><a href="#漏洞原理" class="headerlink" title="漏洞原理"></a>漏洞原理</h2><p>CRLF（Carriage Return Line Feed）注入漏洞利用的是HTTP响应中未能正确处理用户输入的缺陷。攻击者可以通过插入回车符（CR，<code>\r</code>）和换行符（LF，<code>\n</code>）来操控HTTP响应，导致HTTP响应头被篡改或分割，从而实现各种恶意攻击。</p>
+<h2 id="漏洞危害"><a href="#漏洞危害" class="headerlink" title="漏洞危害"></a>漏洞危害</h2><h3 id="1-HTTP响应拆分（HTTP-Response-Splitting）"><a href="#1-HTTP响应拆分（HTTP-Response-Splitting）" class="headerlink" title="1. HTTP响应拆分（HTTP Response Splitting）"></a>1. HTTP响应拆分（HTTP Response Splitting）</h3><p>CRLF注入最常见的危害是HTTP响应拆分。<strong>攻击者利用该漏洞可以将一个HTTP响应拆分为多个响应</strong>，从而引发多种安全问题。</p>
+<h3 id="2-跨站脚本（XSS）攻击"><a href="#2-跨站脚本（XSS）攻击" class="headerlink" title="2. 跨站脚本（XSS）攻击"></a>2. 跨站脚本（XSS）攻击</h3><p>通过HTTP响应拆分，攻击者可以注入恶意的JavaScript代码。当用户浏览器解析并执行这些代码时，可能导致跨站脚本（XSS）攻击，<strong>窃取用户的敏感信息（如Cookies、会话令牌）或进行其他恶意操作。</strong></p>
+<p><strong>示例</strong>：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">200</span> OK<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>text/html<br><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"><span class="hljs-title function_">alert</span>(<span class="hljs-string">&#x27;XSS Attack&#x27;</span>);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span></span><br><span class="language-xml"><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<h3 id="3-会话固定"><a href="#3-会话固定" class="headerlink" title="3. 会话固定"></a>3. 会话固定</h3><p>CRLF注入可以使攻击者插入会话，<strong>使其固定为攻击者设置的凭证</strong></p>
+<p><strong>示例：</strong></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">200</span> OK<br><span class="hljs-attribute">Set-Cookie</span><span class="hljs-punctuation">: </span>sessionID=hacker; HttpOnly<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>text/html<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>100<br><br><span class="language-apache"><span class="hljs-section">&lt;html&gt;</span></span><br><span class="language-apache"><span class="hljs-section">&lt;body&gt;</span></span><br><span class="language-apache"><span class="hljs-attribute">Hello</span>, world!</span><br><span class="language-apache"><span class="hljs-section">&lt;/body&gt;</span></span><br><span class="language-apache"><span class="hljs-section">&lt;/html&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+<h3 id="4-缓存中毒"><a href="#4-缓存中毒" class="headerlink" title="4. 缓存中毒"></a>4. 缓存中毒</h3><p><strong>攻击者可以通过CRLF注入将恶意内容缓存到服务器上</strong>。如果Web应用程序使用了缓存机制（如CDN或代理服务器），恶意内容可能被缓存，影响后续请求的用户。</p>
+<p><strong>示例</strong>： 攻击者注入一个恶意响应，使得缓存服务器缓存了带有恶意脚本的响应内容。随后，每次用户请求相同资源时，都会从缓存中获取到恶意内容。</p>
+<h3 id="5-HTTP请求-响应劫持"><a href="#5-HTTP请求-响应劫持" class="headerlink" title="5. HTTP请求&#x2F;响应劫持"></a>5. HTTP请求&#x2F;响应劫持</h3><p>通过CRLF注入，<strong>攻击者可以注入多个响应，导致浏览器或中间代理服务器解析错误的响应内容</strong>，从而进行HTTP请求&#x2F;响应劫持，劫持用户会话或劫持Web页面内容。</p>
+<h3 id="6-信息泄露"><a href="#6-信息泄露" class="headerlink" title="6. 信息泄露"></a>6. 信息泄露</h3><p><strong>攻击者可以通过注入额外的响应内容来窃取服务器的内部信息，如敏感的响应头或错误信息</strong>，进一步加深攻击。</p>
+<h2 id="漏洞出现场景"><a href="#漏洞出现场景" class="headerlink" title="漏洞出现场景"></a>漏洞出现场景</h2><ul>
+<li>用户可控的自定义头部字段(但没什么用)</li>
+<li>CORS漏洞中的Access-Allow-Origin直接接收Origin值导致的该响应头可控(但没什么用)</li>
+<li>URL重定向漏洞中Location头可控</li>
+<li>Referer头注入，某些Web应用程序可能会根据用户输入动态生成HTTP头部用于跨站点追踪(但没什么用)</li>
+<li>GET、POST参数值出现在了响应包头部且可控</li>
+<li>日志注入，输入直接写入日志文件，导日志文件可伪造条目</li>
+<li>邮件头注入，发送电子邮件时，把用户输入的内容直接插入到电子邮件头中</li>
+<li>API注入，某些Web应用程序可能会接受用户输入并将其作为HTTP头的一部分发送到外部API</li>
+<li>文件上传中的文件名，将文件名直接包含在HTTP响应头</li>
+</ul>
+<h2 id="换行Payload"><a href="#换行Payload" class="headerlink" title="换行Payload"></a>换行Payload</h2><ol>
+<li><strong>回车符 (Carriage Return, <code>\r</code> 或 <code>%0D</code>)</strong>: 表示回到当前行的开头</li>
+<li><strong>换行符 (Line Feed, <code>\n</code> 或 <code>%0A</code>)</strong>: 表示换到下一行</li>
+</ol>
+<p>当这两个字符组合在一起（<code>\r\n</code> 或 <code>%0D%0A</code>）时，表示一个完整的换行操作。HTTP协议中的头部字段和实际内容通常使用CRLF来分隔，因此这种组合在注入攻击中尤为关键</p>
+<h2 id="Demo演示分析"><a href="#Demo演示分析" class="headerlink" title="Demo演示分析"></a>Demo演示分析</h2><h3 id="Demo-1"><a href="#Demo-1" class="headerlink" title="Demo-1"></a>Demo-1</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-meta">if (isset($_GET[&#x27;header&#x27;])) &#123;</span><br><span class="hljs-meta">    $headerValue = $_GET[&#x27;header&#x27;];</span><br><span class="hljs-meta">    // 故意没有对输入进行过滤，从而造成CRLF漏洞</span><br><span class="hljs-meta">    header(&quot;X-Custom-Header: $headerValue&quot;);</span><br><span class="hljs-meta">&#125;</span><br><span class="hljs-meta">?&gt;</span><br><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>CRLF Injection Demo<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>CRLF Injection Demo<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;GET&quot;</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;header&quot;</span>&gt;</span>Enter header value:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;header&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;header&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;Submit&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Check the HTTP response headers after submitting the form.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br><br></code></pre></td></tr></table></figure>
+
+<p>直接接收用户输入来设置X-Custom-Header响应头部，没有任何过滤</p>
+<h3 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h3><img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/1.png" srcset="/img/loading.gif" lazyload class="">**注意：这里就不要再输入框直接输入了，因为是GET提交，"%"会被URL编码一次，就不再是换行符了，采用抓包修改或者Hackbar**
+
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/2.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/3.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>都出现了警告，翻译是**”警告：标头不能包含多个标头，在 D:\phpStudy\PHPTutorial\WWW\crlf\index.php 第 5 行检测到换行符”**,也就是被拦截了，查了一下原因，是php版本太高了，已经有了防御CRLF攻击的机制</p>
+<p>于是切换一个低版本的php：5.2</p>
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/4.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>切换为了现有的最低的版本，还是不行。没事换一个demo来看呢，或许这种demo场景太”露骨”了，于是很多版本都会拦截，换一种场景演示</p>
+<h3 id="Demo-2"><a href="#Demo-2" class="headerlink" title="Demo-2"></a>Demo-2</h3><ul>
+<li>由于php对头部某些危险字符有着严格的过滤拦截机制，于是采用node.js来搭建demo-2</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>);<br><span class="hljs-keyword">const</span> querystring = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;querystring&#x27;</span>);<br><br><span class="hljs-keyword">const</span> server = http.<span class="hljs-title function_">createServer</span>(<span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (req.<span class="hljs-property">method</span> === <span class="hljs-string">&#x27;POST&#x27;</span> &amp;&amp; req.<span class="hljs-property">url</span> === <span class="hljs-string">&#x27;/submit&#x27;</span>) &#123;<br>        <span class="hljs-keyword">let</span> body = <span class="hljs-string">&#x27;&#x27;</span>;<br><br>        req.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function"><span class="hljs-params">chunk</span> =&gt;</span> &#123;<br>            body += chunk.<span class="hljs-title function_">toString</span>(); <span class="hljs-comment">// Convert Buffer to string</span><br>        &#125;);<br><br>        req.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-keyword">const</span> parsedBody = querystring.<span class="hljs-title function_">parse</span>(body);<br>            <span class="hljs-keyword">const</span> userInput = parsedBody.<span class="hljs-property">input</span> || <span class="hljs-string">&#x27;&#x27;</span>;<br><br>            <span class="hljs-comment">// Set HTTP headers using user input (vulnerable to CRLF injection)</span><br>            res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>, &#123;<br>                <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;text/html&#x27;</span>,<br>                <span class="hljs-string">&#x27;X-Injected-Header&#x27;</span>: userInput <span class="hljs-comment">// CRLF injection can be exploited here</span><br>            &#125;);<br><br>            res.<span class="hljs-title function_">end</span>(<span class="hljs-string">`</span><br><span class="hljs-string">                &lt;html&gt;</span><br><span class="hljs-string">                &lt;head&gt;&lt;title&gt;CRLF Injection Demo&lt;/title&gt;&lt;/head&gt;</span><br><span class="hljs-string">                &lt;body&gt;</span><br><span class="hljs-string">                    &lt;h1&gt;CRLF Injection Demo&lt;/h1&gt;</span><br><span class="hljs-string">                    &lt;p&gt;Your input has been processed.&lt;/p&gt;</span><br><span class="hljs-string">                &lt;/body&gt;</span><br><span class="hljs-string">                &lt;/html&gt;</span><br><span class="hljs-string">            `</span>);<br>        &#125;);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>, &#123; <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;text/html&#x27;</span> &#125;);<br>        res.<span class="hljs-title function_">end</span>(<span class="hljs-string">`</span><br><span class="hljs-string">            &lt;html&gt;</span><br><span class="hljs-string">            &lt;head&gt;&lt;title&gt;CRLF Injection Demo&lt;/title&gt;&lt;/head&gt;</span><br><span class="hljs-string">            &lt;body&gt;</span><br><span class="hljs-string">                &lt;h1&gt;CRLF Injection Demo&lt;/h1&gt;</span><br><span class="hljs-string">                &lt;form action=&quot;/submit&quot; method=&quot;POST&quot;&gt;</span><br><span class="hljs-string">                    &lt;label for=&quot;input&quot;&gt;Enter your text:&lt;/label&gt;</span><br><span class="hljs-string">                    &lt;textarea id=&quot;input&quot; name=&quot;input&quot; rows=&quot;4&quot; cols=&quot;50&quot;&gt;&lt;/textarea&gt;&lt;br&gt;</span><br><span class="hljs-string">                    &lt;input type=&quot;submit&quot; value=&quot;Submit&quot;&gt;</span><br><span class="hljs-string">                &lt;/form&gt;</span><br><span class="hljs-string">            &lt;/body&gt;</span><br><span class="hljs-string">            &lt;/html&gt;</span><br><span class="hljs-string">        `</span>);<br>    &#125;<br>&#125;);<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">PORT</span> = <span class="hljs-number">3000</span>;<br>server.<span class="hljs-title function_">listen</span>(<span class="hljs-variable constant_">PORT</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`Server running at http://localhost:<span class="hljs-subst">$&#123;PORT&#125;</span>`</span>);<br>&#125;);<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="演示-1"><a href="#演示-1" class="headerlink" title="演示"></a>演示</h3><img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/5.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/6.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/7.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>还是被拦截了呜呜</p>
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/8.png" srcset="/img/loading.gif" lazyload class="">
+
+<p><strong>看来，Node.js 对于 HTTP 头部的内容也有严格的字符限制，不允许有控制字符（如 <code>\r</code> 和 <code>\n</code>）出现在头部字段的内容中</strong></p>
+<p>那就不折腾了，反正就是这么个道理对吧哈哈，之后搞懂了怎么搭建再来补充这篇文章……</p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="1-Web缓存投毒"><a href="#1-Web缓存投毒" class="headerlink" title="1. Web缓存投毒"></a>1. <strong>Web缓存投毒</strong></h3><p>攻击者可以通过 CRLF 注入修改 Web 缓存服务器的缓存内容，影响后续用户的缓存数据。这种攻击可以导致缓存中注入恶意内容或伪造的响应。</p>
+<p><strong>示例攻击：</strong></p>
+<p>假设一个 Web 应用程序在某些条件下返回不同的内容，但没有对用户输入进行验证。攻击者可以提交以下内容：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-attribute">Cache-Control</span><span class="hljs-punctuation">: </span>no-cache\r\nX-Custom-Header: injected<br></code></pre></td></tr></table></figure>
+
+<p>如果缓存服务器处理用户输入不当，这可能会导致缓存中的内容被恶意修改，<strong>之后再专门研究Web缓存投毒</strong>，此处简单提一句</p>
+<h3 id="2-跨站脚本攻击（XSS）"><a href="#2-跨站脚本攻击（XSS）" class="headerlink" title="2. 跨站脚本攻击（XSS）"></a>2. <strong>跨站脚本攻击（XSS）</strong></h3><p>攻击者可以利用 CRLF 注入来实现跨站脚本攻击，特别是当注入的内容被后续用户渲染时。</p>
+<p><strong>示例攻击：</strong></p>
+<p>假设一个应用程序允许用户输入内容并将其回显到 HTML 页面中。攻击者可以提交如下内容：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="language-javascript"><span class="hljs-title function_">alert</span>(<span class="hljs-string">&#x27;XSS&#x27;</span>);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>\r\nX-Injection-Header: injected<br></code></pre></td></tr></table></figure>
+
+<p>如果用户输入未经过滤直接嵌入到 HTML 中，脚本将被执行，造成 XSS 攻击。</p>
+<p>不仅如此，通过注入两个CRLF还能造成一个无视浏览器Filter的反射型XSS：</p>
+<p>比如一个网站接受url参数<a target="_blank" rel="noopener" href="http://test.sina.com.cn/?url=xxx%EF%BC%8Cxxx%E6%94%BE%E5%9C%A8Location%E5%90%8E%E9%9D%A2%E4%BD%9C%E4%B8%BA%E4%B8%80%E4%B8%AA%E8%B7%B3%E8%BD%AC%E3%80%82%E5%A6%82%E6%9E%9C%E6%88%91%E4%BB%AC%E8%BE%93%E5%85%A5%E7%9A%84%E6%98%AF%EF%BC%9A">http://test.sina.com.cn/?url=xxx，xxx放在Location后面作为一个跳转。如果我们输入的是：</a></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">http://test.sina.com.cn/?url=%0d%0a%0d%0a&lt;img src=1 onerror=alert(/xss/)&gt;<br></code></pre></td></tr></table></figure>
+
+<p>我们的返回包就会变成这样：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">302</span> Moved Temporarily <br><span class="hljs-attribute">Date</span><span class="hljs-punctuation">: </span>Fri, 27 Jun 2014 17:52:17 GMT <br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>text/html <br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>154 <br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close <br><span class="hljs-attribute">Location</span>:<br>&lt;img src=1 onerror=alert(/xss/)&gt;<br></code></pre></td></tr></table></figure>
+
+<p>为什么说是无视浏览器filter的，这里涉及到另一个问题。</p>
+<p>浏览器的Filter是浏览器应对一些反射型XSS做的保护策略，当url中含有XSS相关特征的时候就会过滤掉不显示在页面中，所以不能触发XSS。</p>
+<p>怎样才能关掉filter？一般来说用户这边是不行的，只有数据包中http头含有X-XSS-Protection并且值为0的时候，浏览器才不会开启filter。</p>
+<p>说到这里应该就很清楚了，HRS不正是注入HTTP头的一个漏洞吗，我们可以将X-XSS-Protection:0注入到数据包中，再用两个CRLF来注入XSS代码，这样就成功地绕过了浏览器filter，并且执行我们的反射型XSS。</p>
+<p>所以说HRS的危害大于XSS，因为它能绕过一般XSS所绕不过的filter</p>
+<p>我们来一个真实案例吧。 新浪某分站含有一个url跳转漏洞，危害并不大，于是我就想到了CRLF Injection，当我测试</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">http://xxx.sina.com.cn/?url=%0a%0d%0a%0d%3Cimg%20src=1%3E<br></code></pre></td></tr></table></figure>
+
+<p>的时候，发现图片已经输出在页面中了，说明CRLF注入成功了：</p>
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/9.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>那么我们试试XSS看看：</p>
+<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/10.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>看控制台，果然被XSS Filter拦截了。</p>
+<p>那么我们就注入一个</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">X-XSS-Protection:0<br></code></pre></td></tr></table></figure>
+
+<p>成功绕过XSS Filter！<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/11.png" srcset="/img/loading.gif" lazyload class=""></p>
+<h3 id="3-固定会话攻击"><a href="#3-固定会话攻击" class="headerlink" title="3.固定会话攻击"></a>3.固定会话攻击</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">http://www.sina.com.cn%0aSet-cookie:JSPSESSID%3Dwooyun<br></code></pre></td></tr></table></figure>
+
+<p>注入了一个换行，此时的返回包就会变成这样： </p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-meta">HTTP/1.1</span> <span class="hljs-number">302</span> Moved Temporarily <br><span class="hljs-attribute">Date</span><span class="hljs-punctuation">: </span>Fri, 27 Jun 2014 17:52:17 GMT <br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>text/html <br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>154 <br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close <br><span class="hljs-attribute">Location</span><span class="hljs-punctuation">: </span>http://www.sina.com.cn <br><span class="hljs-attribute">Set-cookie</span><span class="hljs-punctuation">: </span>JSPSESSID=wooyun<br></code></pre></td></tr></table></figure>
+
+<p>这个时候这样我们就给访问者设置了一个SESSION，造成一个“会话固定漏洞”</p>
+<h3 id="4-邮件头注入"><a href="#4-邮件头注入" class="headerlink" title="4. 邮件头注入"></a>4. <strong>邮件头注入</strong></h3><p>如果 Web 应用程序允许用户提供邮件头部字段（如通过电子邮件发送功能），CRLF 注入可以用来在邮件中注入额外的邮件头部。</p>
+<p><strong>示例攻击：</strong></p>
+<p>假设一个应用程序允许用户指定电子邮件的“发件人”字段，攻击者可以提交如下内容：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs livescript">Sender: attacker@example.com<span class="hljs-string">\r\nBcc:</span> victim@example.com<br></code></pre></td></tr></table></figure>
+
+<p>这将导致电子邮件发送到一个额外的 Bcc 收件人，可能导致信息泄露。</p>
+<h2 id="工具推荐"><a href="#工具推荐" class="headerlink" title="工具推荐"></a>工具推荐</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/dwisiswant0/crlfuzz">https://github.com/dwisiswant0/crlfuzz</a></li>
+</ul>
+<h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><p>​    过滤 \r 、\n 之类的行结束符，避免输入的数据污染其他 HTTP 首部字段。</p>
+<blockquote>
+<p>部分摘自：<a target="_blank" rel="noopener" href="https://wooyun.js.org/drops/CRLF%20Injection%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90.html">https://wooyun.js.org/drops/CRLF%20Injection%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AE%9E%E4%BE%8B%E5%88%86%E6%9E%90.html</a></p>
+</blockquote>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/WEB%E6%94%BB%E9%98%B2/" class="category-chain-item">WEB攻防</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/CRLF%E6%B3%A8%E5%85%A5/" class="print-no-link">#CRLF注入</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/07/20/SRC%E6%A1%88%E4%BE%8B-%E4%B8%80%E6%AC%A1%E7%A7%BB%E8%8A%B1%E6%8E%A5%E6%9C%A8%E7%9A%84getshell/" title="SRC案例-一次移花接木的getshell">
+                        <span class="hidden-mobile">SRC案例-一次移花接木的getshell</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","appKey":"M3h6WgzFRHqbQjc4e8jWn6Ix","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":true},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
