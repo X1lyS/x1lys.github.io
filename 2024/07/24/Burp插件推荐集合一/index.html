@@ -16,22 +16,32 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="漏洞报告或文章的阅读技巧阅读漏洞报告或者文章时重点关注一下几点：  漏洞的产生点（漏洞在哪个功能点？如何发现漏洞的？）  漏洞如何被发现的（把自己带入到作者的角度思考，他当时怎么想的？为什么他能发现这个漏洞，我不能？） 漏洞的类型（实际上很多新奇的挖洞思路都是经典漏洞的变种，弄清这个会让我们举一反三） 漏洞的利用细节（大多人只关注这一点，但不可置疑确实它很重要） 该漏洞本质（根本上是什么导致的漏洞">
+    <meta name="description" content="前言：推荐一些挖洞时常用的burp插件，用上它们包嘎嘎出货！  RouteVulScan简介RouteVulScan是使用java语言基于burpsuite api开发的可以递归检测脆弱路径的burp插件。 插件可以通过被动扫描的方式，递归对每一层路径进行路径探测，并通过设定好的正则表达式匹配响应包的关键字，展示在VulDisplay界面。可以自定义相关路径、匹配信息、与漏洞名称等。 插件重点是">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何完美吸收一篇漏洞报告">
-<meta property="og:url" content="https://example.com/2024/06/06/%E5%A6%82%E4%BD%95%E5%AE%8C%E7%BE%8E%E5%90%B8%E6%94%B6%E4%B8%80%E7%AF%87%E6%BC%8F%E6%B4%9E%E6%8A%A5%E5%91%8A/index.html">
+<meta property="og:title" content="Burp插件推荐集合一">
+<meta property="og:url" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="漏洞报告或文章的阅读技巧阅读漏洞报告或者文章时重点关注一下几点：  漏洞的产生点（漏洞在哪个功能点？如何发现漏洞的？）  漏洞如何被发现的（把自己带入到作者的角度思考，他当时怎么想的？为什么他能发现这个漏洞，我不能？） 漏洞的类型（实际上很多新奇的挖洞思路都是经典漏洞的变种，弄清这个会让我们举一反三） 漏洞的利用细节（大多人只关注这一点，但不可置疑确实它很重要） 该漏洞本质（根本上是什么导致的漏洞">
+<meta property="og:description" content="前言：推荐一些挖洞时常用的burp插件，用上它们包嘎嘎出货！  RouteVulScan简介RouteVulScan是使用java语言基于burpsuite api开发的可以递归检测脆弱路径的burp插件。 插件可以通过被动扫描的方式，递归对每一层路径进行路径探测，并通过设定好的正则表达式匹配响应包的关键字，展示在VulDisplay界面。可以自定义相关路径、匹配信息、与漏洞名称等。 插件重点是">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-06-06T00:55:30.000Z">
-<meta property="article:modified_time" content="2024-06-06T00:57:14.900Z">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/1.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/2.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/3.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/4.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/5.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/6.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/7.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/8.png">
+<meta property="og:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/9.png">
+<meta property="article:published_time" content="2024-07-24T06:09:12.000Z">
+<meta property="article:modified_time" content="2024-07-24T06:17:54.816Z">
 <meta property="article:author" content="X1ly?S">
-<meta property="article:tag" content="阅读报告的技巧">
+<meta property="article:tag" content="Burp插件推荐">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.com/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/1.png">
   
   
   
-  <title>如何完美吸收一篇漏洞报告 - X1ly?S Blog</title>
+  <title>Burp插件推荐集合一 - X1ly?S Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -238,7 +248,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="如何完美吸收一篇漏洞报告"></span>
+            <span id="subtitle" data-typed-text="Burp插件推荐集合一"></span>
           
         </div>
 
@@ -254,8 +264,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2024-06-06 08:55" pubdate>
-          2024年6月6日 早上
+        <time datetime="2024-07-24 14:09" pubdate>
+          2024年7月24日 下午
         </time>
       </span>
     
@@ -266,7 +276,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          272 字
+          790 字
         
       </span>
     
@@ -277,7 +287,7 @@
         
         
         
-          3 分钟
+          7 分钟
         
       </span>
     
@@ -322,12 +332,12 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">如何完美吸收一篇漏洞报告</h1>
+            <h1 id="seo-header">Burp插件推荐集合一</h1>
             
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年6月6日 早上
+                    本文最后更新于 2024年7月24日 下午
                   
                 
               </p>
@@ -335,17 +345,53 @@
             
               <div class="markdown-body">
                 
-                <h2 id="漏洞报告或文章的阅读技巧"><a href="#漏洞报告或文章的阅读技巧" class="headerlink" title="漏洞报告或文章的阅读技巧"></a>漏洞报告或文章的阅读技巧</h2><p>阅读漏洞报告或者文章时重点关注一下几点：</p>
+                <blockquote>
+<p>前言：推荐一些挖洞时常用的burp插件，用上它们包嘎嘎出货！</p>
+</blockquote>
+<h2 id="RouteVulScan"><a href="#RouteVulScan" class="headerlink" title="RouteVulScan"></a>RouteVulScan</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>RouteVulScan是使用java语言基于burpsuite api开发的可以递归检测脆弱路径的burp插件。</p>
+<p>插件可以通过被动扫描的方式，递归对每一层路径进行路径探测，并通过设定好的正则表达式匹配响应包的关键字，展示在VulDisplay界面。可以自定义相关路径、匹配信息、与漏洞名称等。</p>
+<p>插件重点是那些简单而有害的漏洞。这些漏洞通常不是固定路径，但可能位于路径的任何层。在这种情况下，非常容易忽视这些漏洞，而如果使用路径爆破，则非常耗时和麻烦。</p>
+<p>所以插件主打是发送数量小、准确的payload，尽可能覆盖面广的探测一些容易忽略的漏洞。</p>
+<h3 id="使用截图"><a href="#使用截图" class="headerlink" title="使用截图"></a>使用截图</h3><img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/1.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/2.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/F6JO/RouteVulScan">https://github.com/F6JO/RouteVulScan</a></p>
+<h2 id="TsojanScan"><a href="#TsojanScan" class="headerlink" title="TsojanScan"></a>TsojanScan</h2><h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>一个集成的BurpSuite漏洞探测插件，本着市面上各大漏洞探测插件的功能比较单一，因此与<a target="_blank" rel="noopener" href="https://github.com/Tsojan">TsojanSecTeam</a>成员决定在已有框架的基础上修改并增加常用的漏洞探测POC，它会以最少的数据包请求来准确检测各漏洞存在与否，你只需要这一个足矣。</p>
+<h3 id="使用截图-1"><a href="#使用截图-1" class="headerlink" title="使用截图"></a>使用截图</h3><img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/3.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/4.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/Tsojan/TsojanScan">https://github.com/Tsojan/TsojanScan</a></p>
+<h2 id="BurpFingerPrint"><a href="#BurpFingerPrint" class="headerlink" title="BurpFingerPrint"></a>BurpFingerPrint</h2><h3 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h3><p>攻击过程中，我们通常会用浏览器访问一些资产，该BurpSuite插件实现被动指纹识别+网站提取链接+OA爆破，可帮助我们发现更多资产</p>
 <ul>
-<li>漏洞的产生点（漏洞在哪个功能点？如何发现漏洞的？） </li>
-<li>漏洞如何被发现的（把自己带入到作者的角度思考，他当时怎么想的？为什么他能发现这个漏洞，我不能？）</li>
-<li>漏洞的类型（实际上很多新奇的挖洞思路都是经典漏洞的变种，弄清这个会让我们举一反三）</li>
-<li>漏洞的利用细节（大多人只关注这一点，但不可置疑确实它很重要）</li>
-<li>该漏洞本质（根本上是什么导致的漏洞）</li>
-<li>遇到问题之后的解决方法（例如说环境版本的问题、有 Waf 绕 Waf、常规思路受阻…）</li>
+<li>浏览器被动指纹识别，已集成Ehole指纹识别库</li>
+<li>提取网站的URL链接和解析JS文件中的URL链接后进行指纹识别</li>
+<li>开界面进行指纹库修改，可导入、导出、重置</li>
+<li>优化已有指纹库，区分重点指纹和常见指纹，补充部分实战热门漏洞的指纹，方便直接一键getshell</li>
 </ul>
-<p>阅读完后，如果是值得反复揣摩的文章，务必根据这些点，写成一篇自己的案例分析文章</p>
-<p>(但只要你能保证看了一篇文章，什么都不做，就已经完全掌握了，也可以不写)</p>
+<h3 id="使用截图-2"><a href="#使用截图-2" class="headerlink" title="使用截图"></a>使用截图</h3><img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/5.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/6.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/shuanx/BurpFingerPrint/tree/main">https://github.com/shuanx/BurpFingerPrint/tree/main</a></p>
+<h2 id="BurpAPIFinder"><a href="#BurpAPIFinder" class="headerlink" title="BurpAPIFinder"></a>BurpAPIFinder</h2><h3 id="简介-3"><a href="#简介-3" class="headerlink" title="简介"></a>简介</h3><p>攻防演练过程中，我们通常会用浏览器访问一些资产，但很多未授权&#x2F;敏感信息&#x2F;越权隐匿在已访问接口过html、JS文件等，通过该BurpAPIFinder插件我们可以：</p>
+<ul>
+<li>发现通过某接口可以进行未授权&#x2F;越权获取到所有的账号密码、私钥、凭证</li>
+<li>发现通过某接口可以枚举用户信息、密码修改、用户创建接口</li>
+<li>发现登陆后台网址</li>
+<li>发现在html、JS中泄漏账号密码或者云主机的Access Key和SecretKey</li>
+<li>自动提取js、html中路径进行访问，也支持自定义父路径访问 …</li>
+</ul>
+<h3 id="使用截图-3"><a href="#使用截图-3" class="headerlink" title="使用截图"></a>使用截图</h3><img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/7.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/8.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/shuanx/BurpAPIFinder">https://github.com/shuanx/BurpAPIFinder</a></p>
+<h2 id="xia-SQL-瞎注"><a href="#xia-SQL-瞎注" class="headerlink" title="xia SQL (瞎注)"></a>xia SQL (瞎注)</h2><h3 id="简介-4"><a href="#简介-4" class="headerlink" title="简介"></a>简介</h3><p>本插件仅只插入单引号，在每个参数后面填加一个单引号，两个单引号,如果值为纯数字则多加一个-1、-0，没有其他盲注啥的，且返回的结果需要人工介入去判断是否存在注入，如果需要所有注入都测试，请把burp的流量转发到xray</p>
+<img src="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/9.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/smxiazi/xia_sql">https://github.com/smxiazi/xia_sql</a></p>
 
                 
               </div>
@@ -364,7 +410,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E5%AD%A6%E4%B9%A0%E6%96%B9%E6%B3%95/" class="category-chain-item">学习方法</a>
+  <a href="/categories/%E5%B7%A5%E5%85%B7/" class="category-chain-item">工具</a>
   
   
 
@@ -379,7 +425,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E9%98%85%E8%AF%BB%E6%8A%A5%E5%91%8A%E7%9A%84%E6%8A%80%E5%B7%A7/" class="print-no-link">#阅读报告的技巧</a>
+        <a href="/tags/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90/" class="print-no-link">#Burp插件推荐</a>
       
     </div>
   
@@ -393,18 +439,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/06/10/%E6%9F%90%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%9F%B9%E8%AE%AD%E6%9C%BA%E6%9E%84%E7%9A%84%E6%95%99%E5%AD%A6%E5%B9%B3%E5%8F%B0%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%A4%84%E5%AD%98%E5%9C%A8%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E/" title="某网络安全培训机构的教学平台修改密码处存在逻辑缺陷漏洞">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">某网络安全培训机构的教学平台修改密码处存在逻辑缺陷漏洞</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2024/06/04/OAuth%E7%BC%BA%E9%99%B7%E5%AF%BC%E8%87%B4%E4%BB%BB%E6%84%8F%E8%B4%A6%E5%8F%B7%E6%8E%A5%E7%AE%A1/" title="SRC案例-OAuth缺陷导致任意账号接管">
-                        <span class="hidden-mobile">SRC案例-OAuth缺陷导致任意账号接管</span>
+                      <a href="/2024/07/23/python-day1-API%E6%8E%A5%E5%8F%A3%E6%8F%90%E5%8F%96%E5%99%A81-0/" title="python-day1-API接口提取器1.0">
+                        <span class="hidden-mobile">python-day1-API接口提取器1.0</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
