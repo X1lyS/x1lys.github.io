@@ -37,10 +37,8 @@
 <meta property="og:image" content="https://example.com/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/12.png">
 <meta property="og:image" content="https://example.com/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/13.png">
 <meta property="og:image" content="https://example.com/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/14.png">
-<meta property="og:image" content="https://example.com/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/15.png">
-<meta property="og:image" content="https://example.com/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/16.png">
 <meta property="article:published_time" content="2024-08-08T07:46:16.000Z">
-<meta property="article:modified_time" content="2024-08-08T07:49:30.751Z">
+<meta property="article:modified_time" content="2024-08-08T15:13:06.442Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="记一次对某棋牌系统失败的渗透">
 <meta name="twitter:card" content="summary_large_image">
@@ -283,7 +281,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.2k 字
+          957 字
         
       </span>
     
@@ -294,7 +292,7 @@
         
         
         
-          11 分钟
+          8 分钟
         
       </span>
     
@@ -344,7 +342,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年8月8日 下午
+                    本文最后更新于 2024年8月8日 晚上
                   
                 
               </p>
@@ -409,23 +407,8 @@
 
 <img src="/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/14.png" srcset="/img/loading.gif" lazyload class="">
 
-<p>那么既然如此，我们为什么不直接请求一个远程js文件链接构成存储型XSS呢？</p>
-<p>直接把链接替换为</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">http://111.111.111.111/hack.js?.jpg<br></code></pre></td></tr></table></figure>
-
-<p>先试试这样构造，能不能正常加载js文件，随便找一个网站的js文件链接</p>
-<p>比如百度的 <a target="_blank" rel="noopener" href="https://passport.baidu.com/passApi/js/wrapper.js">https://passport.baidu.com/passApi/js/wrapper.js</a> ，构造下：</p>
-<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">https://passport.baidu.com/passApi/js/wrapper.js?.jpg<br></code></pre></td></tr></table></figure>
-
-<p>上传，保存</p>
-<img src="/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/15.png" srcset="/img/loading.gif" lazyload class="">
-
-<p>查看是否会正常加载我们指定的js文件，成功加载</p>
-<img src="/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/16.png" srcset="/img/loading.gif" lazyload class="">
-
-<p><strong>那么我们直接用beef给它挂上hook，这样可以钩住访问该新闻的所有用户的浏览器，以及管理员的浏览器，可以用来获取基本系统信息，cookie盗取，凭证窃取，权限维持，钓鱼等等一系列beef自带的强大功能，从而把xss的危害提升到了极致</strong></p>
-<p><strong>还想了一下，既然js的链接都可以暗中加载，那是不是还可以直接替换为exe病毒的链接暗中植入病毒，让目标上线，从而拿下目标呢？经测试，exe的链接确实也能正常加载，但是问题在于，此处的远程加载是被限制在了&lt;img标签中的，虽然能加载但是不能触发下载，也就是不被解析为下载，而是被当成了图片加载，除非手动新建标签打开才能触发下载，那这样就算植入了病毒，需要手动触发它才能下载也没有什么好说的了，这一点宣告利用失败</strong></p>
-<p>经测试也不存在注入，本次渗透结束</p>
+<p>那么既然如此，我们为什么不直接请求一个远程js文件链接构成存储型XSS呢，甚至直接替换为exe病毒的链接暗中植入病毒，让目标上线，从而拿下目标呢？但是显然是不行的，因为这里的链接被限制在了img标签中，js只是加不会解析，那这样就算植入了病毒链接，植入了beef的hook钩子也没有用，因为此处不会解析执行，于是宣告失败</p>
+<p>经测试也不存在注入，本次渗透以失败告终</p>
 
                 
               </div>
