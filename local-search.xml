@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>EDUSRC挖掘技巧-1</title>
+    <link href="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/"/>
+    <url>/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/</url>
+    
+    <content type="html"><![CDATA[<h1 id="EDUSRC挖掘技巧-1"><a href="#EDUSRC挖掘技巧-1" class="headerlink" title="EDUSRC挖掘技巧-1"></a>EDUSRC挖掘技巧-1</h1><blockquote><p>如何找通杀漏洞，快速上分</p></blockquote><p>EDUSRC挖掘技巧-1：<strong>如何找通杀漏洞，快速上分？</strong></p><h2 id="思路一：从开发商入手"><a href="#思路一：从开发商入手" class="headerlink" title="思路一：从开发商入手"></a>思路一：从开发商入手</h2><p>这里有开发商的排行榜，那么如果我们找到了某开发商的某产品的一个漏洞，那么不就对使用该产品的所有学校造成了通杀吗？</p><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/1.png" class=""><p>确定好一个开发商，对其产品进行信息收集，以<strong>上海慧泉软件科技有限公司</strong>为例</p><h3 id="第一种方法：直接用FOFA搜索"><a href="#第一种方法：直接用FOFA搜索" class="headerlink" title="第一种方法：直接用FOFA搜索"></a>第一种方法：直接用FOFA搜索</h3><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/2.png" class=""><p>这里就基本可以看到一些该公司的产品了</p><h3 id="第二种方法：小蓝本查看知识产权"><a href="#第二种方法：小蓝本查看知识产权" class="headerlink" title="第二种方法：小蓝本查看知识产权"></a>第二种方法：小蓝本查看知识产权</h3><p>但是有些时候这里看不到或者不全，还可以使用小蓝本查看知识产权</p><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/3.png" class=""><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/4.png" class=""><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/5.png" class=""><p>这些都是公司的产品，都有可能找到漏洞，造成通杀</p><p>接着就是对这些系统一个一个去找找漏洞咯</p><h2 id="思路二：从指纹入手"><a href="#思路二：从指纹入手" class="headerlink" title="思路二：从指纹入手"></a>思路二：从指纹入手</h2><p>使用FOFA语句</p><figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">(<span class="hljs-string">&quot;系统&quot;</span> || <span class="hljs-string">&quot;登录&quot;</span> || <span class="hljs-string">&quot;后台&quot;</span> || <span class="hljs-string">&quot;管理&quot;</span>) &amp;&amp; org=<span class="hljs-string">&quot;China Education and Research Network Center&quot;</span><br></code></pre></td></tr></table></figure><p>意思是从EDU组织中寻找含有这些关键字的网站</p><p>这里有大量的网站图标，使用量比较多的一般就是一个通用的产品的图标。有时某些大学的网站使用大量相同的自己学校的校徽图标作为网站图标，那这种就不是我们要找的，因为这个不是通用产品，但是也有可能其实就是通用产品，只是修改了图标。但是反正优先避开校徽，从其他网站图标先找起，看看是否是通用的产品</p><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/6.png" class=""><p>随便点击一个使用量比较多的图标看看</p><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/7.png" class=""><p>可以看到这种使用量大的，IP跨度也大的就是通用产品了，点进去看看</p><img src="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/8.png" class=""><p>原来是深信服的产品</p><p>接着就是找一个软柿子系统捏捏看咯</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>EDUSRC挖掘技巧</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>EDUSRC挖掘技巧</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>SQL注入的防御</title>
     <link href="/2024/08/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E9%98%B2%E5%BE%A1/"/>
     <url>/2024/08/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E9%98%B2%E5%BE%A1/</url>
