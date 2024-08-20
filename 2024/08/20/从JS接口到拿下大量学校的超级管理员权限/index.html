@@ -1,0 +1,883 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="X1ly?S">
+  <meta name="keywords" content="网络安全 渗透测试">
+  
+    <meta name="description" content="信息收集首先通过网站标题搞清楚了网站的性质，是一个某地的站群系统，集合管理着大量的子网站   通过Wappalyzer了解使用的重点技术有：Java、Swagger-UI、Spring、Vue.js、Webpack 而常用的前后端分离架构正是Vue.js + Java(SpringBoot) 于是可以初步判断该站点是前后端分离架构的 而前后端分离的架构，常涉及到前后端之间的数据的传递与调用，如果接">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从JS接口到拿下大量学校的超级管理员权限">
+<meta property="og:url" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/index.html">
+<meta property="og:site_name" content="X1ly?S Blog">
+<meta property="og:description" content="信息收集首先通过网站标题搞清楚了网站的性质，是一个某地的站群系统，集合管理着大量的子网站   通过Wappalyzer了解使用的重点技术有：Java、Swagger-UI、Spring、Vue.js、Webpack 而常用的前后端分离架构正是Vue.js + Java(SpringBoot) 于是可以初步判断该站点是前后端分离架构的 而前后端分离的架构，常涉及到前后端之间的数据的传递与调用，如果接">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/1.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/2.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/3.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/4.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/5.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/6.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/7.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/8.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/9.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/10.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/11.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/12.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/13.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/14.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/15.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/16.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/17.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/18.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/19.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/20.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/21.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/22.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/23.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/24.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/25.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/26.png">
+<meta property="og:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/27.png">
+<meta property="article:published_time" content="2024-08-20T08:26:18.000Z">
+<meta property="article:modified_time" content="2024-08-20T08:34:30.255Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="从JS接口到拿下大量学校的超级管理员权限">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://example.com/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/1.png">
+  
+  
+  
+  <title>从JS接口到拿下大量学校的超级管理员权限 - X1ly?S Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"|","loop":"flase","scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"PYTHON"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","app_key":"M3h6WgzFRHqbQjc4e8jWn6Ix","server_url":"https://f0dhnqsc.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>X1ly?S Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="从JS接口到拿下大量学校的超级管理员权限"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        X1ly?S
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-08-20 16:26" pubdate>
+          2024年8月20日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">从JS接口到拿下大量学校的超级管理员权限</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年8月20日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="信息收集"><a href="#信息收集" class="headerlink" title="信息收集"></a>信息收集</h2><p>首先通过<strong>网站标题</strong>搞清楚了网站的性质，是一个某地的<strong>站群系统</strong>，集合管理着<strong>大量的子网站</strong></p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/1.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>通过<strong>Wappalyzer</strong>了解使用的重点技术有：<strong>Java、Swagger-UI、Spring、Vue.js、Webpack</strong></p>
+<p>而常用的<strong>前后端分离</strong>架构正是<strong>Vue.js + Java(SpringBoot)</strong></p>
+<p>于是可以初步判断该站点是<strong>前后端分离架构</strong>的</p>
+<p><strong>而前后端分离的架构，常涉及到前后端之间的数据的传递与调用，如果接口鉴权未做好，很容易出现API接口未授权的安全漏洞</strong></p>
+<h2 id="基本测试流程"><a href="#基本测试流程" class="headerlink" title="基本测试流程"></a>基本测试流程</h2><p>简单的信息收集之后，接下来开始走一遍登录框的基本测试流程</p>
+<p>万能密码</p>
+<p>弱口令</p>
+<p>用户名枚举 </p>
+<p>前端登录检验绕过</p>
+<p>找前端源码泄露</p>
+<p>……</p>
+<p>这些基本流程走完后，不出所料，没有任何发现</p>
+<p>那么既然是前后端分离的架构，当然得测一测JS中未授权接口了，于是展开对JS中未授权接口的详细测试</p>
+<h2 id="API接口提取"><a href="#API接口提取" class="headerlink" title="API接口提取"></a>API接口提取</h2><p>对于API接口的测试，前面也提过很多次了，我常用的工具是FindSomeThing、URLFinder并结合手工的方式去测试的</p>
+<p>ok，先用FindSomeThing看看接口</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/2.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>好家伙，一个接口也没有，这种时候不要慌，前面信息收集提到了站点使用了<strong>Webpack</strong>，那么JS就被压缩打包了，这可能对该工具提取API接口有影响，或者是该工具的匹配接口的正则不适合于当前站点的写法的原因</p>
+<p><strong>这种情况可以选择用URLFinder看看能不能提取成功，一般是可以的，但是这个工具爬取功能太强大了，爬取到API接口的同时，也会爬取到大量无用的数据和垃圾数据，之后仍然需要手工去把有效的接口筛选出来，数据多的时候反而效率不如手工直接找接口来得快，而且，还有一点，有时API接口不完整，需要拼接baseURL、baseAPI，该工具无法做到正确地拼接接口，也是需要手工去拼接的</strong></p>
+<p>看看js文件</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/3.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/4.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>果然有baseURL，是需要手动拼接接口的，于是我选择<strong>手工+自写小脚本来进行API接口的测试</strong></p>
+<p>findAPI.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> os<br><br>headers = &#123;<br>    <span class="hljs-string">&quot;User-Agent&quot;</span>: <span class="hljs-string">&quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36&quot;</span>&#125;<br><br>fileurl=sys.argv[<span class="hljs-number">1</span>]<br><br>filemkdir=fileurl.split(<span class="hljs-string">&#x27;_&#x27;</span>)[<span class="hljs-number">0</span>]<br><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(filemkdir):<br>    os.makedirs(filemkdir)<br><br><br><span class="hljs-comment"># 下载chunk.js</span><br><span class="hljs-comment"># with open (str(fileurl)) as furl:</span><br><span class="hljs-comment">#   url=furl.readlines()</span><br><span class="hljs-comment">#   print(str(url)+&quot;---is---downloading&quot;)</span><br><span class="hljs-comment">#   for url in url:</span><br><span class="hljs-comment">#       url=url.strip(&#x27;\n&#x27;)</span><br><span class="hljs-comment">#       file=url.split(&#x27;/&#x27;)[-1]</span><br><br><span class="hljs-comment">#       resp = requests.get(url)</span><br><span class="hljs-comment">#       html = resp.text</span><br><br><span class="hljs-comment">#       with open (&quot;./&quot;+filemkdir+&quot;/&quot;+file,&quot;a&quot;,encoding=&quot;utf-8&quot;) as f1:</span><br><span class="hljs-comment">#           f1.write(html)</span><br><br><br><br><span class="hljs-comment">#get path  + 路径名称</span><br>paths=[]<br><span class="hljs-keyword">for</span> dirpath, dirnames, filenames <span class="hljs-keyword">in</span> os.walk(<span class="hljs-string">&#x27;./&#x27;</span>+filemkdir):<br>    <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> filenames:<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;./&quot;</span>+filemkdir+<span class="hljs-string">&quot;/&quot;</span>+file,<span class="hljs-string">&quot;r&quot;</span>,encoding=<span class="hljs-string">&#x27;gb18030&#x27;</span>, errors=<span class="hljs-string">&#x27;ignore&#x27;</span>) <span class="hljs-keyword">as</span> f2:<br>            <span class="hljs-keyword">try</span>:<br>                line=f2.readlines()<br>                <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> line:<br>                    line=line.strip(<span class="hljs-string">&#x27;\n&#x27;</span>).strip(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>                    <span class="hljs-comment">#print(line)</span><br>                    p =  re.findall(<span class="hljs-string">&#x27;&#x27;&#x27;([&#x27;&quot;]\/[^][^&gt;&lt; \)\(\&#123;\&#125;]*?[&#x27;&quot;])&#x27;&#x27;&#x27;</span>,line)<br>                    <span class="hljs-comment">#print(p)</span><br>                    <span class="hljs-keyword">if</span> p != <span class="hljs-literal">None</span>:<br>                        <span class="hljs-comment">#print(p)</span><br>                        <span class="hljs-keyword">for</span> path <span class="hljs-keyword">in</span> p:<br>                            path=path.replace(<span class="hljs-string">&#x27;:&quot;&#x27;</span>,<span class="hljs-string">&quot;&quot;</span>).replace(<span class="hljs-string">&#x27;&quot;&#x27;</span>,<span class="hljs-string">&quot;&quot;</span>)<br>                            paths.append(file+<span class="hljs-string">&quot;---&quot;</span>+path)<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                <span class="hljs-built_in">print</span>(e)<br><br><br><span class="hljs-keyword">for</span> var <span class="hljs-keyword">in</span> <span class="hljs-built_in">sorted</span>(<span class="hljs-built_in">set</span>(paths)):<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span> (fileurl+<span class="hljs-string">&#x27;_path.txt&#x27;</span>,<span class="hljs-string">&quot;a+&quot;</span>,encoding=<span class="hljs-string">&#x27;gb18030&#x27;</span>, errors=<span class="hljs-string">&#x27;ignore&#x27;</span>) <span class="hljs-keyword">as</span> paths:<br>        paths.write(var+<span class="hljs-string">&#x27;\n&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>先把base路径单独提取出来</p>
+<p>然后再去提取后半段的API接口作为字典</p>
+<p>然后再放进burp里批量跑一下接口，固定一个base路径然后跑字典，缺参数就去找参数或者猜测FUZZ，请求方法不对就改方法，以此类推</p>
+<p>剔除掉一些401的接口，这些接口就是正确地鉴了权的，基本不用看了，除非校验字段可伪造(JWT漏洞，弱cookie等等)</p>
+<p>剔除掉一些404的接口，403的接口可以尝试绕一下</p>
+<p>然后根据测试结果，手工分类了一下API接口</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/5.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/6.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>可以看到收获还是颇丰的，有些接口能<strong>直接看到大量的数据</strong>，但是不是什么很敏感的数据，接下来，就是逐一对这些接口进行<strong>单独测试</strong>，首选一些比较重要的接口，比如upload，password，username，admin，manager，upgrade，newpasswd，post等等之类的</p>
+<h2 id="API接口测试"><a href="#API接口测试" class="headerlink" title="API接口测试"></a>API接口测试</h2><blockquote>
+<p>（所有接口已虚化）</p>
+</blockquote>
+<p>最开始，这个接口没有填任何参数就SQL报错</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/7.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>那么这里大概就是缺少一些必要的参数了</p>
+<p>于是首先我回到JS源码中去找，全局搜索该接口，看了看<strong>上下文</strong>，没有找到，<strong>简单跟进了一下调用的函数</strong>，还是没有找到</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/8.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>然后我又<strong>手翻遍了整个app.js</strong>，并结合上下文仍然<strong>没有</strong>找到任何一处有API接口的参数定义的地方</p>
+<p>那么基本可以确定这里单独凭借对JS的搜索与审计是无法找到参数的，<strong>要么是做了某种混淆要么就是参数压根就没有写在前端！</strong></p>
+<p>这种情况就只能采用<strong>暴力手段</strong>了，<strong>直接FUZZ参数</strong>试试看能不能找到，使用<strong>Arjun</strong>去FUZZ参数，使用<strong>burp</strong>去FUZZ也一样，重要的是字典和哪个更顺手吧</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/9.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>成功找到了几个参数，拼接上去试试看吧</p>
+<blockquote>
+<p>还有一种方式，就是用自写的小脚本，<strong>提取所有JS文件中的所有单词</strong>，然后再使用<strong>burp</strong>爆破！这样不管你<strong>webpack</strong>打包压缩之后的JS文件有多复杂，参数也大概率就在这些单词之中！但是这次没有找到</p>
+</blockquote>
+<p>经过几个参数的排列组合，最终发现拼接<strong>limit+page</strong>两个参数可以得到大量数据！</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/10.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>得到了大量的学校的数据，一共有312页数据，每一页的数据量相当可观！</p>
+<p><strong>但是只是得到了大量的该区的幼儿园、小学、中学的学校名称(也是子站点的名称)危害很小，而许多的敏感字段数据都是空白的，应该被脱敏了或者定期清理了吧</strong></p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs elixir">&#123;<span class="hljs-string">&quot;date&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;updateDate&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;trend&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;sumNumberSite&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;siteName&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;xxxxxxxxxxxxxx&quot;</span></span>,<span class="hljs-string">&quot;delFlag&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;0&quot;</span></span>,<span class="hljs-string">&quot;sumNumberArticle&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;listId&quot;</span><span class="hljs-symbol">:[]</span>,<span class="hljs-string">&quot;articleNumber&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;updateBy&quot;</span><span class="hljs-symbol">:null</span>,<span class="hljs-string">&quot;enable&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;limit&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;statusName&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;id&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">294</span>,<span class="hljs-string">&quot;judge&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;createDate&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;trendDate&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;wxArticleNumber&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;site_token&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;count&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">313</span>,<span class="hljs-string">&quot;pageBean&quot;</span><span class="hljs-symbol">:null</span>,<span class="hljs-string">&quot;statissList&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;dateNumber&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;ipSumber&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;sumNumberVisit&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;createBy&quot;</span><span class="hljs-symbol">:null</span>,<span class="hljs-string">&quot;name&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;siteId&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;page&quot;</span><span class="hljs-symbol">:</span><span class="hljs-number">0</span>,<span class="hljs-string">&quot;remarks&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;startDate&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;stopDate&quot;</span><span class="hljs-symbol">:<span class="hljs-string">&quot;&quot;</span></span>,<span class="hljs-string">&quot;status&quot;</span><span class="hljs-symbol">:false</span>&#125;,<br></code></pre></td></tr></table></figure>
+
+<p>注意到了这里的参数是<strong>limit+page</strong>，那么肯定想着测测SQL注入咯，于是加单引号触发报错</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/11.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>好吧，这里把参数值进行了<strong>强制数据类型转化</strong>为了<strong>数字型</strong>，SQL注入没戏了</p>
+<p>……</p>
+<p><strong>ok，其他的接口也是如法炮制，逐一测试就行，要有耐心</strong></p>
+<h2 id="测试成果"><a href="#测试成果" class="headerlink" title="测试成果"></a>测试成果</h2><h3 id="未授权获取全站所有用户名数据"><a href="#未授权获取全站所有用户名数据" class="headerlink" title="未授权获取全站所有用户名数据"></a>未授权获取全站所有用户名数据</h3><p>像这样的数据还有三百多页，每一页的数据量相当可观，前面点的一页有<strong>302条</strong>数据，就算每页<strong>200条</strong>数据，那么粗略估计全站用<strong>siteName</strong>数据就有接近<strong>6w条</strong>，而经过后面的测试发现，<strong>站点登录的用户名正是siteName</strong>，<strong>即该接口可以获取全站接近6w条的用户名！</strong></p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/12.png" srcset="/img/loading.gif" lazyload class="">
+
+<h3 id="未授权删除调查问卷"><a href="#未授权删除调查问卷" class="headerlink" title="未授权删除调查问卷"></a>未授权删除调查问卷</h3><p>这个接口通过路由可以看出来是删除调查问卷的，不算很敏感，于是就尝试了删除</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/13.png" srcset="/img/loading.gif" lazyload class="">
+
+<h3 id="任意用户菜单未授权删除"><a href="#任意用户菜单未授权删除" class="headerlink" title="任意用户菜单未授权删除"></a>任意用户菜单未授权删除</h3><p>这个接口是user类的接口，功能是删除，但是还没有确定具体是删除什么东西，由于这个接口比较敏感，便没有轻易尝试FUZZlist</p>
+<p>的参数值，而是随意填写了参数值，避免对站点数据造成破坏，<strong>但这里存在删除操作的未授权是无疑的</strong></p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/14.png" srcset="/img/loading.gif" lazyload class="">
+
+<h3 id="未授权保存用户权限"><a href="#未授权保存用户权限" class="headerlink" title="未授权保存用户权限"></a>未授权保存用户权限</h3><img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/15.png" srcset="/img/loading.gif" lazyload class="">
+
+<h3 id="查看全站操作日志"><a href="#查看全站操作日志" class="headerlink" title="查看全站操作日志"></a>查看全站操作日志</h3><p>敏感数据还是被脱敏了，可恶(bushi)</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/16.png" srcset="/img/loading.gif" lazyload class="">
+
+<h3 id="未授权获取大量超级管理员权限"><a href="#未授权获取大量超级管理员权限" class="headerlink" title="未授权获取大量超级管理员权限"></a>未授权获取大量超级管理员权限</h3><p>其中一个接口，<strong>FUZZ</strong>出<strong>site.id</strong>参数名，再去<strong>Burp</strong> <strong>FUZZ</strong>参数值，得到如下结果</p>
+<p>终于！在手工逐一看了这么多的接口之后，让我找到了敏感信息，<strong>子站点的超级管理员密码+姓名+电话+登录IP</strong>，而且数据量非常可观</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/17.png" srcset="/img/loading.gif" lazyload class="">
+
+<p><strong>目测估计有好几百家学校吧</strong></p>
+<p>把得到的密码进行解密(也可以不解密，直接在burp发包)，<strong>登录用户名</strong>绝大都是<strong>学校的名称</strong>，只有少部分是自定义的</p>
+<p>因为有些密码解密需要购买点数，而且有些密码无法被解密，于是我不想买(穷)，<strong>于是采用直接burp发包的方式登录</strong></p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/18.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/19.png" srcset="/img/loading.gif" lazyload class="">
+
+<p><strong>非常好，密码是可用的！返回了token！</strong></p>
+<p>但是由于是前后端分离的站点，这样手动改包发包，只是能获取查看后端各种接口的权限(Token值)，无法在前端登录进去</p>
+<p>于是我还是充了个值，100米</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/20.png" srcset="/img/loading.gif" lazyload class="">
+
+<p><strong>用解密的密码成功登录！</strong></p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/21.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>到目前我们拿下了几百个站点的<strong>后台或者超级管理员权限</strong>，但是感觉还是不够，想进一步扩大危害：</p>
+<p>前面不是提到有一个接口可以未授权查看全<strong>siteName</strong>吗，而这个<strong>siteName</strong>就是大部分站点的登录的用户名，而且在刚刚解密密码时，<strong>又发现一个密码是直接与整个站群系统的缩写有关的密码，而且有不少站点都使用着这个有特征的密码</strong>，于是大胆推测这个密码就是该站点的<strong>默认密码</strong>！那么就好办了，直接写python脚本，提取出全站的用户名(<strong>siteName</strong>)，再固定<strong>默认密码</strong>去登录发包爆破，从而得到更多数量的<strong>后台或者超级管理员权限！</strong></p>
+<p>既然进了后台，那么就对后台测测看吧</p>
+<h2 id="进一步测试"><a href="#进一步测试" class="headerlink" title="进一步测试"></a>进一步测试</h2><p>进入任意一个后台……</p>
+<p>先是把所有的功能点触发一遍，让流量经过<strong>burp</strong>，抓到尽可能多的数据包，并开启一些常用的插件进行被动扫描敏感信息，提取指纹，识别Nday等等</p>
+<h3 id="水平越权获取大量敏感信息"><a href="#水平越权获取大量敏感信息" class="headerlink" title="水平越权获取大量敏感信息"></a>水平越权获取大量敏感信息</h3><img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/22.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>直接改ID</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/23.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>直接就返回了另外学校的数据：<strong>学校名+电话+wxid+wx_accessToken+地址+wxSecret</strong></p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/24.png" srcset="/img/loading.gif" lazyload class="">
+
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/25.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>那么遍历一下id，就可以获取到全站学校的<strong>学校名+电话+wxid+wx_accessToken+地址+wxSecret</strong>！</p>
+<h3 id="拿下主站点的超级管理员权限"><a href="#拿下主站点的超级管理员权限" class="headerlink" title="拿下主站点的超级管理员权限"></a>拿下主站点的超级管理员权限</h3><p>前面提到拿下了大量的子站点的权限，大概是这样：</p>
+<p>111.test.com  张三小学</p>
+<p>222.test.com 李四小学</p>
+<p>这些都是test.com的子域名，那么肯定有主域名啊，于是我推测主域名下就是该站群的主站点的后台系统</p>
+<p>子站点是该区的幼儿园、小学、中学的站点，那么主站点就是这些站点的上级吧，比如教育局、什么什么中心之类的甚至是该站群的供应商</p>
+<p>于是我就去查这个<strong>站群的备案，得到了该站群系统的名称</strong>，因为我觉得主站点的名称肯定与这个有关</p>
+<p>然后我就再去<strong>手翻之前泄露密码的接口</strong>，<strong>看看能不能找到与这个备案主体类似的名称</strong></p>
+<p>果然被我找到了一个类似的名称，登录看看</p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/26.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>好家伙，果然找到了主后台！</p>
+<p><strong>数据量更大一些，也比子站点更重要！</strong></p>
+<img src="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/27.png" srcset="/img/loading.gif" lazyload class="">
+
+<p>经过基本的测试，没有发现注入漏洞，上传漏洞，因为上传功能点失效了，无XSS，等等一系列的基础漏洞，但存在<strong>大量越权、未授权接口</strong>，Over</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8C%96%E6%B4%9E%E8%AE%B0%E5%BD%95/" class="category-chain-item">挖洞记录</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/" class="print-no-link">#从JS接口到拿下大量学校的超级管理员权限</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/08/18/%E5%85%8D%E6%9D%80Day-1/" title="免杀Day-1">
+                        <span class="hidden-mobile">免杀Day-1</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","appKey":"M3h6WgzFRHqbQjc4e8jWn6Ix","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":true},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <div style="font-size: 0.85rem"> <span id="timeDate">载入天数...</span> <span id="times">载入时分秒...</span> <script src="/js/duration.js"></script> </div> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
