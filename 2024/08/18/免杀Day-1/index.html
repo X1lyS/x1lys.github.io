@@ -16,15 +16,15 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="免杀Day-1杀毒软件检测⽅式静态查杀特征码扫描机制：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。 优点：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。 缺点：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。 ⽂">
+    <meta name="description" content="杀毒软件检测⽅式静态查杀特征码扫描机制：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。 优点：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。 缺点：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。 ⽂件校验和每个文">
 <meta property="og:type" content="article">
 <meta property="og:title" content="免杀Day-1">
 <meta property="og:url" content="https://example.com/2024/08/18/%E5%85%8D%E6%9D%80Day-1/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="免杀Day-1杀毒软件检测⽅式静态查杀特征码扫描机制：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。 优点：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。 缺点：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。 ⽂">
+<meta property="og:description" content="杀毒软件检测⽅式静态查杀特征码扫描机制：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。 优点：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。 缺点：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。 ⽂件校验和每个文">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-08-18T10:10:43.000Z">
-<meta property="article:modified_time" content="2024-08-18T10:11:28.991Z">
+<meta property="article:modified_time" content="2024-08-20T08:36:37.719Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="免杀">
 <meta name="twitter:card" content="summary_large_image">
@@ -327,7 +327,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年8月18日 晚上
+                    本文最后更新于 2024年8月20日 下午
                   
                 
               </p>
@@ -335,7 +335,7 @@
             
               <div class="markdown-body">
                 
-                <h1 id="免杀Day-1"><a href="#免杀Day-1" class="headerlink" title="免杀Day-1"></a>免杀Day-1</h1><h2 id="杀毒软件检测⽅式"><a href="#杀毒软件检测⽅式" class="headerlink" title="杀毒软件检测⽅式"></a>杀毒软件检测⽅式</h2><h3 id="静态查杀"><a href="#静态查杀" class="headerlink" title="静态查杀"></a>静态查杀</h3><h4 id="特征码扫描"><a href="#特征码扫描" class="headerlink" title="特征码扫描"></a>特征码扫描</h4><p><strong>机制</strong>：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。</p>
+                <h2 id="杀毒软件检测⽅式"><a href="#杀毒软件检测⽅式" class="headerlink" title="杀毒软件检测⽅式"></a>杀毒软件检测⽅式</h2><h3 id="静态查杀"><a href="#静态查杀" class="headerlink" title="静态查杀"></a>静态查杀</h3><h4 id="特征码扫描"><a href="#特征码扫描" class="headerlink" title="特征码扫描"></a>特征码扫描</h4><p><strong>机制</strong>：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。</p>
 <p><strong>优点</strong>：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。</p>
 <p><strong>缺点</strong>：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。</p>
 <h4 id="⽂件校验和"><a href="#⽂件校验和" class="headerlink" title="⽂件校验和"></a>⽂件校验和</h4><p>每个文件都可以通过特定的哈希算法（如 MD5、SHA-1、SHA-256）生成一个唯一的校验和（哈希值）。如果文件被恶意软件篡改，即使只是一个字节的变化，其哈希值也会发生显著变化。</p>
