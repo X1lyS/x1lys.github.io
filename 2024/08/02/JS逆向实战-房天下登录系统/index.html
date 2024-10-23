@@ -16,51 +16,51 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="加密发现开局一个登录框，开逆！   输入任意账号密码登录，抓包，看看载荷   pwd是密码参数，被前端加密了 密码合法性前端校验如果我输入一长串密码，点击登录，发现抓不到登录包，为什么呢？   来看看js怎么写的吧，多半是有前端的密码合法性校验，只有先通过了前端的合法性校验，数据包才能发给服务器，才能被抓到包   好家伙，一眼就找到了，原来是限制了密码的位数6-16位，否则就不发包，over 逆向">
+    <meta name="description" content="加密发现开局一个登录框，开逆！  输入任意账号密码登录，抓包，看看载荷  pwd是密码参数，被前端加密了 密码合法性前端校验如果我输入一长串密码，点击登录，发现抓不到登录包，为什么呢？  来看看js怎么写的吧，多半是有前端的密码合法性校验，只有先通过了前端的合法性校验，数据包才能发给服务器，才能被抓到包  好家伙，一眼就找到了，原来是限制了密码的位数6-16位，否则就不发包，over 逆向加密过程">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JS逆向实战-房天下登录系统">
 <meta property="og:url" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="加密发现开局一个登录框，开逆！   输入任意账号密码登录，抓包，看看载荷   pwd是密码参数，被前端加密了 密码合法性前端校验如果我输入一长串密码，点击登录，发现抓不到登录包，为什么呢？   来看看js怎么写的吧，多半是有前端的密码合法性校验，只有先通过了前端的合法性校验，数据包才能发给服务器，才能被抓到包   好家伙，一眼就找到了，原来是限制了密码的位数6-16位，否则就不发包，over 逆向">
+<meta property="og:description" content="加密发现开局一个登录框，开逆！  输入任意账号密码登录，抓包，看看载荷  pwd是密码参数，被前端加密了 密码合法性前端校验如果我输入一长串密码，点击登录，发现抓不到登录包，为什么呢？  来看看js怎么写的吧，多半是有前端的密码合法性校验，只有先通过了前端的合法性校验，数据包才能发给服务器，才能被抓到包  好家伙，一眼就找到了，原来是限制了密码的位数6-16位，否则就不发包，over 逆向加密过程">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/1.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/2.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/3.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/4.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/5.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/6.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/7.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/8.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/9.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/10.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/11.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/12.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/13.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/14.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/15.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/16.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/17.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/18.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/19.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/20.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/21.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/22.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/23.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/24.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/25.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/26.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/27.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/28.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/29.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/30.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/31.png">
-<meta property="og:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/32.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/mZvsUjCEH9d3BDS.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/vfHzq3J1d74rwGt.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/2mQR9C8ndPKXfZb.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/vALZMlenzWF5QNc.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/gPts3IvYrkUToAn.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/uiDbnol97RNdFjK.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/CdLUHA41EmVpQoO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/FwVyf9t4dDRi6He.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/HTqkpEC7wd2FSz1.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/6wO8sGjT4VD5Yd7.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/okVZldzs8pqTHw6.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/m5sqDZdS7BXVn6A.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/LZE3BGOxwPukYb4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/Sca4B8o9xEWmHjg.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/rHucXeplf5IGhOV.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/4oczmtOMnariNRD.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/1o4bn7ANaqGY5lU.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/Dli2ckpo9LFtjq3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/3UsVjW18gXYvmTc.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/yUHlWVpovCgkQOE.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/OrqJRFQxeSnAh23.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/RXUuB2o7FSvflwJ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/1EwqNxzeiOBnL8h.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/q2JP9FVK5kXeOtD.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/BhFbG8wPjkL6igM.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/GTScJVu8qkQUh9E.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/M8d3ie1t5Fgr6RP.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/R3aJXCYyW7zHNKe.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/6hCNk2xLDjFiqVv.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/s2IAXnOSFypEdYz.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/kb5eHinTKYxL9CG.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/dgx3uQIt9mwLanE.png">
 <meta property="article:published_time" content="2024-08-02T09:43:40.000Z">
-<meta property="article:modified_time" content="2024-08-02T14:37:40.366Z">
+<meta property="article:modified_time" content="2024-10-21T14:18:17.265Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="JS逆向">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/21/mZvsUjCEH9d3BDS.png">
   
   
   
@@ -360,7 +360,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年8月2日 晚上
+                    本文最后更新于 2024年10月21日 晚上
                   
                 
               </p>
@@ -369,65 +369,52 @@
               <div class="markdown-body">
                 
                 <h2 id="加密发现"><a href="#加密发现" class="headerlink" title="加密发现"></a>加密发现</h2><p>开局一个登录框，开逆！</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/mZvsUjCEH9d3BDS.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>输入任意账号密码登录，抓包，看看载荷</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/vfHzq3J1d74rwGt.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>pwd是密码参数，被前端加密了</p>
 <h2 id="密码合法性前端校验"><a href="#密码合法性前端校验" class="headerlink" title="密码合法性前端校验"></a>密码合法性前端校验</h2><p>如果我输入一长串密码，点击登录，发现抓不到登录包，为什么呢？</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/2mQR9C8ndPKXfZb.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>来看看js怎么写的吧，多半是有前端的密码合法性校验，只有先通过了前端的合法性校验，数据包才能发给服务器，才能被抓到包</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/vALZMlenzWF5QNc.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>好家伙，一眼就找到了，原来是限制了密码的位数6-16位，否则就不发包，over</p>
 <h2 id="逆向加密过程"><a href="#逆向加密过程" class="headerlink" title="逆向加密过程"></a>逆向加密过程</h2><p>ok，进入正题</p>
 <p>全局搜索pwd，寻找pwd的加密入口点，我自称加密点</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/gPts3IvYrkUToAn.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>看到了”encrypt”多半就是这里了，点击跟进，为了确定加密点就是这里，可以在这里下个断，再点击登录触发加密流程，看看是否程序会停在这里，调试一下值，看看是否真的是在经过这个点之后，pwd就由明文变为密文了</p>
 <p>（由于我登录次数太多，被封了24h，就没办法放调试结果的截图了，但之前我调试成功了）</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/6.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/uiDbnol97RNdFjK.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>经测试，这里的确是加密点，分析一下</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title function_">encryptedString</span>(key_to_encode, that.<span class="hljs-property">password</span>.<span class="hljs-title function_">val</span>())<br></code></pre></td></tr></table></figure>
 
 <p><strong>encryptedString</strong>函数接收<strong>key_to_encode</strong>和**that.password.val()**两个值，后者不用说，就是原始密码，前者是什么呢，找一找</p>
 <p>全局搜索<strong>key_to_encod</strong>：</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/7.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/CdLUHA41EmVpQoO.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>一眼找到</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">var</span> key_to_encode = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RSAKeyPair</span>(<span class="hljs-string">&quot;010001&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;978C0A92D2173439707498F0944AA476B1B62595877DD6FA87F6E2AC6DCB3D0BF0B82857439C99B5091192BC134889DFF60C562EC54EFBA4FF2F9D55ADBCCEA4A2FBA80CB398ED501280A007C83AF30C3D1A142D6133C63012B90AB26AC60C898FB66EDC3192C3EC4FF66925A64003B72496099F4F09A9FB72A2CF9E4D770C41&quot;</span>);<br></code></pre></td></tr></table></figure>
 
 <p>但是<strong>key_to_encod</strong>不是一个静态值，也是使用函数计算出的动态值，怎么办呢，不慌，跟进<strong>RSAKeyPair</strong>函数看看</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/8.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/FwVyf9t4dDRi6He.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>可以看到这个函数中又进行了一些数据流的传递，难道又要继续跟进内层的函数跟踪数据流吗？其实不用，因为<strong>RSAKeyPair</strong>函数是在<strong>RSA.min.js</strong>文件中定义的，<strong>RSA.min.js</strong>文件不就是<strong>RSA的加密库</strong>吗，现成的，开发图方便直接调用这个加密库，那我也图了个方便，直接调用这个加密库，自写一下入口函数就行了，不用再跟踪数据流的传递了</p>
 <p>那么，回到<strong>encryptedString</strong>函数，<strong>现在已知第一个参数就是调用RSA加密库中的函数计算出来的，第二个参数就是原始密码</strong></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title function_">encryptedString</span>(key_to_encode, that.<span class="hljs-property">password</span>.<span class="hljs-title function_">val</span>())<br></code></pre></td></tr></table></figure>
 
 <p>那么不就逆出来了吗，可以再跟进<strong>encryptedString</strong>函数看看，是不是这么一回事</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/9.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/HTqkpEC7wd2FSz1.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>果然，<strong>encryptedString</strong>函数也是在RSA加密库里，这下确定了，整个前端加密就是直接套用的<strong>RSA.min.js</strong>加密库，不涉及自写算法或者修改的情况，over</p>
 <h2 id="模拟还原加密过程"><a href="#模拟还原加密过程" class="headerlink" title="模拟还原加密过程"></a>模拟还原加密过程</h2><p>看看<strong>RSA.min.js</strong>，也就四百多行</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/10.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/6wO8sGjT4VD5Yd7.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>打开鬼鬼调试，直接全选复制过去，加载代码，成功加载，没有bug</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/11.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/okVZldzs8pqTHw6.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>现在这个代码段，加密逻辑都有了，还缺点什么呢？</p>
 <p>缺少入口函数去调用这些加密逻辑以及缺少key的定义</p>
 <p>前把kay的定义复制出来，就是<strong>key_to_encode</strong>这个，前面找到了它单独在html源码中，我们给它拿出来</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/12.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/m5sqDZdS7BXVn6A.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">var</span> key_to_encode = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RSAKeyPair</span>(<span class="hljs-string">&quot;010001&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;978C0A92D2173439707498F0944AA476B1B62595877DD6FA87F6E2AC6DCB3D0BF0B82857439C99B5091192BC134889DFF60C562EC54EFBA4FF2F9D55ADBCCEA4A2FBA80CB398ED501280A007C83AF30C3D1A142D6133C63012B90AB26AC60C898FB66EDC3192C3EC4FF66925A64003B72496099F4F09A9FB72A2CF9E4D770C41&quot;</span>);<br></code></pre></td></tr></table></figure>
 
 <p>给当前代码段加一个入口函数，去调用这些RSA加密库的逻辑，并把<strong>key_to_encode</strong>定义在里面</p>
 <p>怎么写呢？直接找前面说过的加密入口点，把这个函数拿出来，不就可以调用整个<strong>RAS.min.js</strong>的逻辑了吗</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/13.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/LZE3BGOxwPukYb4.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-title function_">encryptedString</span>(key_to_encode, pwd)<br></code></pre></td></tr></table></figure>
 
 <p><strong>注意修改一下第二个参数，改为我们自定义的参数，手动传参原始密码，而不是从that.password.val()接收再取值了</strong></p>
@@ -435,8 +422,7 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"> <br><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span> (pwd)&#123;<br>        <span class="hljs-title function_">setMaxDigits</span>(<span class="hljs-number">129</span>);<br>        <span class="hljs-keyword">var</span> key_to_encode = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RSAKeyPair</span>(<span class="hljs-string">&quot;010001&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;978C0A92D2173439707498F0944AA476B1B62595877DD6FA87F6E2AC6DCB3D0BF0B82857439C99B5091192BC134889DFF60C562EC54EFBA4FF2F9D55ADBCCEA4A2FBA80CB398ED501280A007C83AF30C3D1A142D6133C63012B90AB26AC60C898FB66EDC3192C3EC4FF66925A64003B72496099F4F09A9FB72A2CF9E4D770C41&quot;</span>);<br>    <br><span class="hljs-keyword">return</span> <span class="hljs-title function_">encryptedString</span>(key_to_encode, pwd);<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>在鬼鬼里调试一下看看输出</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/14.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/Sca4B8o9xEWmHjg.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>可以看到成功模拟还原出整个加密过程，可以实现正确的加密数据了</strong></p>
 <h2 id="写脚本批量加密数据"><a href="#写脚本批量加密数据" class="headerlink" title="写脚本批量加密数据"></a>写脚本批量加密数据</h2><p>直接开始写脚本，批量加密数据</p>
 <p>这种直接套用RSA加密库的前端加密情况，该怎么写脚本呢？很简单，直接使用<strong>execjs</strong>库，在py中去调用执行JS代码，那么我们直接把<strong>RSA.min.js</strong>存为一个js文件，再使用py的<strong>execjs</strong>库调用执行，就不用再自己写加密逻辑了，加密逻辑全部由现成的<strong>RSA.min.js</strong>加密库完成，py脚本要做的其实就只是<strong>实现数据的批量输入与输出</strong>。ok不废话了，上脚本</p>
@@ -444,16 +430,12 @@
 
 <h3 id="encrypt-py"><a href="#encrypt-py" class="headerlink" title="encrypt.py"></a>encrypt.py</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> execjs<br><span class="hljs-keyword">import</span> os<br><br><span class="hljs-comment"># 加载并编译 JavaScript 代码</span><br><span class="hljs-keyword">try</span>:<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;rsa.js&#x27;</span>, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> js:<br>        js_code = js.read()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;成功加载 JavaScript 代码。&quot;</span>)<br>        encrypt = execjs.<span class="hljs-built_in">compile</span>(js_code)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;成功编译 JavaScript 代码。&quot;</span>)<br><span class="hljs-keyword">except</span> FileNotFoundError:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;错误：未找到 &#x27;rsa.js&#x27; 文件。&quot;</span>)<br>    exit(<span class="hljs-number">1</span>)<br><span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;加载或编译 JavaScript 代码时出错：<span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>    exit(<span class="hljs-number">1</span>)<br><br><span class="hljs-comment"># 加密函数</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">encrypt_data</span>(<span class="hljs-params">data</span>):<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;正在加密数据：<span class="hljs-subst">&#123;data[:<span class="hljs-number">30</span>]&#125;</span>...&quot;</span>)  <span class="hljs-comment"># 打印数据的前30个字符以避免泄露</span><br>        encrypted = encrypt.call(<span class="hljs-string">&#x27;main&#x27;</span>, data)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;数据加密成功。&quot;</span>)<br>        <span class="hljs-keyword">return</span> encrypted<br>    <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;加密数据时出错：<span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>        exit(<span class="hljs-number">1</span>)<br><br><span class="hljs-comment"># 读取 data.txt 中的数据</span><br>input_file = <span class="hljs-string">&#x27;data.txt&#x27;</span><br>output_file = <span class="hljs-string">&#x27;encrypted_data.txt&#x27;</span><br><br><span class="hljs-keyword">try</span>:<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(input_file, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        data = f.read().strip()<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;从 <span class="hljs-subst">&#123;input_file&#125;</span> 读取的数据：<span class="hljs-subst">&#123;data[:<span class="hljs-number">30</span>]&#125;</span>...&quot;</span>)  <span class="hljs-comment"># 打印数据的前30个字符</span><br><span class="hljs-keyword">except</span> FileNotFoundError:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;错误：未找到 &#x27;<span class="hljs-subst">&#123;input_file&#125;</span>&#x27; 文件。&quot;</span>)<br>    exit(<span class="hljs-number">1</span>)<br><span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;读取文件 <span class="hljs-subst">&#123;input_file&#125;</span> 时出错：<span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>    exit(<span class="hljs-number">1</span>)<br><br><span class="hljs-comment"># 执行加密</span><br><span class="hljs-keyword">try</span>:<br>    encrypted_data = encrypt_data(data)<br><span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;加密过程中出错：<span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>    exit(<span class="hljs-number">1</span>)<br><br><span class="hljs-comment"># 将加密结果写入新文件</span><br><span class="hljs-keyword">try</span>:<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(output_file, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        f.write(encrypted_data)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;加密数据已写入 <span class="hljs-subst">&#123;output_file&#125;</span>。&quot;</span>)<br><span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;写入文件 <span class="hljs-subst">&#123;output_file&#125;</span> 时出错：<span class="hljs-subst">&#123;e&#125;</span>&quot;</span>)<br>    exit(<span class="hljs-number">1</span>)<br><br></code></pre></td></tr></table></figure>
 
-<h3 id="执行截图"><a href="#执行截图" class="headerlink" title="执行截图"></a>执行截图</h3><img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/15.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/16.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/17.png" srcset="/img/loading.gif" lazyload class="">
-
+<h3 id="执行截图"><a href="#执行截图" class="headerlink" title="执行截图"></a>执行截图</h3><p><img src="https://s2.loli.net/2024/10/21/rHucXeplf5IGhOV.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/4oczmtOMnariNRD.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/1o4bn7ANaqGY5lU.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>下面讲讲遇到的几个坑，我也是初学者，相信第一次接触这个的师傅也都遇到过吧……</strong></p>
 <h3 id="坑点一-库的安装"><a href="#坑点一-库的安装" class="headerlink" title="坑点一:库的安装"></a>坑点一:库的安装</h3><p>由于py脚本执行需要<strong>execjs</strong>库，一般都是 **pip install  execjs **安装，网上的部分文章也是这样的命令</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/18.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/Dli2ckpo9LFtjq3.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>但实际情况无法使用这条命令安装成功，会报错</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs shell">(py39) C:\Users\xxxxx\xxxxx&gt;pip install execjs<br>Looking in indexes: http://mirrors.aliyun.com/pypi/simple/<br>ERROR: Could not find a version that satisfies the requirement execjs (from versions: none)<br>ERROR: No matching distribution found for execjs<br><br>(py39) C:\Users\xxxxx\xxxxx&gt;<br></code></pre></td></tr></table></figure>
 
@@ -463,8 +445,7 @@
 
 <h3 id="坑点二-位数限制未配置导致程序卡死"><a href="#坑点二-位数限制未配置导致程序卡死" class="headerlink" title="坑点二:位数限制未配置导致程序卡死"></a>坑点二:位数限制未配置导致程序卡死</h3><p><strong>第一写的脚本，一切正常，但是就是运行到加密数据时，程序卡死了，一直卡在加密数据的地方，无法执行完成和退出</strong></p>
 <p>强制退出程序的话是这样：</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/19.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/3UsVjW18gXYvmTc.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>于是我就逐一排查问题：</p>
 <p>py的语法是否正确</p>
 <p>py的传参是否正确</p>
@@ -476,30 +457,25 @@
 <p>结果就是在最后一步排查，找到了问题所在：</p>
 <p>原来是我的main入口函数中，缺少了一个位数限制配置的代码</p>
 <p><strong>再次回到网站HTML源码看看细节：</strong></p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/20.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/yUHlWVpovCgkQOE.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>就是这个：    <strong>setMaxDigits(129);</strong></p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">function</span> <span class="hljs-title function_">main</span> (pwd)&#123;<br>        <span class="hljs-title function_">setMaxDigits</span>(<span class="hljs-number">129</span>);<br>        <span class="hljs-keyword">var</span> key_to_encode = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RSAKeyPair</span>(<span class="hljs-string">&quot;010001&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;978C0A92D2173439707498F0944AA476B1B62595877DD6FA87F6E2AC6DCB3D0BF0B82857439C99B5091192BC134889DFF60C562EC54EFBA4FF2F9D55ADBCCEA4A2FBA80CB398ED501280A007C83AF30C3D1A142D6133C63012B90AB26AC60C898FB66EDC3192C3EC4FF66925A64003B72496099F4F09A9FB72A2CF9E4D770C41&quot;</span>);<br><span class="hljs-keyword">return</span> <span class="hljs-title function_">encryptedString</span>(key_to_encode, pwd);<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>在第一次的脚本中，我没有加这一行，因为之前我觉得这个应该没必要吧，就糊弄过去了没有管它，<strong>而且之前模拟还原加密过程时使用鬼鬼调试，没有加这一行代码，也没有出现问题，我就以为没问题了，结果后面运行py才发现存在问题</strong></p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/21.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/OrqJRFQxeSnAh23.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>这一行是什么用处呢？</p>
 <figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs tcl">如果缺少 setMaxDigits(<span class="hljs-number">129</span>); 这一行代码导致加密过程卡死，可能是因为加密库在处理大数运算时遇到了未配置的位数限制，造成了以下问题：<br><br>位数限制未配置：大数运算库（如 jsbn）通常有一个默认的最大位数限制。如果你的加密操作涉及到的数字位数超过了这个默认限制，而没有调用 setMaxDigits 来调整这个限制，库可能无法正确处理这些大数。这会导致计算无法完成，从而卡死。<br><br>库的内部实现：在一些大数库中，未设置足够大的位数可能会导致计算内部的缓冲区溢出或其他资源不足的问题。库内部可能会尝试使用默认的较小位数来处理大数运算，但当实际需求超出这个范围时，可能会导致无限等待或计算卡住。<br><br>加密算法的要求：RSA 加密需要处理相当大的数字（例如，<span class="hljs-number">2048</span> 位或更大的密钥）。如果库未配置足够大的位数来处理这些加密需求，它可能会陷入无法处理的状态。setMaxDigits 确保库有足够的位数来处理 RSA 密钥的大小。<br></code></pre></td></tr></table></figure>
 
 <p><strong>反正就是缺少这个位数限制配置的话，可能会导致计算密码时程序卡死</strong></p>
 <p>现在我们注释掉这一行配置，再看看运行加密脚本是什么情况？</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/22.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/23.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/RXUuB2o7FSvflwJ.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/1EwqNxzeiOBnL8h.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>程序果然卡死了，但试了几次发现这种卡死是有几率的，不一定会每次都卡死，但最好还是加上这一行配置吧</strong></p>
 <h2 id="验证加密脚本的正确性"><a href="#验证加密脚本的正确性" class="headerlink" title="验证加密脚本的正确性"></a>验证加密脚本的正确性</h2><p>对比一下看看本地加密与网站端加密后的密文是否相似：</p>
 <ul>
 <li>网站端的</li>
 </ul>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/24.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/q2JP9FVK5kXeOtD.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ul>
 <li>本地的</li>
 </ul>
@@ -507,32 +483,25 @@
 
 <p>嗯！形式上是一致的！不过最好的验证方式是，使用正确的账号密码，把密码使用本地的脚本加密，如果能登录成功，那么就说明加密脚本没问题!</p>
 <p>于是果断使用手机号注册一个账号</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/25.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/BhFbG8wPjkL6igM.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>修改密码，保存好新密码</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/26.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/GTScJVu8qkQUh9E.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>输入正确的密码，登录，burp拦截住登录包</strong></p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/27.png" srcset="/img/loading.gif" lazyload class="">
-
-<p>成功拦下登录包，<strong>丢包，不要放行</strong>，使得保持<strong>未登录</strong>状态<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/28.png" srcset="/img/loading.gif" lazyload class=""></p>
+<p><img src="https://s2.loli.net/2024/10/21/M8d3ie1t5Fgr6RP.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p>成功拦下登录包，<strong>丢包，不要放行</strong>，使得保持<strong>未登录</strong>状态<img src="https://s2.loli.net/2024/10/21/R3aJXCYyW7zHNKe.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>把数据包发送到<strong>重放模块</strong>，也<strong>不要着急发送数据包</strong></p>
 <p>先使用之前我们写好的加密脚本<strong>encrypt.py</strong>，对我<strong>正确的密码</strong>进行加密，得到加密数据</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/29.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/6hCNk2xLDjFiqVv.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>ok，<strong>把加密后的密文与数据包中密码参数pwd替换，发包登录，如果登录成功，就说明我们的加密脚本完全没有问题，加密出的数据可被服务器端成功解密</strong></p>
 <p>忘了说了还需要过一个验证码</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/30.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/s2IAXnOSFypEdYz.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>登录失败！？翻车了？白忙活了？</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/31.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/kb5eHinTKYxL9CG.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>不会吧……（陷入沉思）</p>
 <p><strong>推测是对数据包做了防篡改，就是类似于sign签名的机制，使用某些参数存储用户的唯一会话，推测这种校验字段与数据包中的数据做了绑定，于是就达到了数据包防篡改的目的</strong></p>
 <p>看看cookie验证一下我的推测</p>
 <p>这是未登录的cookie，就有这么多值</p>
-<img src="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/32.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/dgx3uQIt9mwLanE.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>解释一下参数的作用（只是大概推测）</p>
 <p>这是一个包含多个 Cookie 参数的示例。每个参数在 web 开发和分析中都有不同的用途。下面是这些参数的解释：</p>
 <ol>

@@ -23,23 +23,23 @@
 <meta property="og:site_name" content="X1ly?S Blog">
 <meta property="og:description" content="简介CRLF（Carriage Return Line Feed）又称HRS（HTTP Response Splitting）是一种网络安全漏洞，利用的是在HTTP响应中未能正确处理用户输入的漏洞。CRLF注入攻击通过在用户输入中插入换行符（回车符和换行符），可能导致HTTP响应头被篡改，进而造成响应拆分、跨站脚本（XSS）或其他攻击。 漏洞原理CRLF（Carriage Return Line">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/1.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/2.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/3.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/4.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/5.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/6.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/7.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/8.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/9.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/10.png">
-<meta property="og:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/11.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/kJPH7qGKsrwNmeh.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/KUAxwP2BiHt34Ip.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/Gl8y9DBjpXU5n3b.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/LeNStlnpyr7AI61.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/mBF1AbJftvSp4uI.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/2OYTfdbLxg6QyAV.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/jD2sxnFbkXT63qG.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/zrTEkZiyxnVhP6c.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/IGq2lWrwT1QAfpc.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/RWVDqyJG13wf4ih.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/HVemsidAKtJaCPY.png">
 <meta property="article:published_time" content="2024-07-21T06:25:59.000Z">
-<meta property="article:modified_time" content="2024-07-21T06:28:04.505Z">
+<meta property="article:modified_time" content="2024-10-22T08:22:24.291Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="CRLF注入">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/kJPH7qGKsrwNmeh.png">
   
   
   
@@ -339,7 +339,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月21日 下午
+                    本文最后更新于 2024年10月22日 下午
                   
                 
               </p>
@@ -381,31 +381,23 @@
 <h2 id="Demo演示分析"><a href="#Demo演示分析" class="headerlink" title="Demo演示分析"></a>Demo演示分析</h2><h3 id="Demo-1"><a href="#Demo-1" class="headerlink" title="Demo-1"></a>Demo-1</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-meta">if (isset($_GET[&#x27;header&#x27;])) &#123;</span><br><span class="hljs-meta">    $headerValue = $_GET[&#x27;header&#x27;];</span><br><span class="hljs-meta">    // 故意没有对输入进行过滤，从而造成CRLF漏洞</span><br><span class="hljs-meta">    header(&quot;X-Custom-Header: $headerValue&quot;);</span><br><span class="hljs-meta">&#125;</span><br><span class="hljs-meta">?&gt;</span><br><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>CRLF Injection Demo<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>CRLF Injection Demo<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;GET&quot;</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">label</span> <span class="hljs-attr">for</span>=<span class="hljs-string">&quot;header&quot;</span>&gt;</span>Enter header value:<span class="hljs-tag">&lt;/<span class="hljs-name">label</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;header&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;header&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;Submit&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">p</span>&gt;</span>Check the HTTP response headers after submitting the form.<span class="hljs-tag">&lt;/<span class="hljs-name">p</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br><br></code></pre></td></tr></table></figure>
 
 <p>直接接收用户输入来设置X-Custom-Header响应头部，没有任何过滤</p>
-<h3 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h3><img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/1.png" srcset="/img/loading.gif" lazyload class="">**注意：这里就不要再输入框直接输入了，因为是GET提交，"%"会被URL编码一次，就不再是换行符了，采用抓包修改或者Hackbar**
-
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/2.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<h3 id="演示"><a href="#演示" class="headerlink" title="演示"></a>演示</h3><p><img src="https://s2.loli.net/2024/10/22/kJPH7qGKsrwNmeh.png" srcset="/img/loading.gif" lazyload alt="image"><strong>注意：这里就不要再输入框直接输入了，因为是GET提交，”%”会被URL编码一次，就不再是换行符了，采用抓包修改或者Hackbar</strong></p>
+<p><img src="https://s2.loli.net/2024/10/22/KUAxwP2BiHt34Ip.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/Gl8y9DBjpXU5n3b.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>都出现了警告，翻译是**”警告：标头不能包含多个标头，在 D:\phpStudy\PHPTutorial\WWW\crlf\index.php 第 5 行检测到换行符”**,也就是被拦截了，查了一下原因，是php版本太高了，已经有了防御CRLF攻击的机制</p>
 <p>于是切换一个低版本的php：5.2</p>
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/LeNStlnpyr7AI61.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>切换为了现有的最低的版本，还是不行。没事换一个demo来看呢，或许这种demo场景太”露骨”了，于是很多版本都会拦截，换一种场景演示</p>
 <h3 id="Demo-2"><a href="#Demo-2" class="headerlink" title="Demo-2"></a>Demo-2</h3><ul>
 <li>由于php对头部某些危险字符有着严格的过滤拦截机制，于是采用node.js来搭建demo-2</li>
 </ul>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>);<br><span class="hljs-keyword">const</span> querystring = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;querystring&#x27;</span>);<br><br><span class="hljs-keyword">const</span> server = http.<span class="hljs-title function_">createServer</span>(<span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> &#123;<br>    <span class="hljs-keyword">if</span> (req.<span class="hljs-property">method</span> === <span class="hljs-string">&#x27;POST&#x27;</span> &amp;&amp; req.<span class="hljs-property">url</span> === <span class="hljs-string">&#x27;/submit&#x27;</span>) &#123;<br>        <span class="hljs-keyword">let</span> body = <span class="hljs-string">&#x27;&#x27;</span>;<br><br>        req.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function"><span class="hljs-params">chunk</span> =&gt;</span> &#123;<br>            body += chunk.<span class="hljs-title function_">toString</span>(); <span class="hljs-comment">// Convert Buffer to string</span><br>        &#125;);<br><br>        req.<span class="hljs-title function_">on</span>(<span class="hljs-string">&#x27;end&#x27;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>            <span class="hljs-keyword">const</span> parsedBody = querystring.<span class="hljs-title function_">parse</span>(body);<br>            <span class="hljs-keyword">const</span> userInput = parsedBody.<span class="hljs-property">input</span> || <span class="hljs-string">&#x27;&#x27;</span>;<br><br>            <span class="hljs-comment">// Set HTTP headers using user input (vulnerable to CRLF injection)</span><br>            res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>, &#123;<br>                <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;text/html&#x27;</span>,<br>                <span class="hljs-string">&#x27;X-Injected-Header&#x27;</span>: userInput <span class="hljs-comment">// CRLF injection can be exploited here</span><br>            &#125;);<br><br>            res.<span class="hljs-title function_">end</span>(<span class="hljs-string">`</span><br><span class="hljs-string">                &lt;html&gt;</span><br><span class="hljs-string">                &lt;head&gt;&lt;title&gt;CRLF Injection Demo&lt;/title&gt;&lt;/head&gt;</span><br><span class="hljs-string">                &lt;body&gt;</span><br><span class="hljs-string">                    &lt;h1&gt;CRLF Injection Demo&lt;/h1&gt;</span><br><span class="hljs-string">                    &lt;p&gt;Your input has been processed.&lt;/p&gt;</span><br><span class="hljs-string">                &lt;/body&gt;</span><br><span class="hljs-string">                &lt;/html&gt;</span><br><span class="hljs-string">            `</span>);<br>        &#125;);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        res.<span class="hljs-title function_">writeHead</span>(<span class="hljs-number">200</span>, &#123; <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;text/html&#x27;</span> &#125;);<br>        res.<span class="hljs-title function_">end</span>(<span class="hljs-string">`</span><br><span class="hljs-string">            &lt;html&gt;</span><br><span class="hljs-string">            &lt;head&gt;&lt;title&gt;CRLF Injection Demo&lt;/title&gt;&lt;/head&gt;</span><br><span class="hljs-string">            &lt;body&gt;</span><br><span class="hljs-string">                &lt;h1&gt;CRLF Injection Demo&lt;/h1&gt;</span><br><span class="hljs-string">                &lt;form action=&quot;/submit&quot; method=&quot;POST&quot;&gt;</span><br><span class="hljs-string">                    &lt;label for=&quot;input&quot;&gt;Enter your text:&lt;/label&gt;</span><br><span class="hljs-string">                    &lt;textarea id=&quot;input&quot; name=&quot;input&quot; rows=&quot;4&quot; cols=&quot;50&quot;&gt;&lt;/textarea&gt;&lt;br&gt;</span><br><span class="hljs-string">                    &lt;input type=&quot;submit&quot; value=&quot;Submit&quot;&gt;</span><br><span class="hljs-string">                &lt;/form&gt;</span><br><span class="hljs-string">            &lt;/body&gt;</span><br><span class="hljs-string">            &lt;/html&gt;</span><br><span class="hljs-string">        `</span>);<br>    &#125;<br>&#125;);<br><br><span class="hljs-keyword">const</span> <span class="hljs-variable constant_">PORT</span> = <span class="hljs-number">3000</span>;<br>server.<span class="hljs-title function_">listen</span>(<span class="hljs-variable constant_">PORT</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>    <span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">`Server running at http://localhost:<span class="hljs-subst">$&#123;PORT&#125;</span>`</span>);<br>&#125;);<br><br></code></pre></td></tr></table></figure>
 
-<h3 id="演示-1"><a href="#演示-1" class="headerlink" title="演示"></a>演示</h3><img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/5.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/6.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/7.png" srcset="/img/loading.gif" lazyload class="">
-
+<h3 id="演示-1"><a href="#演示-1" class="headerlink" title="演示"></a>演示</h3><p><img src="https://s2.loli.net/2024/10/22/mBF1AbJftvSp4uI.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/2OYTfdbLxg6QyAV.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/jD2sxnFbkXT63qG.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>还是被拦截了呜呜</p>
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/8.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/zrTEkZiyxnVhP6c.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>看来，Node.js 对于 HTTP 头部的内容也有严格的字符限制，不允许有控制字符（如 <code>\r</code> 和 <code>\n</code>）出现在头部字段的内容中</strong></p>
 <p>那就不折腾了，反正就是这么个道理对吧哈哈，之后搞懂了怎么搭建再来补充这篇文章……</p>
 <h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><h3 id="1-Web缓存投毒"><a href="#1-Web缓存投毒" class="headerlink" title="1. Web缓存投毒"></a>1. <strong>Web缓存投毒</strong></h3><p>攻击者可以通过 CRLF 注入修改 Web 缓存服务器的缓存内容，影响后续用户的缓存数据。这种攻击可以导致缓存中注入恶意内容或伪造的响应。</p>
@@ -436,16 +428,14 @@
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">http://xxx.sina.com.cn/?url=%0a%0d%0a%0d%3Cimg%20src=1%3E<br></code></pre></td></tr></table></figure>
 
 <p>的时候，发现图片已经输出在页面中了，说明CRLF注入成功了：</p>
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/9.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/IGq2lWrwT1QAfpc.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>那么我们试试XSS看看：</p>
-<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/10.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/RWVDqyJG13wf4ih.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>看控制台，果然被XSS Filter拦截了。</p>
 <p>那么我们就注入一个</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">X-XSS-Protection:0<br></code></pre></td></tr></table></figure>
 
-<p>成功绕过XSS Filter！<img src="/2024/07/21/%E6%B5%85%E8%B0%88CRLF%E6%B3%A8%E5%85%A5/11.png" srcset="/img/loading.gif" lazyload class=""></p>
+<p>成功绕过XSS Filter！<img src="https://s2.loli.net/2024/10/22/HVemsidAKtJaCPY.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="3-固定会话攻击"><a href="#3-固定会话攻击" class="headerlink" title="3.固定会话攻击"></a>3.固定会话攻击</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">http://www.sina.com.cn%0aSet-cookie:JSPSESSID%3Dwooyun<br></code></pre></td></tr></table></figure>
 
 <p>注入了一个换行，此时的返回包就会变成这样： </p>

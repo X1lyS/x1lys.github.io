@@ -23,31 +23,31 @@
 <meta property="og:site_name" content="X1ly?S Blog">
 <meta property="og:description" content="前言：对JS中泄露的API接口进行接口未授权测试一直是渗透测试的重点，于是尽可能找到更多的API接口就显得很重要，更重要的是还需要找到怎么拼接接口，怎么精准的找到API接口对应的参数，本文对此进行了简单的总结，一起来看一下吧  书接上回，通过JS文件进行API接口未授权手工测试上 本文接着继续探讨： 寻找API接口缺失参数其实有些接口是可以直接查看到使用参数的，比如有些显式的功能点，重置密码，登">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/1.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/2.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/3.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/4.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/5.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/6.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/7.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/8.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/9.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/10.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/11.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/12.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/13.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/14.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/15.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/16.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/17.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/18.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/19.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/HrkQhDtyzJPEueB.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/2anmKgvUY36AqhI.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/MWTNKsBIv3eynCR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/9sVEx1C7aPnumMF.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/r5ZDcmKBtHJ2dgX.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/jzsJ7IdvBxEhaWk.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/lUOKAEC3ZoMNWIF.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/IEQFHabSNWXCLyp.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/UR9OI5kH6rzMKmj.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/ZbCWah8lNniRyw2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/d4eWZVDQ9IHcGam.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/JkCPenGmQDc7AKq.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/OpEmCgyZwX2n4Vx.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/cGXZwBIFleoLEu8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/Soh37qmRVBg5jXT.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/YP9JESWfliHTVGx.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/sfRqOJLFSzX6ZDK.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/PYcS2LxnVp98lsI.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/9VogAXBusI6RaqK.png">
 <meta property="article:published_time" content="2024-07-31T04:24:01.000Z">
-<meta property="article:modified_time" content="2024-07-31T04:28:35.250Z">
+<meta property="article:modified_time" content="2024-10-22T13:31:41.944Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="API接口未授权手工测试">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/HrkQhDtyzJPEueB.png">
   
   
   
@@ -347,7 +347,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月31日 中午
+                    本文最后更新于 2024年10月22日 晚上
                   
                 
               </p>
@@ -362,47 +362,34 @@
 <p>本文接着继续探讨：</p>
 <h2 id="寻找API接口缺失参数"><a href="#寻找API接口缺失参数" class="headerlink" title="寻找API接口缺失参数"></a>寻找API接口缺失参数</h2><p>其实有些接口是可以直接查看到使用参数的，比如有些显式的功能点，重置密码，登录，等等这些接口，只要你抓包就可以直接看到其使用的参数，因为这些是比较明显的功能点的后端接口，这类接口本来就是公开的，是功能点处的逻辑处理接口，也就不存在什么未授权的说法了，因为这类接口本来就是不继续鉴权的公共接口，可以直接查看到其使用的参数，于是可能不会考虑去测试未授权的漏洞，但是不排除有其他逻辑缺失漏洞，比如可以测试水平越权与垂直越权，重放攻击等等……于是我把这种公开的，参数可直接看到的接口称为显式接口，把需要进行鉴权，比较隐蔽，参数不好寻找的接口称为隐式接口，这种接口才是未授权的重点测试对象</p>
 <h3 id="隐式接口"><a href="#隐式接口" class="headerlink" title="隐式接口"></a>隐式接口</h3><h4 id="接口参数在接口附近"><a href="#接口参数在接口附近" class="headerlink" title="接口参数在接口附近"></a>接口参数在接口附近</h4><p>注意观察接口的上下文，附近处，看看能不能找到参数</p>
-<h4 id="接口参数离接口较远"><a href="#接口参数离接口较远" class="headerlink" title="接口参数离接口较远"></a>接口参数离接口较远</h4><h5 id="案例二"><a href="#案例二" class="headerlink" title="案例二"></a>案例二</h5><img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<h4 id="接口参数离接口较远"><a href="#接口参数离接口较远" class="headerlink" title="接口参数离接口较远"></a>接口参数离接口较远</h4><h5 id="案例二"><a href="#案例二" class="headerlink" title="案例二"></a>案例二</h5><p><img src="https://s2.loli.net/2024/10/22/HrkQhDtyzJPEueB.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>以<code>/api/user/login</code>接口为例</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/2anmKgvUY36AqhI.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>找出此接口的请求参数，在上图可以看到此接口是<code>POST</code>请求，在此接口附近有以下发现，<code>/api/user/login</code>接口赋值给了<code>o</code>，它定义在<code>c3c9</code>这个<code>function</code>中，<strong>在这个<code>function</code>中将<code>c</code>变量与<code>o</code>变量进行了绑定</strong>，因此，后续可通过<code>c3c9</code>和<code>c</code>定位到<code>/api/user/login</code>接口</p>
 <p>全局搜索”c3c9”，在<a target="_blank" rel="noopener" href="https://xx.xx.xxx.xxx/js/app.b7ca27765d0a5354ebec.js?t=1701951166108">https://xx.xx.xxx.xxx/js/app.b7ca27765d0a5354ebec.js?t=1701951166108</a> 找到两处引用<code>c3c9</code>的地方</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/3.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/MWTNKsBIv3eynCR.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/9sVEx1C7aPnumMF.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><code>i</code>和<code>fe</code>变量与<code>c3c9</code>进行了绑定，因此通过<code>i</code>与<code>c</code>、<code>fe</code>与<code>c</code>可以定位到<code>/api/user/login</code>方法，然后在此<code>app.b7ca27765d0a5354ebec.js</code>文件中全局搜索<code>Object(i,c )</code>和<code>Object(fe.c)</code>，<code>Object(i,c )</code>和<code>Object(fe.c)</code>就是代表<code>/api/user/login</code>方法，然后在<a target="_blank" rel="noopener" href="https://xx.xx.xxx.xxx/js/app.b7ca27765d0a5354ebec.js?t=1701951166108">https://xx.xx.xxx.xxx/js/app.b7ca27765d0a5354ebec.js?t=1701951166108</a> 文件中并没有找到<code>Object(i,c )</code>和Object<code>(fe.c)</code>，因此在其它<code>js</code>文件中寻找，不过在其它文件中寻找需要重新找到<code>c3c9</code>。在<a target="_blank" rel="noopener" href="https://xx.xx.xxx.xxx/js/chunk-2703ab0c.03c38d361c89aa80563e.js">https://xx.xx.xxx.xxx/js/chunk-2703ab0c.03c38d361c89aa80563e.js</a> 中找到了<code>c3c9</code></p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/r5ZDcmKBtHJ2dgX.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>然后在<br><a target="_blank" rel="noopener" href="https://xx.xx.xxx.xxx/js/chunk-2703ab0c.03c38d361c89aa80563e.js?t=1701951166108">https://xx.xx.xxx.xxx/js/chunk-2703ab0c.03c38d361c89aa80563e.js?t=1701951166108</a><br>中全局寻找<code>Object(i.c)</code>，此时<code>Object(i.c)</code>代表<code>/api/user/login</code>，而它的参数如下</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/6.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/jzsJ7IdvBxEhaWk.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>其中的<code>captcha</code>和<code>loginInfo</code>可以在当前模块的数据定义<code>data</code>中可以看到</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/7.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/lUOKAEC3ZoMNWIF.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>因此，<code>/api/user/login</code>接口的参数如下</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs js">&#123;<br>  <span class="hljs-string">&quot;username&quot;</span>:<span class="hljs-string">&quot;&quot;</span>,<br>  <span class="hljs-string">&quot;password&quot;</span>:<span class="hljs-string">&quot;&quot;</span>,<br>  <span class="hljs-string">&quot;captcha&quot;</span>:&#123;<br>    <span class="hljs-string">&quot;nonceStr&quot;</span>:<span class="hljs-string">&quot;&quot;</span>,<br>    <span class="hljs-string">&quot;value&quot;</span>:<span class="hljs-string">&quot;&quot;</span>,<br>    <span class="hljs-string">&quot;tokenCache&quot;</span>:<span class="hljs-string">&quot;&quot;</span><br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 <p>使用登录功能验证一下，完全一致。</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/8.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/IEQFHabSNWXCLyp.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h5 id="案例三"><a href="#案例三" class="headerlink" title="案例三"></a>案例三</h5><p>在<a target="_blank" rel="noopener" href="http://xx.xx.xx.xx:8081/xxq_zhxq_web/static/js/app.bb8538d1.js">http://xx.xx.xx.xx:8081/xxq_zhxq_web/static/js/app.bb8538d1.js</a> 发现重置密码接口</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/9.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/UR9OI5kH6rzMKmj.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>发现在”b3f4”中</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/10.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/ZbCWah8lNniRyw2.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>在所有<code>js</code>文件中搜索<code>b3f4</code></p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/11.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/d4eWZVDQ9IHcGam.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>再寻找<code>Object(n[&quot;f&quot;])</code>，轻松找到参数</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/12.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/JkCPenGmQDc7AKq.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>最终构造数据如下，可成功重置任意用户密码</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/13.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/OpEmCgyZwX2n4Vx.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="技巧一-正则提取出所有参数"><a href="#技巧一-正则提取出所有参数" class="headerlink" title="技巧一:正则提取出所有参数"></a>技巧一:正则提取出所有参数</h3><p>还有一个粗暴但超级好用的技巧，那就是使用正则表达式，把JS文件里所有的”单词”都提取出来，然后去重做成一份字典，其中就有很大概率爆出参数，因为你JS写得再复杂，参数总归是明文写在里面的，我把所有单词提取出来，那么参数也肯定在其中，后面再用burp爆破就行了</p>
 <h4 id="findparam-py"><a href="#findparam-py" class="headerlink" title="findparam.py"></a>findparam.py</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> sys<br><span class="hljs-keyword">import</span> os<br><br>headers = &#123;<br>    <span class="hljs-string">&quot;User-Agent&quot;</span>: <span class="hljs-string">&quot;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36&quot;</span>&#125;<br><br>fileurl = sys.argv[<span class="hljs-number">1</span>]<br><br>filemkdir = fileurl.split(<span class="hljs-string">&#x27;_&#x27;</span>)[<span class="hljs-number">0</span>]<br><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(filemkdir):<br>    os.makedirs(filemkdir)<br><br><span class="hljs-comment"># 下载chunk.js</span><br><span class="hljs-comment"># with open (str(fileurl)) as furl:</span><br><span class="hljs-comment">#   url=furl.readlines()</span><br><span class="hljs-comment">#   print(str(url)+&quot;---is---downloading&quot;)</span><br><span class="hljs-comment">#   for url in url:</span><br><span class="hljs-comment">#       url=url.strip(&#x27;\n&#x27;)</span><br><span class="hljs-comment">#       file=url.split(&#x27;/&#x27;)[-1]</span><br><br><span class="hljs-comment">#       resp = requests.get(url)</span><br><span class="hljs-comment">#       html = resp.text</span><br><br><span class="hljs-comment">#       with open (&quot;./&quot;+filemkdir+&quot;/&quot;+file,&quot;a&quot;,encoding=&quot;utf-8&quot;) as f1:</span><br><span class="hljs-comment">#           f1.write(html)</span><br><br><br><span class="hljs-comment"># get path + 路径名称</span><br>paths = []<br><span class="hljs-keyword">for</span> dirpath, dirnames, filenames <span class="hljs-keyword">in</span> os.walk(<span class="hljs-string">&#x27;./&#x27;</span> + filemkdir):<br>    <span class="hljs-keyword">for</span> file <span class="hljs-keyword">in</span> filenames:<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;./&quot;</span> + filemkdir + <span class="hljs-string">&quot;/&quot;</span> + file, <span class="hljs-string">&quot;r&quot;</span>, encoding=<span class="hljs-string">&#x27;gb18030&#x27;</span>, errors=<span class="hljs-string">&#x27;ignore&#x27;</span>) <span class="hljs-keyword">as</span> f2:<br>            <span class="hljs-keyword">try</span>:<br>                lines = f2.readlines()<br>                <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> lines:<br>                    line = line.strip(<span class="hljs-string">&#x27;\n&#x27;</span>).strip(<span class="hljs-string">&#x27;\t&#x27;</span>)<br>                    <span class="hljs-comment"># print(line)</span><br>                    matches = re.findall(<span class="hljs-string">r&#x27;[a-zA-Z]+[\w-]*\d*|\d+[\w-]*[a-zA-Z]+|[a-zA-Z]+\.[a-zA-Z]+|\w+\.\d+|[a-zA-Z]+~[a-zA-Z]+|\w+~\d+|\d+-\d+|[a-zA-Z]+-[a-zA-Z]+&#x27;</span>, line)<br>                    <span class="hljs-comment"># print(matches)</span><br>                    <span class="hljs-keyword">if</span> matches:<br>                        <span class="hljs-keyword">for</span> <span class="hljs-keyword">match</span> <span class="hljs-keyword">in</span> matches:<br>                            paths.append(file + <span class="hljs-string">&quot;---&quot;</span> + <span class="hljs-keyword">match</span>)<br>            <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>                <span class="hljs-built_in">print</span>(e)<br><br><span class="hljs-keyword">for</span> var <span class="hljs-keyword">in</span> <span class="hljs-built_in">sorted</span>(<span class="hljs-built_in">set</span>(paths)):<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(fileurl + <span class="hljs-string">&#x27;_param.txt&#x27;</span>, <span class="hljs-string">&quot;a+&quot;</span>, encoding=<span class="hljs-string">&#x27;gb18030&#x27;</span>, errors=<span class="hljs-string">&#x27;ignore&#x27;</span>) <span class="hljs-keyword">as</span> paths_file:<br>        paths_file.write(var + <span class="hljs-string">&#x27;\n&#x27;</span>)<br></code></pre></td></tr></table></figure>
 
@@ -427,10 +414,8 @@
 
 <h3 id="技巧二-使用Arjun工具FUZZ"><a href="#技巧二-使用Arjun工具FUZZ" class="headerlink" title="技巧二:使用Arjun工具FUZZ"></a>技巧二:使用Arjun工具FUZZ</h3><p><a target="_blank" rel="noopener" href="https://github.com/s0md3v/Arjun">https://github.com/s0md3v/Arjun</a></p>
 <p>这个工具就更简单粗暴一点，内置2.5w的参数字典，设置好URL，拼接好接口，直接爆破参数</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/14.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/15.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/cGXZwBIFleoLEu8.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/Soh37qmRVBg5jXT.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="技巧三-输入输出接口对应"><a href="#技巧三-输入输出接口对应" class="headerlink" title="技巧三:输入输出接口对应"></a>技巧三:输入输出接口对应</h3><p>什么是输入输出接口对应呢？这是来自于L神的思路。</p>
 <p>我们把所有的接口按照他是输出信息的还是输入信息接口分为两类</p>
 <p><strong>输入接口：比如登录接口，修改密码接口，编辑其他信息接口</strong></p>
@@ -441,18 +426,14 @@
 <p>比方说上文提到的返回商品信息的接口和编辑商品信息的接口，它们操作的对象都是”商品”，那么这两个接口涉及到的参数有极大可能是完全一致的，比方说商品名、价格、商品描述等，属性，就算有不一致的参数也会是少数</p>
 <p>而更有意思的是，在很多java网站中，<strong>输出相关的接口（比如返回商品信息）返回的数据基本都会包含属性（参数名）</strong>。这也就意味着，<strong>如果我们的输入相关接口（如编辑商品信息）找不到参数名，可以去输出相关接口里找</strong>。同时输出相关的接口，其参数一般都比较简单，比较好fuzz，比如提到的&#x2F;api&#x2F;shop&#x2F;selectinfo，也许只需要商品名之类的简单参数。<strong>我们可以先观察接口名字，找一组“输入输出接口”，当输入相关接口fuzz不出参数，可以找寻对应的输出相关接口</strong>，FUZZ其参数，然后通过观察接口返回的信息，来获取具体的参数值</p>
 <h4 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h4><p>这是一个输入接口，比较难受，找不到参数名，经过fuzz也没有结果</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/16.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/YP9JESWfliHTVGx.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>根据上面的思想，这是一个”输入相关接口”，那么我们来试着找寻一下输出相关接口</p>
 <p>在我们找到了一个输出相关接口，我们尝试访问一下</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/17.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/18.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/sfRqOJLFSzX6ZDK.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/PYcS2LxnVp98lsI.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>可以看到，返回包中有很多东西，它们很大可能就是参数值，我们直接把这个返回包中的关键部分，粘贴到输入接口去利用，会怎么样呢？</p>
 <p>好家伙，直接修改成功了？！</p>
-<img src="/2024/07/31/%E9%80%9A%E8%BF%87JS%E6%96%87%E4%BB%B6%E8%BF%9B%E8%A1%8CAPI%E6%8E%A5%E5%8F%A3%E6%9C%AA%E6%8E%88%E6%9D%83%E6%89%8B%E5%B7%A5%E6%B5%8B%E8%AF%95%E4%B8%8B/19.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/9VogAXBusI6RaqK.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>此时，成功利用。其实这个点还隐藏了一层更深的意义，它再度提醒我在渗透过程中，一定要好好利用现有的信息，即使是某个接口的返回包中的参数名这种信息，也要留心一下</p>
 
                 

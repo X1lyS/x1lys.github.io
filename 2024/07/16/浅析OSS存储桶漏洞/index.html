@@ -16,42 +16,42 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="环境搭建搭建一个阿里云OSS，可以选择试用  https:&#x2F;&#x2F;www.aliyun.com&#x2F;product&#x2F;oss?spm&#x3D;5176.28536895.nav-dropdown-menu-0.19.53dd586ckiS3OP&amp;scm&#x3D;20140722.X_data-47ed1f95c8b1f5f652d4._.V_1    访问存储桶的几种场景 这种有key id等等数据的就算成功访问了">
+    <meta name="description" content="环境搭建搭建一个阿里云OSS，可以选择试用  https:&#x2F;&#x2F;www.aliyun.com&#x2F;product&#x2F;oss?spm&#x3D;5176.28536895.nav-dropdown-menu-0.19.53dd586ckiS3OP&amp;scm&#x3D;20140722.X_data-47ed1f95c8b1f5f652d4._.V_1   访问存储桶的几种场景 这种有key id等等数据的就算成功访问了，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅析OSS存储桶漏洞">
 <meta property="og:url" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="环境搭建搭建一个阿里云OSS，可以选择试用  https:&#x2F;&#x2F;www.aliyun.com&#x2F;product&#x2F;oss?spm&#x3D;5176.28536895.nav-dropdown-menu-0.19.53dd586ckiS3OP&amp;scm&#x3D;20140722.X_data-47ed1f95c8b1f5f652d4._.V_1    访问存储桶的几种场景 这种有key id等等数据的就算成功访问了">
+<meta property="og:description" content="环境搭建搭建一个阿里云OSS，可以选择试用  https:&#x2F;&#x2F;www.aliyun.com&#x2F;product&#x2F;oss?spm&#x3D;5176.28536895.nav-dropdown-menu-0.19.53dd586ckiS3OP&amp;scm&#x3D;20140722.X_data-47ed1f95c8b1f5f652d4._.V_1   访问存储桶的几种场景 这种有key id等等数据的就算成功访问了，">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/1.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/2.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/3.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/4.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/5.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/6.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/7.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/8.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/9.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/10.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/11.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/12.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/13.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/14.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/15.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/14.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/17.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/18.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/19.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/20.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/21.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/22.png">
-<meta property="og:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/23.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/d4VWBDMGik7ojCX.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/S8of36GOkBtC1z7.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/f7y4GCSsLNWivzY.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/eSLTqcokdytYnZ9.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/Azs4MqOmgK2BU5Q.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/LAmHCuRpP9ea1jt.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/ngU9mT4JrdWeKov.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/UZXNdxYqGf3vmI2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/rDmdOfRWYph73A5.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/gupmFT4Za21ydNH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/796ou5ImHkWOgYR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/gKU7u8DzVA4lp9k.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/iVk9wCZEMryeR51.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/HG7IUhjfytrsvWN.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/aE8fcmS5YAjTsU2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/HG7IUhjfytrsvWN.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/T2Y6nGQuh3XLKFa.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/noeW9aC7hJX4cM3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/GtuBEQbYC4VeKUX.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/CDOHzgBWMFnqkSN.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/7eUK42hVQTCYjqH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/UjHAIzFkhqBVvoE.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/spYA8vGgPEjLcbq.png">
 <meta property="article:published_time" content="2024-07-16T07:43:54.000Z">
-<meta property="article:modified_time" content="2024-07-16T07:46:28.565Z">
+<meta property="article:modified_time" content="2024-10-22T08:14:54.632Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="OSS存储桶漏洞">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/d4VWBDMGik7ojCX.png">
   
   
   
@@ -351,7 +351,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月16日 下午
+                    本文最后更新于 2024年10月22日 下午
                   
                 
               </p>
@@ -363,42 +363,34 @@
 <ul>
 <li><a target="_blank" rel="noopener" href="https://www.aliyun.com/product/oss?spm=5176.28536895.nav-dropdown-menu-0.19.53dd586ckiS3OP&scm=20140722.X_data-47ed1f95c8b1f5f652d4._.V_1">https://www.aliyun.com/product/oss?spm=5176.28536895.nav-dropdown-menu-0.19.53dd586ckiS3OP&amp;scm=20140722.X_data-47ed1f95c8b1f5f652d4._.V_1</a></li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/d4VWBDMGik7ojCX.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h2 id="访问存储桶的几种场景"><a href="#访问存储桶的几种场景" class="headerlink" title="访问存储桶的几种场景"></a>访问存储桶的几种场景</h2><ul>
 <li>这种有key id等等数据的就算成功访问了，说明该存储桶配置为了公开的，而且允许了文件路径列出 “只读（包含ListObject）”</li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/S8of36GOkBtC1z7.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ul>
 <li>这种是有权访问，但是文件路径不正确</li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/f7y4GCSsLNWivzY.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ul>
 <li>403拒绝访问，这种有很多可能性：可能是没有权限访问，配置为了私有需要身份认证、文件路径不对、目前没有任何文件、特定的Bucket策略限制，后面专门详细解释。</li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/eSLTqcokdytYnZ9.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ul>
 <li>这种是存储桶虽然是公开的，但是是该存储桶目前没有任何文件，且开启了文件列出（ListObject）权限</li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/Azs4MqOmgK2BU5Q.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ul>
 <li>这种是不存在这个存储桶</li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/6.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/LAmHCuRpP9ea1jt.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ul>
 <li>这种是存储桶名无效</li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/7.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/ngU9mT4JrdWeKov.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><p>接下来介绍几种不安全配置导致的安全漏洞：</p>
 <p>如果配置为公共读&#x2F;公共读写，那么所有人可以不用经过身份验证就可以访问存储桶的数据</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/8.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/UZXNdxYqGf3vmI2.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="oss凭证泄露"><a href="#oss凭证泄露" class="headerlink" title="oss凭证泄露"></a>oss凭证泄露</h3><ul>
 <li>可以直接看这篇文章</li>
 </ul>
@@ -406,41 +398,32 @@
 <h3 id="OSS存储桶路径列出"><a href="#OSS存储桶路径列出" class="headerlink" title="OSS存储桶路径列出"></a>OSS存储桶路径列出</h3><ol>
 <li>如果配置为公共读&#x2F;公共读写，且权限控制中的Bucket授权策略配置了”只读（包含ListObject）”，那么访问存储桶会直接列出所有文件路径(Key)，类似于Apache的目录遍历漏洞，都是配置错误的原因。那就不用爆破存储桶文件名路径了，只需提取出路径来访问就行</li>
 </ol>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/9.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/10.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/rDmdOfRWYph73A5.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/gupmFT4Za21ydNH.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="2">
 <li>当文件太多，一个一个手动去拼接访问链接太慢了，可以用这个工具，提取文件的具体路径</li>
 </ol>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://github.com/source-xu/ossx">https://github.com/source-xu/ossx</a></li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/11.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/796ou5ImHkWOgYR.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="OSS爆破"><a href="#OSS爆破" class="headerlink" title="OSS爆破"></a>OSS爆破</h3><p>如果配置为公共读&#x2F;公共读写，但知道的信息很少，想得到更多的数据，还可以试试爆破来碰碰运气。</p>
 <h4 id="1-存储桶名爆破"><a href="#1-存储桶名爆破" class="headerlink" title="1. 存储桶名爆破"></a>1. 存储桶名爆破</h4><p>对存储桶名的爆破其实就是对子域名的爆破，因为存储桶名会被用来作为子域名，通过查看响应得知是否成功。但是其实如果都不知道目标的存储桶的名字，那么想单纯靠爆破的方式得到目标的存储桶名，几乎是不可能的，除非目标的存储桶名有规律，比如以企业名+其他标识为存储桶名的话可能还有一丝丝希望，不过也难。又但是，一般情况下，存储桶名很容易就得到了：访问存储桶的文件看子域名，查看响应包，FindSomeThing插件就可直接得到了</p>
 <h4 id="2-存储桶文件名路径爆破"><a href="#2-存储桶文件名路径爆破" class="headerlink" title="2. 存储桶文件名路径爆破"></a>2. 存储桶文件名路径爆破</h4><p>可以尝试一些常见的文件名比如1.pdf 1.docx test.jpg 等等，准备好字典跑就完事</p>
 <p>说明oss配置为了私有，需要经过身份验证或者<strong>满足配置的特定Bucket策略</strong>才可以访问。还有一种可能是，该存储桶虽然是公开的，但是是你不知道文件的访问路径，或者该存储桶目前没有任何文件，且关闭了文件列出（ListObject）权限</p>
-<h3 id="403的场景与绕过"><a href="#403的场景与绕过" class="headerlink" title="403的场景与绕过"></a>403的场景与绕过</h3><img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/12.png" srcset="/img/loading.gif" lazyload class="">
-
+<h3 id="403的场景与绕过"><a href="#403的场景与绕过" class="headerlink" title="403的场景与绕过"></a>403的场景与绕过</h3><p><img src="https://s2.loli.net/2024/10/22/gKU7u8DzVA4lp9k.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>上图出现了403 AccessDenied，有如下几种情况：</p>
 <h4 id="存储桶被配置为了私有"><a href="#存储桶被配置为了私有" class="headerlink" title="存储桶被配置为了私有"></a>存储桶被配置为了私有</h4><p>需要带上正确的身份验证参数才能访问，这种情况直接跳过，没法利用了，除非通过泄露达到了ak sk等等身份验证数据</p>
 <h4 id="不知道文件路径key"><a href="#不知道文件路径key" class="headerlink" title="不知道文件路径key"></a>不知道文件路径key</h4><p>这种情况是，明明存储桶是公开的，但是不知道文件路径的话，且没有开启文件列出（ListObject）权限，也会出现403 AccessDenied</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/13.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/14.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/iVk9wCZEMryeR51.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/HG7IUhjfytrsvWN.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>这种就按照上面提到的直接爆破文件名就行</p>
 <p>如果开启了文件列出（ListObject）权限，会是这样</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/15.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/aE8fcmS5YAjTsU2.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h4 id="当前存储桶没有文件"><a href="#当前存储桶没有文件" class="headerlink" title="当前存储桶没有文件"></a>当前存储桶没有文件</h4><p>这种情况还是和”不知道文件路径key”的情况差不多，也会出现403 AccessDenied，存储桶不一定就是私有的</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/14.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/HG7IUhjfytrsvWN.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h4 id="存储桶地点错误"><a href="#存储桶地点错误" class="headerlink" title="存储桶地点错误"></a>存储桶地点错误</h4><p>如果存储桶端点错误，也会出现403 AccessDenied，但存储桶不一定就是私有的，它会出现提示，给出正确的地点，只需要改为正确的地点访问就行，改为正确地点后，再根据响应包进行判断</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/17.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/T2Y6nGQuh3XLKFa.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h4 id="特定的Bucket策略配置绕过"><a href="#特定的Bucket策略配置绕过" class="headerlink" title="特定的Bucket策略配置绕过"></a>特定的Bucket策略配置绕过</h4><p>如果管理员设置了某些IP，UA才可以请求该存储桶的话，访问时还是会出现这种403 AccessDenied，但存储桶不一定就是私有的。也就是需要满足特定的Bucket策略才可能访问，有办法绕过吗？有的：如果错误的配置了GetBucketPolicy，可导致攻击者获取策略配置，那么直接改成特定的Bucket策略不就行了吗，于是我们使用aliyun cli官方工具查看存储桶的特定配置：</p>
 <h5 id="安装阿里云-CLI"><a href="#安装阿里云-CLI" class="headerlink" title="安装阿里云 CLI"></a>安装阿里云 CLI</h5><ol>
 <li>下载并解压阿里云 CLI：</li>
@@ -477,10 +460,8 @@
 <ul>
 <li>懒得放图了，借用一下云安全知识库的图</li>
 </ul>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/18.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/19.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/noeW9aC7hJX4cM3.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/GtuBEQbYC4VeKUX.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="OSS-CNAME接管"><a href="#OSS-CNAME接管" class="headerlink" title="OSS-CNAME接管"></a>OSS-CNAME接管</h3><h4 id="CNAME-记录"><a href="#CNAME-记录" class="headerlink" title="CNAME 记录"></a>CNAME 记录</h4><ul>
 <li>CNAME 记录是一种 DNS 记录类型，用于将一个域名的请求指向另一个域名。例如，将 <code>cdn.example.com</code> 指向 <code>oss-bucket-name.oss-cn-region.aliyuncs.com</code></li>
 </ul>
@@ -536,17 +517,13 @@
 </li>
 </ol>
 <h3 id="Bucket-策略配置可写"><a href="#Bucket-策略配置可写" class="headerlink" title="Bucket 策略配置可写"></a>Bucket 策略配置可写</h3><p>当我们访问存储桶的时候，会提示我们已经被policy拦截</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/20.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/CDOHzgBWMFnqkSN.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>如果此时配置了存储桶的oss:PutBucketPolicy，就可以更改Deny为Allow即可访问</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/21.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/7eUK42hVQTCYjqH.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>随后使用PUT方法上传</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/22.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/UjHAIzFkhqBVvoE.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="修改策略导致网站瘫痪"><a href="#修改策略导致网站瘫痪" class="headerlink" title="修改策略导致网站瘫痪"></a>修改策略导致网站瘫痪</h3><p>还是当策略可写的时候，除了上面的将可原本不可访问的数据设置为可访问从而获得敏感数据外，如果目标网站引用了某个存储桶上的资源文件，而且我们可以对该策略进行读写的话，也可以将原本可访问的资源权限设置为不可访问，这样就会使得该图片，js资源无法被加载到网站，导致网站瘫痪了。</p>
-<img src="/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/23.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/spYA8vGgPEjLcbq.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="漏洞修复与防御"><a href="#漏洞修复与防御" class="headerlink" title="漏洞修复与防御"></a>漏洞修复与防御</h3><h4 id="常见漏洞修复"><a href="#常见漏洞修复" class="headerlink" title="常见漏洞修复"></a>常见漏洞修复</h4><h5 id="未授权访问"><a href="#未授权访问" class="headerlink" title="未授权访问"></a><strong>未授权访问</strong></h5><ul>
 <li><strong>描述</strong>：存储桶和对象的访问权限配置不当，导致未授权用户可以访问敏感数据。</li>
 <li>修复与防御<ul>

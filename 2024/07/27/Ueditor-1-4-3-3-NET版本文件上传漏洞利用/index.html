@@ -23,20 +23,20 @@
 <meta property="og:site_name" content="X1ly?S Blog">
 <meta property="og:description" content="影响范围UEditor v1.4.3.3 漏洞验证访问路径目标路径&#x2F;Content&#x2F;ueditor&#x2F;net&#x2F;controller.ashx?action&#x3D;catchimage，但有时路径也会被修改，主要是看这个路径”&#x2F;controller.ashx?action&#x3D;” 若返回”参数错误:没有指定抓取源”，则说明存在该漏洞 实战案例">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/1.png">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/2.png">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/3.png">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/4.png">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/5.png">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/6.png">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/7.png">
-<meta property="og:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/eiM4zHAtYTpwaqV.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/8qKBjIHU6lMmerw.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/bfswG1pQmWP2naR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/UbeFxg4qsv3NLcp.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/p76Cr9MBbwNXJRL.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/5tj3aE2cLvQOfmF.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/sTuPWzUKOCGFNZx.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/vDjM2Q9X3lpN5AF.png">
 <meta property="article:published_time" content="2024-07-27T10:31:00.000Z">
-<meta property="article:modified_time" content="2024-07-27T10:32:11.854Z">
+<meta property="article:modified_time" content="2024-10-22T06:48:23.748Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="Ueditor漏洞">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/eiM4zHAtYTpwaqV.png">
   
   
   
@@ -336,7 +336,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月27日 晚上
+                    本文最后更新于 2024年10月22日 下午
                   
                 
               </p>
@@ -351,24 +351,20 @@
 <ol>
 <li>先在编辑处发现了ueditor特征</li>
 </ol>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/eiM4zHAtYTpwaqV.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="2">
 <li>F12查看请求的接口</li>
 </ol>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/8qKBjIHU6lMmerw.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>发现了这个接口，可以用来验证是否存在Ueditor1.4.3.3 .NET版本文件上传漏洞</p>
 <ol start="3">
 <li>打开该接口路径，<strong>发现直接就是”&#x2F;controller.ashx?action&#x3D;”路径，而不是默认路径”&#x2F;Content&#x2F;ueditor&#x2F;net&#x2F;controller.ashx?action”，于是要根据实际情况去寻找该接口</strong></li>
 </ol>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/bfswG1pQmWP2naR.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="4">
 <li>验证漏洞是否存在，构造接口”&#x2F;controller.ashx?action&#x3D;catchimage”</li>
 </ol>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/UbeFxg4qsv3NLcp.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>验证成功，漏洞大概率存在</p>
 <h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><ol>
 <li>构造本地test.html文件，注意修改action为目标漏洞路径</li>
@@ -377,20 +373,18 @@
 
 <ol start="2">
 <li><p>使用哥斯拉制作aspx图片马，上传至VPS某个空目录，在该目录下，使用python开启临时http服务，使得能通过公网访问到该aspx木马</p>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/5.png" srcset="/img/loading.gif" lazyload class=""></li>
+<p><img src="https://s2.loli.net/2024/10/21/p76Cr9MBbwNXJRL.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+</li>
 </ol>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/6.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/5tj3aE2cLvQOfmF.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="3">
 <li>本地打开test.html文件，输入aspx木马的地址</li>
 </ol>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/7.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/sTuPWzUKOCGFNZx.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="4">
 <li>上传成功后，会返回木马地址，使用Webshell管理工具连接即可</li>
 </ol>
-<img src="/2024/07/27/Ueditor-1-4-3-3-NET%E7%89%88%E6%9C%AC%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/8.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/vDjM2Q9X3lpN5AF.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 
                 
               </div>

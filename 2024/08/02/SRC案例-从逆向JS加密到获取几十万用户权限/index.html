@@ -16,40 +16,40 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="token加密发现 打开站点，进行注册登录操作的时候需要上传身份信息等资料     抓包，发现该接口可能是通过两个ID值来返回对应的用户个人信息的，那就修改ID试试越权呗     修改userid提示未登录     那就尝试修改dealerId，提示token异常    怎么办呢，难道就放弃了？其实还可以看看能否JS逆向出”token是怎么得到的”这个流程，这里没有sign数据包校验，那么是可以篡">
+    <meta name="description" content="token加密发现 打开站点，进行注册登录操作的时候需要上传身份信息等资料    抓包，发现该接口可能是通过两个ID值来返回对应的用户个人信息的，那就修改ID试试越权呗    修改userid提示未登录    那就尝试修改dealerId，提示token异常   怎么办呢，难道就放弃了？其实还可以看看能否JS逆向出”token是怎么得到的”这个流程，这里没有sign数据包校验，那么是可以篡改数据包">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SRC案例-从逆向JS加密到获取几十万用户权限">
 <meta property="og:url" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="token加密发现 打开站点，进行注册登录操作的时候需要上传身份信息等资料     抓包，发现该接口可能是通过两个ID值来返回对应的用户个人信息的，那就修改ID试试越权呗     修改userid提示未登录     那就尝试修改dealerId，提示token异常    怎么办呢，难道就放弃了？其实还可以看看能否JS逆向出”token是怎么得到的”这个流程，这里没有sign数据包校验，那么是可以篡">
+<meta property="og:description" content="token加密发现 打开站点，进行注册登录操作的时候需要上传身份信息等资料    抓包，发现该接口可能是通过两个ID值来返回对应的用户个人信息的，那就修改ID试试越权呗    修改userid提示未登录    那就尝试修改dealerId，提示token异常   怎么办呢，难道就放弃了？其实还可以看看能否JS逆向出”token是怎么得到的”这个流程，这里没有sign数据包校验，那么是可以篡改数据包">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/1.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/2.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/3.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/4.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/5.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/6.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/7.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/8.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/9.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/10.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/11.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/12.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/13.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/14.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/15.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/16.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/17.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/18.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/19.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/20.png">
-<meta property="og:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/21.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/NwzjgPeMOfcmXLC.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/n7Kxpi6HuYcM8kr.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/XjOypeYNRr3i7w6.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/h3w8GvYzaSVRiOe.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/E3nPCZdUu86KkeT.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/YrbFSDQcMtNXKgd.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/hLdPGKpFtxz49m2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/G9Pqnez5QLxYKfa.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/Y8UDyOJWVIdBj3x.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/EDQZMBOgwKRf4cL.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/o3azAKQD5JRUHrd.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/W3XkifhZ7Q2Ljog.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/xbM4QlAJTkVsHWe.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/hHXJQY5jnWqNM8U.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/yiTA6CjrolFc7W9.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/QB54cLtDAkEeG6l.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/jrX6NtZ9GnRFTJH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/yJ64m9HPSG1ekjz.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/uAoQDgrB9zIxESR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/4ub7ecYSsWgn1XP.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/4jo6FT5BPKupJYQ.png">
 <meta property="article:published_time" content="2024-08-02T00:30:18.000Z">
-<meta property="article:modified_time" content="2024-08-02T00:32:55.313Z">
+<meta property="article:modified_time" content="2024-10-22T06:32:40.497Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="从逆向JS加密到获取几十万用户权限">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/NwzjgPeMOfcmXLC.png">
   
   
   
@@ -349,7 +349,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年8月2日 早上
+                    本文最后更新于 2024年10月22日 下午
                   
                 
               </p>
@@ -360,59 +360,48 @@
                 <h2 id="token加密发现"><a href="#token加密发现" class="headerlink" title="token加密发现"></a>token加密发现</h2><ol>
 <li>打开站点，进行注册登录操作的时候需要上传身份信息等资料</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/NwzjgPeMOfcmXLC.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="2">
 <li>抓包，发现该接口可能是通过两个ID值来返回对应的用户个人信息的，那就修改ID试试越权呗</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/n7Kxpi6HuYcM8kr.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="3">
 <li>修改userid提示未登录</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/XjOypeYNRr3i7w6.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="4">
 <li>那就尝试修改dealerId，提示token异常</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/h3w8GvYzaSVRiOe.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>怎么办呢，难道就放弃了？其实还可以看看能否JS逆向出”token是怎么得到的”这个流程，这里没有sign数据包校验，那么是可以篡改数据包的，如果JS逆向出了token，就可以伪造token！越权也就有可能成功了</strong></p>
 <h2 id="逆向token加密流程"><a href="#逆向token加密流程" class="headerlink" title="逆向token加密流程"></a>逆向token加密流程</h2><p>首先看到token又是数字字母的长度又是32位的，第一反应是md5加密，ok开始JS逆向token</p>
 <ol>
 <li>全局搜索token</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/E3nPCZdUu86KkeT.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>但是搜出来很多怎么办？可以给每个疑似token加密点处，都下一个断，只要触发了加密流程，就会停在真正的token加密点处</strong></p>
 <ol start="2">
 <li>然后断在了一个headers.token处，headers的token等于后面的参数，多半就是这里了</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/6.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/YrbFSDQcMtNXKgd.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="3">
 <li>不确定的话，可以利用控制台进行调试输出结果，发现果然是我们要找加密方法</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/7.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/hLdPGKpFtxz49m2.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="4">
 <li>然后进行函数跟进，发现了使用了AES.ECB加密</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/8.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/G9Pqnez5QLxYKfa.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="5">
 <li>最终得到的加密方式是：data数据-&gt;AES.ECB加密hex-&gt;md5加密</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/9.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/10.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/Y8UDyOJWVIdBj3x.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/EDQZMBOgwKRf4cL.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>结果成功匹配上，说明加密正确</p>
 <h2 id="伪造加密数据越权"><a href="#伪造加密数据越权" class="headerlink" title="伪造加密数据越权"></a>伪造加密数据越权</h2><ol>
 <li>修改dealerId在进行data数据-&gt;AES.ECB加密hex-&gt;md5加密的流程</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/11.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/o3azAKQD5JRUHrd.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>通过遍历ID，再根据逆向出的加密流程，以ID为data加密得到token，成功越权获取到几十万用户身份信息</strong></p>
 <ol start="2">
 <li><p>发现还有APP，再去尝试一下看能不能进一步突破</p>
@@ -420,35 +409,28 @@
 <li><p>直接登录刚刚注册的账号进行抓包</p>
 </li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/12.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/W3XkifhZ7Q2Ljog.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="4">
 <li>推测会不会是就刚刚相同加密方式呢？AES是对称加密，于是使用得到的要素是可以被解密的</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/13.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/xbM4QlAJTkVsHWe.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="5">
 <li><p>果真还是刚刚的加密，再次试试越权</p>
 </li>
 <li><p>data数据包里面有2个参数是我们未知的分别是data、token</p>
 </li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/14.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/hHXJQY5jnWqNM8U.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="7">
 <li>还是复用之前的加密流程，data也尝试AES解密</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/15.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/16.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/yiTA6CjrolFc7W9.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/QB54cLtDAkEeG6l.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="8">
 <li>就是用户ID，而且加密方式跟Web如出一辙，直接把data数据再进行md5加密，得到了token，那尝试把cookie删除请求看看</li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/17.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/18.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/jrX6NtZ9GnRFTJH.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/yJ64m9HPSG1ekjz.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>一样返回结果了，那岂不是说明身份就是userid</p>
 <ol start="9">
 <li><p>这个时候在想如何再进一步突破呢，每个接口都要去加解密岂不是很麻烦</p>
@@ -458,17 +440,16 @@
 <li><p><strong>找到登录成功的返回包把userid遍历替换，再进行aes加密，得到我们伪造的合法的登录成功的响应，且包含了用户凭证</strong></p>
 </li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/19.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/uAoQDgrB9zIxESR.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="12">
 <li><strong>登录的时候账号密码随便输入点击登录再利用burp的功能修改返回包为我们伪造的数据包</strong></li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/20.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/4ub7ecYSsWgn1XP.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="13">
 <li><strong>直接进去来了，代表可以控制几十万商户</strong></li>
 </ol>
-<img src="/2024/08/02/SRC%E6%A1%88%E4%BE%8B-%E4%BB%8E%E9%80%86%E5%90%91JS%E5%8A%A0%E5%AF%86%E5%88%B0%E8%8E%B7%E5%8F%96%E5%87%A0%E5%8D%81%E4%B8%87%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90/21.png" srcset="/img/loading.gif" lazyload class="">
+<p><img src="https://s2.loli.net/2024/10/22/4jo6FT5BPKupJYQ.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+
                 
               </div>
             

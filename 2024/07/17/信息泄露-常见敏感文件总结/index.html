@@ -23,16 +23,16 @@
 <meta property="og:site_name" content="X1ly?S Blog">
 <meta property="og:description" content="Git泄露简介Git 是一个开源的分布式版本控制系统，用于跟踪和管理文件的变化，主要用于软件开发。它允许多个开发者同时工作，并记录每个文件的修改历史，以便在需要时恢复到之前的版本。 泄露原因git在初始化项目的时候, 会在项目的根目录创建一个名为.git的隐藏文件夹, 里面包含了本地所有commit的历史记录. 如果无意间将这个目录置于WEB的路径下让用户可以访问, 那么也就泄露了几乎所有的源代码">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/1.png">
-<meta property="og:image" content="https://example.com/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/2.png">
-<meta property="og:image" content="https://example.com/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/3.png">
-<meta property="og:image" content="https://example.com/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/yRX9Otn42QLs58P.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/ymlDJRwOKhxt2Fv.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/ZcIL8MvuGQAfUVC.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/IUr8kwGngpWqRtN.png">
 <meta property="article:published_time" content="2024-07-17T08:04:48.000Z">
-<meta property="article:modified_time" content="2024-07-17T08:07:13.512Z">
+<meta property="article:modified_time" content="2024-10-22T07:23:29.384Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="信息泄露">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/yRX9Otn42QLs58P.png">
   
   
   
@@ -332,7 +332,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月17日 下午
+                    本文最后更新于 2024年10月22日 下午
                   
                 
               </p>
@@ -343,8 +343,7 @@
                 <h2 id="Git泄露"><a href="#Git泄露" class="headerlink" title="Git泄露"></a>Git泄露</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>Git 是一个开源的分布式版本控制系统，用于跟踪和管理文件的变化，主要用于软件开发。它允许多个开发者同时工作，并记录每个文件的修改历史，以便在需要时恢复到之前的版本。</p>
 <h3 id="泄露原因"><a href="#泄露原因" class="headerlink" title="泄露原因"></a>泄露原因</h3><p>git在初始化项目的时候, 会在项目的根目录创建一个名为<code>.git</code>的隐藏文件夹, 里面包含了本地所有commit的历史记录. 如果无意间将这个目录置于WEB的路径下让用户可以访问, 那么也就泄露了几乎所有的源代码和其他其他敏感信息.</p>
 <p>就拿我这个博客项目来说，我这个博客项目就是使用Git来推送发布文章的</p>
-<img src="/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/yRX9Otn42QLs58P.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>这里的.git就是在初始化博客项目时产生的，<code>.git</code> 目录是 Git 仓库的核心，它包含了所有跟踪和管理项目所需的信息。这些信息包括提交历史、配置选项、对象存储、引用（如分支和标签）等，其中如果直接把.git放在网站的根目录下就能被所有人访问，那么也就泄露了几乎所有的源代码资源和其他其他敏感信息。</p>
 <h3 id="泄露内容"><a href="#泄露内容" class="headerlink" title="泄露内容"></a>泄露内容</h3><ul>
 <li>所有该项目的源代码</li>
@@ -359,10 +358,8 @@
 <li>项目还原：<a target="_blank" rel="noopener" href="https://github.com/lijiejie/GitHack">GitHack</a></li>
 </ul>
 <h3 id="实战案例"><a href="#实战案例" class="headerlink" title="实战案例"></a>实战案例</h3><p>这个案例居然同样也是一个技术博客，和我的博客一样也是采用HEXO框架搭建的，但是看样子这位师傅是搞开发的，疏忽了.git文件的控制，直接就放在网站根目录了，使用GitHack也是直接可以下载还原几乎整个项目，不过还好，毕竟是技术博客，绝大多数文件本来在github仓库就是公开的，不存在什么敏感的信息，只是做个例子演示一下</p>
-<img src="/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/2.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/ymlDJRwOKhxt2Fv.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/ZcIL8MvuGQAfUVC.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h3><p>不要把.git文件暴露在网站根目录下</p>
 <h2 id="svn泄露"><a href="#svn泄露" class="headerlink" title="svn泄露"></a>svn泄露</h2><h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>svn, 即Subversion, 在github之前曾经也是炙手可热的版本管理工具, 虽然已经日渐式微, 但在很多国企, 研究院等地方依然是作为版本管理的主要工具. 对于一些历史悠久的项目, 比如LLVM, 出于历史原因, 也是主要使用svn管理源代码.</p>
 <h3 id="泄露原因-1"><a href="#泄露原因-1" class="headerlink" title="泄露原因"></a>泄露原因</h3><p>同git，只是成了.svn文件</p>
@@ -419,8 +416,7 @@
 <p>④ WEB-INF&#x2F;lib&#x2F; : 用来存放打包好的库(.jar)</p>
 <p>⑤ WEB-INF&#x2F;src&#x2F; : 用来放源代码(.asp和.php等)</p>
 <p>它里面记载了servlet以及其他组件配置文件的信息</p>
-<img src="/2024/07/17/%E4%BF%A1%E6%81%AF%E6%B3%84%E9%9C%B2-%E5%B8%B8%E8%A7%81%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6%E6%80%BB%E7%BB%93/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/IUr8kwGngpWqRtN.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="利用-6"><a href="#利用-6" class="headerlink" title="利用"></a>利用</h3><ul>
 <li><strong>通过web.xml文件推测应用组件相关类的名字, 然后在src目录下查找代码, 如果没有源代码可以直接下载class文件反编译即可.</strong></li>
 </ul>

@@ -16,52 +16,52 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="业务介绍是一个某佛教的系统   有一些佛教的学习资源、一些佛教相关的实物商品可购买，有个人中心，供奉活动，讲堂，禅院动态 漏洞发现获得测试账号权限由于没有普通用户权限，只是访客权限，于是想先注册一个账号   结果是不允许注册的，只允许已有的用户进行登录，输入我的手机号会校验是否是已有的用户，不是则不允许发送验证码 这可怎么办呢，爆破手机号显然不现实，而且就算爆破手机号，也无法收到验证码啊，这样一来">
+    <meta name="description" content="业务介绍是一个某佛教的系统  有一些佛教的学习资源、一些佛教相关的实物商品可购买，有个人中心，供奉活动，讲堂，禅院动态 漏洞发现获得测试账号权限由于没有普通用户权限，只是访客权限，于是想先注册一个账号  结果是不允许注册的，只允许已有的用户进行登录，输入我的手机号会校验是否是已有的用户，不是则不允许发送验证码 这可怎么办呢，爆破手机号显然不现实，而且就算爆破手机号，也无法收到验证码啊，这样一来连普">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次对某佛教系统的漏洞挖掘">
 <meta property="og:url" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="业务介绍是一个某佛教的系统   有一些佛教的学习资源、一些佛教相关的实物商品可购买，有个人中心，供奉活动，讲堂，禅院动态 漏洞发现获得测试账号权限由于没有普通用户权限，只是访客权限，于是想先注册一个账号   结果是不允许注册的，只允许已有的用户进行登录，输入我的手机号会校验是否是已有的用户，不是则不允许发送验证码 这可怎么办呢，爆破手机号显然不现实，而且就算爆破手机号，也无法收到验证码啊，这样一来">
+<meta property="og:description" content="业务介绍是一个某佛教的系统  有一些佛教的学习资源、一些佛教相关的实物商品可购买，有个人中心，供奉活动，讲堂，禅院动态 漏洞发现获得测试账号权限由于没有普通用户权限，只是访客权限，于是想先注册一个账号  结果是不允许注册的，只允许已有的用户进行登录，输入我的手机号会校验是否是已有的用户，不是则不允许发送验证码 这可怎么办呢，爆破手机号显然不现实，而且就算爆破手机号，也无法收到验证码啊，这样一来连普">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/1.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/2.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/3.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/4.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/5.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/6.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/7.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/8.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/9.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/10.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/11.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/12.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/13.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/14.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/15.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/16.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/17.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/18.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/19.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/20.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/21.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/22.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/23.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/24.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/25.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/26.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/27.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/28.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/29.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/30.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/31.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/32.png">
-<meta property="og:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/33.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/CYJoSIMBG25Fct1.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/hG3ivtrZdHxRSgw.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/8JUw6MBVTDy9Ltc.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/9bCtMg7XxqK5WSs.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/r7Vb1wQsvAu3cKt.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/b4T9rVfSEeDlaRI.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/v9HFDAZlpCT4he6.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/MugaY3SH896hTIN.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/FmLQgBXWf6pihY8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/dAC4nO1lmzxHiof.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/QO3HZaqBPUfJFlL.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/bwkV1XG8tIK6Nmy.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/6B2PaMcq5sQXjiE.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/vuQyt9LDxTB1Ybg.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/D8NuyLOgG7dlB6K.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/bAnjKDmMu78vPL3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/42FAGYiLSRnopzv.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/7unYeIFHi8NW465.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/MNxkYuFevA45ws7.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/R1EjY3O9tqalWPJ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/34UjJTdgRHGphB1.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/sJT9DXO4hKnliUo.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/E5O6cdJheVu7Msv.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/bun8Fwd5BY2DTK6.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/ej3FwkTzrJVq7EZ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/w8MzncJuGyObldX.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/s8z7bioIVUM9vRp.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/1W7sD9c6JhImqio.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/hOixrIYQT1PRENb.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/V2M9HmX5AETuJpz.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/vZKRk87qdcbSy5t.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/gZ2AzR1HuVIQkcM.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/RmEJaw1d6M5GPgo.png">
 <meta property="article:published_time" content="2024-08-10T10:55:39.000Z">
-<meta property="article:modified_time" content="2024-08-10T10:57:09.377Z">
+<meta property="article:modified_time" content="2024-10-22T12:49:04.326Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="记一次对某佛教系统的漏洞挖掘">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/CYJoSIMBG25Fct1.png">
   
   
   
@@ -361,7 +361,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年8月10日 晚上
+                    本文最后更新于 2024年10月22日 晚上
                   
                 
               </p>
@@ -370,114 +370,84 @@
               <div class="markdown-body">
                 
                 <h2 id="业务介绍"><a href="#业务介绍" class="headerlink" title="业务介绍"></a>业务介绍</h2><p>是一个某佛教的系统</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/CYJoSIMBG25Fct1.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>有一些佛教的学习资源、一些佛教相关的实物商品可购买，有个人中心，供奉活动，讲堂，禅院动态</p>
 <h2 id="漏洞发现"><a href="#漏洞发现" class="headerlink" title="漏洞发现"></a>漏洞发现</h2><h3 id="获得测试账号权限"><a href="#获得测试账号权限" class="headerlink" title="获得测试账号权限"></a>获得测试账号权限</h3><p>由于没有普通用户权限，只是访客权限，于是想先注册一个账号</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/hG3ivtrZdHxRSgw.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>结果是不允许注册的，只允许已有的用户进行登录，输入我的手机号会校验是否是已有的用户，不是则不允许发送验证码</p>
 <p>这可怎么办呢，爆破手机号显然不现实，而且就算爆破手机号，也无法收到验证码啊，这样一来连普通用户权限都没有了，这对进行其他功能点的测试来说是一个极大的阻碍</p>
 <p>于是我不死心地再试了试测试手机号，也就是开发在做这个发送验证码的功能时，大都会创建一个默认的测试手机号，用来验证功能是否完善有无bug等等，如果开发没有即时删除这个默认的测试手机号，攻击者就能轻易以测试账号的权限登录进系统，因为这种测试账号的密码也一般就是弱口令</p>
 <p>于是我试了试经典的 13888888888、15888888888、18888888888 都成功发送了验证码！说明存在测试账号！</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/8JUw6MBVTDy9Ltc.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>抓包，看响应包</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/9bCtMg7XxqK5WSs.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>好家伙响应包直接返回了验证码！msg不就是验证码的md5值吗，md5解密即可</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/r7Vb1wQsvAu3cKt.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>输入验证码，登录成功，到这里就从访客权限提升到了普通会员权限了，但是由于是测试账号，没有什么数据</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/6.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/b4T9rVfSEeDlaRI.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="OSS任意文件上传"><a href="#OSS任意文件上传" class="headerlink" title="OSS任意文件上传"></a>OSS任意文件上传</h3><p>然后果断来到修改头像处，想要试试拿shell</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/7.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/v9HFDAZlpCT4he6.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>结果上传的文件后缀倒没有任何限制，只是全上传到OSS去了哈哈，拿shell是没戏了</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/8.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/MugaY3SH896hTIN.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>还可以试试看OSS能不能解析HTML，如果可以那么就是一个存储型XSS，当然如果能解析PHP那么就拿shell了(几乎不可能)</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/9.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/FmLQgBXWf6pihY8.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>尝试了，所有后缀都是只下载，不解析，但是可以上传任意后缀文件到OSS中</p>
-<h3 id="任意用户接管"><a href="#任意用户接管" class="headerlink" title="任意用户接管"></a>任意用户接管</h3><img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/10.png" srcset="/img/loading.gif" lazyload class="">
-
+<h3 id="任意用户接管"><a href="#任意用户接管" class="headerlink" title="任意用户接管"></a>任意用户接管</h3><p><img src="https://s2.loli.net/2024/10/22/dAC4nO1lmzxHiof.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>看这个修改手机号的功能，一眼就有问题对吧</p>
 <p>修改为新的手机号时，他这里只校验了当前手机号，对当前手机号发验证码，没有对新手机号进行校验，因为需要确保这个手机号的确属于你啊，否则就构成了任意用户换绑从而可接管任意用户账号！</p>
 <h3 id="大量水平越权"><a href="#大量水平越权" class="headerlink" title="大量水平越权"></a>大量水平越权</h3><p>发送验证码，抓个包看看</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/11.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/QO3HZaqBPUfJFlL.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>嗯？这是个什么操作！？手机号数据直接从前端取出的，因为还带有用来脱敏的星号”*”，那么这说明了什么呢？说明他这里没有做身份校验，手机号不是按照用户权限在数据库中取出对应的手机号，而是直接从前端取出的！于是可以大胆推测这里的userid，与phone肯定是没有绑定的！既可以修改userid，又可以修改手机号！</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/12.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/bwkV1XG8tIK6Nmy.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>可以看到，请求包中没有cookie，session等校验用户身份的字段，响应包直接set-cookie了！？那么肯定就是全靠userid来识别用户身份了，像这样的使用userid的来鉴权的点还有非常多，通通都可以水平越权！</p>
 <p>既然都可以直接通过userid去set-cookie了，那么遍历一下userid就可以获得全站几乎所有用户的操作权限了撒</p>
 <p>接着验证一下上面提到的<strong>任意用户接管</strong>，发送验证码，填写新的手机号，抓包</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/13.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/6B2PaMcq5sQXjiE.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>果然，可以直接改改手机号连前面的验证旧手机号的逻辑都可以直接跳过了，而且同理，把这个cookie删掉也是也可以直接修改用户的手机号的，也可以算是接口未授权</p>
 <p>这里既然发了验证码，那么继续测测看，能不能短信轰炸，经简单的测试发现，虽然响应包显示发送成功，但是实际上还是只能收到一条验证码</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/14.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/vuQyt9LDxTB1Ybg.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="支付逻辑缺陷"><a href="#支付逻辑缺陷" class="headerlink" title="支付逻辑缺陷"></a>支付逻辑缺陷</h3><p>接着测一测购买的功能吧</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/15.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/D8NuyLOgG7dlB6K.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>填好表单</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/16.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/bAnjKDmMu78vPL3.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>支付时弹了一个窗，嗯？这又是什么操作？直接前端让我选择是否完成支付，而不是调用微信支付的接口去支付？</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/17.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/42FAGYiLSRnopzv.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>那么我选已完成支付</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/18.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/7unYeIFHi8NW465.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>查看我的订单，还真有啊？</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/19.png" srcset="/img/loading.gif" lazyload class="">
-
-<p>看看数据包<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/20.png" srcset="/img/loading.gif" lazyload class=""></p>
+<p><img src="https://s2.loli.net/2024/10/22/MNxkYuFevA45ws7.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p>看看数据包<img src="https://s2.loli.net/2024/10/22/R1EjY3O9tqalWPJ.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>看这个statusIds是1对吧，也是典中典的逻辑漏洞场景了，这个statusIds代表支付过程完成的步骤，比如正常流程是：</p>
 <p>先给你预览订单，让你确认订单，这时statusIds&#x3D;0</p>
 <p>如果确认订单了，statusIds&#x3D;1</p>
 <p>然后让你支付，如果支付成功，statusIds&#x3D;2</p>
 <p>也就是这个statusIds代表支付过程的几个关键的节点，如果各个节点之间没有做好对上一步骤是否真的完成了的校验，那么攻击者可以直接跳步执行逻辑，从而可以跳过支付步骤，直接购买成功！</p>
 <p>此时statusIds&#x3D;1，显示状态为待支付</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/21.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/34UjJTdgRHGphB1.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>直接改为2，好家伙直接，显示状态为待发货了，成功跳过支付步骤</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/22.png" srcset="/img/loading.gif" lazyload class="">
-
-<h3 id="信息泄露thinkphp报错"><a href="#信息泄露thinkphp报错" class="headerlink" title="信息泄露thinkphp报错"></a>信息泄露thinkphp报错</h3><img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/23.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/24.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/sJT9DXO4hKnliUo.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<h3 id="信息泄露thinkphp报错"><a href="#信息泄露thinkphp报错" class="headerlink" title="信息泄露thinkphp报错"></a>信息泄露thinkphp报错</h3><p><img src="https://s2.loli.net/2024/10/22/E5O6cdJheVu7Msv.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/bun8Fwd5BY2DTK6.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="thinphp反序列化"><a href="#thinphp反序列化" class="headerlink" title="thinphp反序列化"></a>thinphp反序列化</h3><p>ThinkPHP V5.0.24版本存在反序列化漏洞</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/25.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/26.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/ej3FwkTzrJVq7EZ.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/w8MzncJuGyObldX.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="未授权访问数据库信息"><a href="#未授权访问数据库信息" class="headerlink" title="未授权访问数据库信息"></a>未授权访问数据库信息</h3><p>通过手翻burp历史数据包找到了后台 &#x2F;admin&#x2F;login&#x2F;index.html</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/27.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/s8z7bioIVUM9vRp.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>发现了CMS及其版本信息</p>
 <p>直接拿去搜索Nday，果然有一个未授权访问数据库信息Nday</p>
 <p>&#x2F;admin&#x2F;system.system_databackup&#x2F;tablelist.html路径可以未授权读取数据库表名</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/28.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/1W7sD9c6JhImqio.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>直接就读取成功了</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/29.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/hOixrIYQT1PRENb.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="Druid未授权访问"><a href="#Druid未授权访问" class="headerlink" title="Druid未授权访问"></a>Druid未授权访问</h3><p>burp插件扫描到的Druid未授权访问</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/30.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/31.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/V2M9HmX5AETuJpz.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/vZKRk87qdcbSy5t.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="Redis未授权访问"><a href="#Redis未授权访问" class="headerlink" title="Redis未授权访问"></a>Redis未授权访问</h3><p>扫了一下端口发现有6379，redis，尝试连接一下</p>
 <p>连接成功，可以直接执行一些redis的命令</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/32.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/gZ2AzR1HuVIQkcM.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>就差一点点就可以反弹shell了，结果没有写入的权限，是只读权限</p>
-<img src="/2024/08/10/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E4%BD%9B%E6%95%99%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/33.png" srcset="/img/loading.gif" lazyload class="">
+<p><img src="https://s2.loli.net/2024/10/22/RmEJaw1d6M5GPgo.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+
                 
               </div>
             

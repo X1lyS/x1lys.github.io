@@ -23,19 +23,19 @@
 <meta property="og:site_name" content="X1ly?S Blog">
 <meta property="og:description" content="前言：本文简单的总结一下一些403bypass的绕过姿势  403的成因 某些敏感的URL路径配置为不允许访问 网络安全设备（如入侵检测系统或防火墙）可能会基于请求的特征或内容进行拦截，从而导致 403 错误 服务器配置成了只允许工作区的公网出口地址访问 服务器配置成了只允许某些特定的UA访问 服务器配置成了只允许某些特定的来源访问 因为在进行某些攻击活动，被检测到了，IP被ban  短时间内同">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/1.png">
-<meta property="og:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/2.png">
-<meta property="og:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/3.png">
-<meta property="og:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/4.png">
-<meta property="og:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/5.png">
-<meta property="og:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/6.png">
-<meta property="og:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/7.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/eQ8OnNZlzXc5fSx.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/PE9o2ycz1g47jHh.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/5BqJ8RF47IhWKY9.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/imFeBrzqZEJQf1S.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/5GMULm2PYSqZWsz.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/yaxJb9olpZjOcrQ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/z7HvLhRe3qJoY5G.png">
 <meta property="article:published_time" content="2024-07-29T10:12:32.000Z">
-<meta property="article:modified_time" content="2024-07-29T10:14:12.742Z">
+<meta property="article:modified_time" content="2024-10-22T07:59:18.906Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="403bypass">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/29/%E6%B5%85%E6%9E%90403bypass/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/eQ8OnNZlzXc5fSx.png">
   
   
   
@@ -335,7 +335,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月29日 晚上
+                    本文最后更新于 2024年10月22日 下午
                   
                 
               </p>
@@ -409,30 +409,25 @@
 </ol>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">X-Original-URL</span><span class="hljs-punctuation">: </span>/admin<br><span class="hljs-attribute">X-Rewrite-URL</span><span class="hljs-punctuation">: </span>/admin<br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>www.abc.com<br></code></pre></td></tr></table></figure>
 
-<img src="/2024/07/29/%E6%B5%85%E6%9E%90403bypass/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/eQ8OnNZlzXc5fSx.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>在Header头中添加X-Original-URL标头，发现已经有权限可以删除Administrator、carlos、wiener 帐号的管理员权限</p>
-<img src="/2024/07/29/%E6%B5%85%E6%9E%90403bypass/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/PE9o2ycz1g47jHh.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="扩展名绕过"><a href="#扩展名绕过" class="headerlink" title="扩展名绕过"></a>扩展名绕过</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs http">site.com/admin =&gt; 403<br><br>site.com/admin/ =&gt; 200<br><br>site.com/admin// =&gt; 200<br><br>site.com//admin// =&gt; 200<br><br>site.com/admin/* =&gt; 200<br><br>site.com/admin/*/ =&gt; 200<br><br>site.com/admin/. =&gt; 200<br><br>site.com/admin/./ =&gt; 200<br><br>site.com/./admin/./ =&gt; 200<br><br>site.com/admin/./. =&gt; 200<br><br>site.com/admin/./. =&gt; 200<br><br>site.com/admin? =&gt; 200<br><br>site.com/admin?? =&gt; 200<br><br>site.com/admin??? =&gt; 200<br><br>site.com/admin…;/ =&gt; 200<br><br>site.com/admin/…;/ =&gt; 200<br><br>site.com/%2f/admin =&gt; 200<br><br>site.com/%2e/admin =&gt; 200<br><br>site.com/admin%20/ =&gt; 200<br><br>site.com/admin%09/ =&gt; 200<br><br>site.com/%20admin%20/ =&gt; 200<br></code></pre></td></tr></table></figure>
 
 <h2 id="绕过案例"><a href="#绕过案例" class="headerlink" title="绕过案例"></a>绕过案例</h2><p>某个后台地址 <a target="_blank" rel="noopener" href="http://www.login.com/">http://www.login.com</a> 只允许工作区的公网出口IP访问，在局域网中，甲方让测试看能不能在外网访问到目标IP </p>
 <h3 id="端口绕过"><a href="#端口绕过" class="headerlink" title="端口绕过"></a>端口绕过</h3><p>外网进行访问返回403状态码。利用nmap进行全端口探测，发现除了80端口之外，还开放了一个web服务的8001端口，尝试使用8001端口访问(<a href="https://www.login.com:8001)，总是充满惊喜。可直接绕过IP限制进行访问">https://www.login.com:8001)，总是充满惊喜。可直接绕过IP限制进行访问</a></p>
-<img src="/2024/07/29/%E6%B5%85%E6%9E%90403bypass/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/5BqJ8RF47IhWKY9.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>通过沟通，由于疏忽未下线8001端口，导致访问控制缺失，这就是用到了信息收集而已</p>
 <h3 id="子域名绕过"><a href="#子域名绕过" class="headerlink" title="子域名绕过"></a>子域名绕过</h3><p>外网进行访问返回403状态码</p>
 <p>先爆破出一些子域名，再把子域名放在host中去访问</p>
-<img src="/2024/07/29/%E6%B5%85%E6%9E%90403bypass/4.png" srcset="/img/loading.gif" lazyload class="">
-
-<img src="/2024/07/29/%E6%B5%85%E6%9E%90403bypass/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/imFeBrzqZEJQf1S.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/5GMULm2PYSqZWsz.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>往往成功也离不开运气，看到一个服务端返回200的状态码。成功找到一个在HOST白名单中的子域名，这个子域名没有做好访问控制，这也属于信息收集</p>
 <h2 id="工具推荐"><a href="#工具推荐" class="headerlink" title="工具推荐"></a>工具推荐</h2><p><a target="_blank" rel="noopener" href="https://github.com/sting8k/BurpSuite_403Bypasser">https://github.com/sting8k/BurpSuite_403Bypasser</a></p>
-<img src="/2024/07/29/%E6%B5%85%E6%9E%90403bypass/6.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/yaxJb9olpZjOcrQ.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>burp插件商店有，需要配置Jython环境</p>
-<img src="/2024/07/29/%E6%B5%85%E6%9E%90403bypass/7.png" srcset="/img/loading.gif" lazyload class="">
+<p><img src="https://s2.loli.net/2024/10/22/z7HvLhRe3qJoY5G.png" srcset="/img/loading.gif" lazyload alt="image"></p>
+
                 
               </div>
             

