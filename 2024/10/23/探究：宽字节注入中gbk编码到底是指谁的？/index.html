@@ -1,0 +1,994 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="X1ly?S">
+  <meta name="keywords" content="网络安全 渗透测试">
+  
+    <meta name="description" content="探究：宽字节注入中gbk编码到底是指谁的？前言想必师傅们都知道宽字节注入的前提必须要目标使用了GBK编码，才能够加上一些字符结合转义字符构造成汉字，吞掉了转义字符，使得引号逃逸出来，导致注入。但是这里的”使用了GBK编码“具体指的是谁的编码呢?数据库的编码(数据库服务器的默认字符集、数据库的字符集、数据表的字符集、列的字符集)吗，网站的编码吗，还是什么编码？还是这两个都是？或者是其他的什么编码呢？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探究：宽字节注入中gbk编码到底是指谁的？">
+<meta property="og:url" content="https://example.com/2024/10/23/%E6%8E%A2%E7%A9%B6%EF%BC%9A%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E4%B8%ADgbk%E7%BC%96%E7%A0%81%E5%88%B0%E5%BA%95%E6%98%AF%E6%8C%87%E8%B0%81%E7%9A%84%EF%BC%9F/index.html">
+<meta property="og:site_name" content="X1ly?S Blog">
+<meta property="og:description" content="探究：宽字节注入中gbk编码到底是指谁的？前言想必师傅们都知道宽字节注入的前提必须要目标使用了GBK编码，才能够加上一些字符结合转义字符构造成汉字，吞掉了转义字符，使得引号逃逸出来，导致注入。但是这里的”使用了GBK编码“具体指的是谁的编码呢?数据库的编码(数据库服务器的默认字符集、数据库的字符集、数据表的字符集、列的字符集)吗，网站的编码吗，还是什么编码？还是这两个都是？或者是其他的什么编码呢？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/Ba3yGPp4u1CoKOq.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/yTgGhMnR1NoYlJb.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/9e5ciSGKLfmxPga.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/p3vmfbd8xcSeRAw.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/YxZSB8zwq25RnVH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/IYJLDpP7iOGmrqd.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/EJ2XgGmeqzbD3Il.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/8QCItZO6Aimu5qJ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/npX5RiMBUgEzvL3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/ilmcvV7NGkBAsST.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/G2XuJtLNbp8C1HO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/GEm543DsjMU6y89.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/KIjRelvBJ4fyrNn.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/dyjUcSDmaN3n5Ak.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/CuQlkdKcW7jzNxR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/9PEKdojga7VRSuM.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/yGOwcTJReWuDUt4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/UsqnDYOH3x47SG9.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/KwZoViPXcEdmrDY.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/nvaWK6loHA7jb4u.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/Dh3NSQUXtboHyBE.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/VsjwyWZGYnKcfeP.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/8uU3Nrjvolgm5xF.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/yGOwcTJReWuDUt4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/MnT7FwujZPGWE6a.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/e96SBNvt5mar2Lc.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/RFApQzmJjrNB9Sl.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/wVfYFl15PsXLAao.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/24V3f87dKgiLUpO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/YzsSghqwICZcFap.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/24V3f87dKgiLUpO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/Y1VeIJAaZ7f4oju.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/24V3f87dKgiLUpO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/VbpZl6Jwg3v2PnO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/ap6svOIMugnEkH5.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/XCUFkmbMqhl96Zn.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/OKHSiEgnhGQW7ol.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/21FOcdtI4kHVPUb.png">
+<meta property="og:image" content="https://s2.loli.net/2024/10/23/pIZntPYUgcRHmxG.png">
+<meta property="article:published_time" content="2024-10-23T08:26:37.000Z">
+<meta property="article:modified_time" content="2024-10-23T09:04:41.216Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="SQL注入">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/10/23/Ba3yGPp4u1CoKOq.png">
+  
+  
+  
+  <title>探究：宽字节注入中gbk编码到底是指谁的？ - X1ly?S Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"|","loop":"flase","scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"PYTHON"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","app_key":"M3h6WgzFRHqbQjc4e8jWn6Ix","server_url":"https://f0dhnqsc.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>X1ly?S Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="探究：宽字节注入中gbk编码到底是指谁的？"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        X1ly?S
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-10-23 16:26" pubdate>
+          2024年10月23日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          43 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">探究：宽字节注入中gbk编码到底是指谁的？</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年10月23日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="探究：宽字节注入中gbk编码到底是指谁的？"><a href="#探究：宽字节注入中gbk编码到底是指谁的？" class="headerlink" title="探究：宽字节注入中gbk编码到底是指谁的？"></a>探究：宽字节注入中gbk编码到底是指谁的？</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>想必师傅们都知道宽字节注入的前提必须要目标<strong>使用了GBK编码</strong>，才能够加上一些字符结合转义字符构造成汉字，吞掉了转义字符，使得引号逃逸出来，导致注入。但是这里的”<strong>使用了GBK编码</strong>“具体指的是谁的编码呢?数据库的编码(数据库服务器的默认字符集、数据库的字符集、数据表的字符集、列的字符集)吗，网站的编码吗，还是什么编码？还是这两个都是？或者是其他的什么编码呢？</p>
+<p>既然不知道，那么我先查查网上其他师傅怎么说吧：</p>
+<h2 id="资料查询"><a href="#资料查询" class="headerlink" title="资料查询"></a>资料查询</h2><h3 id="查文章"><a href="#查文章" class="headerlink" title="查文章"></a>查文章</h3><p>先是查了大量的有关宽字节注入的文章，发现都没有得到想要的答案：</p>
+<p><img src="https://s2.loli.net/2024/10/23/Ba3yGPp4u1CoKOq.png" srcset="/img/loading.gif" lazyload alt="image-20241020165148510"></p>
+<p><img src="https://s2.loli.net/2024/10/23/yTgGhMnR1NoYlJb.png" srcset="/img/loading.gif" lazyload alt="image-20241020164709440"></p>
+<p><img src="https://s2.loli.net/2024/10/23/9e5ciSGKLfmxPga.png" srcset="/img/loading.gif" lazyload alt="image-20241020165109918"></p>
+<p><img src="https://s2.loli.net/2024/10/23/p3vmfbd8xcSeRAw.png" srcset="/img/loading.gif" lazyload alt="image-20241020165214528"></p>
+<p><img src="https://s2.loli.net/2024/10/23/YxZSB8zwq25RnVH.png" srcset="/img/loading.gif" lazyload alt="image-20241020165309713"></p>
+<p>发现绝大多数文章，<strong>要么没有提到宽字节的利用前提，文章重心一直放在怎么利用上，要么文章的相关措辞都是”mysql使用了GBK编码”，也就是说这个编码前提是指的数据库的gbk编码，但是都没有指明该gbk编码具体到底在哪里，因为mysql配置编码的地方很多</strong></p>
+<h3 id="拷打ChatGPT"><a href="#拷打ChatGPT" class="headerlink" title="拷打ChatGPT"></a>拷打ChatGPT</h3><p><img src="https://s2.loli.net/2024/10/23/IYJLDpP7iOGmrqd.png" srcset="/img/loading.gif" lazyload alt="image-20241020170539840"></p>
+<p>ok，首先GPT排除了网站编码的可能性，它也认为是数据库的编码影响的，继续拷打</p>
+<p><img src="https://s2.loli.net/2024/10/23/EJ2XgGmeqzbD3Il.png" srcset="/img/loading.gif" lazyload alt="image-20241020170705776"></p>
+<p><img src="https://s2.loli.net/2024/10/23/8QCItZO6Aimu5qJ.png" srcset="/img/loading.gif" lazyload alt="image-20241020170725536"></p>
+<p>啊嘞？GPT给我说这<strong>四个配置项共同决定了数据库在处理字符时的编码行为</strong>，咋越来越离谱了呢，有点懵圈……</p>
+<p>没事我直接写个宽字节注入的Demo自己做实验，看看到底是哪个编码影响的，不就行了吗?</p>
+<h2 id="动手实验"><a href="#动手实验" class="headerlink" title="动手实验"></a>动手实验</h2><h3 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$servername</span> = <span class="hljs-string">&quot;localhost&quot;</span>;<br><span class="hljs-variable">$username</span> = <span class="hljs-string">&quot;root&quot;</span>;  <br><span class="hljs-variable">$password</span> = <span class="hljs-string">&quot;root&quot;</span>;     <br><span class="hljs-variable">$dbname</span> = <span class="hljs-string">&quot;security&quot;</span>;<br><span class="hljs-variable">$conn</span> = <span class="hljs-keyword">new</span> <span class="hljs-title function_ invoke__">mysqli</span>(<span class="hljs-variable">$servername</span>, <span class="hljs-variable">$username</span>, <span class="hljs-variable">$password</span>, <span class="hljs-variable">$dbname</span>);<br><span class="hljs-variable">$conn</span>-&gt;<span class="hljs-title function_ invoke__">set_charset</span>(<span class="hljs-string">&quot;gbk&quot;</span>); <br><span class="hljs-keyword">if</span> (<span class="hljs-variable">$conn</span>-&gt;connect_error) &#123;<br>    <span class="hljs-keyword">die</span>(<span class="hljs-string">&quot;Connection failed: &quot;</span> . <span class="hljs-variable">$conn</span>-&gt;connect_error);<br>&#125;<br><span class="hljs-variable">$db_encoding</span> = <span class="hljs-variable">$conn</span>-&gt;<span class="hljs-title function_ invoke__">character_set_name</span>();<br><span class="hljs-variable">$website_encoding</span> = <span class="hljs-title function_ invoke__">ini_get</span>(<span class="hljs-string">&quot;default_charset&quot;</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt;Debug: Database Encoding - &lt;strong&gt;&quot;</span> . <span class="hljs-title function_ invoke__">htmlspecialchars</span>(<span class="hljs-variable">$db_encoding</span>) . <span class="hljs-string">&quot;&lt;/strong&gt;&lt;/p&gt;&quot;</span>;<br><span class="hljs-variable">$id</span> = <span class="hljs-title function_ invoke__">addslashes</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]);<br><span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;SELECT * FROM users WHERE id = &#x27;<span class="hljs-subst">$id</span>&#x27;&quot;</span>;<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt;Debug: Executing SQL Query - &lt;strong&gt;&quot;</span> . <span class="hljs-title function_ invoke__">htmlspecialchars</span>(<span class="hljs-variable">$sql</span>) . <span class="hljs-string">&quot;&lt;/strong&gt;&lt;/p&gt;&quot;</span>;<br><span class="hljs-variable">$result</span> = <span class="hljs-variable">$conn</span>-&gt;<span class="hljs-title function_ invoke__">query</span>(<span class="hljs-variable">$sql</span>);<br><span class="hljs-keyword">if</span> (<span class="hljs-variable">$result</span>-&gt;num_rows &gt; <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-variable">$row</span> = <span class="hljs-variable">$result</span>-&gt;<span class="hljs-title function_ invoke__">fetch_assoc</span>()) &#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;ID: &quot;</span> . <span class="hljs-variable">$row</span>[<span class="hljs-string">&quot;id&quot;</span>] . <span class="hljs-string">&quot; - Username: &quot;</span> . <span class="hljs-variable">$row</span>[<span class="hljs-string">&quot;username&quot;</span>] . <span class="hljs-string">&quot; - Password: &quot;</span> . <span class="hljs-variable">$row</span>[<span class="hljs-string">&quot;password&quot;</span>] . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>    &#125;<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;0 results&quot;</span>;<br>&#125;<br><span class="hljs-variable">$conn</span>-&gt;<span class="hljs-title function_ invoke__">close</span>();<br><span class="hljs-meta">?&gt;</span><br><br></code></pre></td></tr></table></figure>
+
+<p>这段demo实现了宽字节注入的场景，并且添加了一些调试输出，打印了执行的sql语句，打印了数据库连接时采用的字符集编码</p>
+<p><img src="https://s2.loli.net/2024/10/23/npX5RiMBUgEzvL3.png" srcset="/img/loading.gif" lazyload alt="image-20241021085941477"></p>
+<h3 id="实验变量-各种gbk编码"><a href="#实验变量-各种gbk编码" class="headerlink" title="实验变量-各种gbk编码"></a>实验变量-各种gbk编码</h3><p>首先看看有哪些地方能配置gbk编码，<strong>也就是首先找出所有的影响实验结论的变量，再逐一控制变量实验，就能找到到底哪一个才是宽字节注入的真正前提</strong></p>
+<h4 id="1-网站编码"><a href="#1-网站编码" class="headerlink" title="1. 网站编码"></a>1. 网站编码</h4><p><img src="https://s2.loli.net/2024/10/23/ilmcvV7NGkBAsST.png" srcset="/img/loading.gif" lazyload alt="image-20241021090120356"></p>
+<p><strong>网站编码</strong>（如 <code>&lt;meta charset=&quot;UTF-8&quot;&gt;</code>）主要用于控制前端显示，这个编码定义了网页上显示内容的字符编码方式，比如是 UTF-8、GBK 等。但它还会影响浏览器<strong>向服务器发送数据时的编码</strong>。</p>
+<p>比如，当用户在网页上填写表单并提交时，浏览器会根据网页的编码（如 GBK）对数据进行编码后，再发送到服务器。<strong>这意味着网页编码决定了浏览器如何对用户输入进行编码。</strong></p>
+<p>服务器收到数据后，<strong>会根据约定的编码方式对数据进行解码</strong>。如果服务器预期收到的数据是 UTF-8 编码，而前端传过来的实际是 GBK 编码的数据，那么解码可能会失败。</p>
+<p><strong>关键点在于：无论前端数据传输使用的是什么编码，服务器端应用在接收到数据后可以根据需要进行重新编码和转换。所以，前端编码的影响主要是在数据进入服务器的那一刻，之后数据的编码转换完全由服务器端控制。</strong></p>
+<p><img src="https://s2.loli.net/2024/10/23/G2XuJtLNbp8C1HO.png" srcset="/img/loading.gif" lazyload alt="image-20241021094429428"></p>
+<p><strong>那么，从这里就已经可以看出，网站编码影响的是网站前端到服务器端之间传输的数据编码，并没有真正影响到数据库，因为和数据库直接交互的是服务器端，那么由此推测：网站编码不是宽字节注入的真正前提</strong></p>
+<p>我使用这个谷歌插件修改网站编码</p>
+<ul>
+<li><a href="%5Bhttps://chromewebstore.google.com/detail/set-character-encoding/bpojelgakakmcfmjfilgdlmhefphglae?hl=zh-CN&utm_source=ext_sidebar">Set Character Encoding</a></li>
+</ul>
+<h4 id="2-数据库字符集"><a href="#2-数据库字符集" class="headerlink" title="2. 数据库字符集"></a>2. 数据库字符集</h4><p><img src="https://s2.loli.net/2024/10/23/GEm543DsjMU6y89.png" srcset="/img/loading.gif" lazyload alt="image-20241021090526505"></p>
+<p>这个gbk编码又是干什么的呢？这是数据库整理字符集编码：</p>
+<p><strong>数据存储</strong>：<strong>设置数据库(整理)字符集编码会影响存储的数据的实际编码方式</strong>。例如，如果表的字符集是 <code>utf8mb4</code>，插入数据时会按照 <code>utf8mb4</code> 编码存储，读取时也会按 <code>utf8mb4</code> 解码。</p>
+<p><strong>查询和排序</strong>：<strong>整理规则影响查询时的比较和排序方式</strong>。例如，如果表的整理规则是 <code>utf8_general_ci</code>，那么查询时会忽略大小写进行比较。</p>
+<p><img src="https://s2.loli.net/2024/10/23/KIjRelvBJ4fyrNn.png" srcset="/img/loading.gif" lazyload alt="image-20241021094846097"></p>
+<p><strong>也就是这个数据库编码是纯只在数据库中的，只影响数据库中的数据存储、排序、整理的，也和网站编码一样，没有与服务器直接交互，仅仅影响数据库本身，那么推测：数据库编码也不是宽字节注入的真正前提</strong></p>
+<h4 id="3-表字符集"><a href="#3-表字符集" class="headerlink" title="3. 表字符集"></a>3. 表字符集</h4><p>如果上述推测正确，那么同理可得，表的字符集<strong>仅仅影响表中数据以什么编码进行存储和读取，并不会直接影响与服务器的交互或者导致宽字节注入</strong></p>
+<p><img src="https://s2.loli.net/2024/10/23/dyjUcSDmaN3n5Ak.png" srcset="/img/loading.gif" lazyload alt="image-20241021095615598"></p>
+<h4 id="4-列字符集"><a href="#4-列字符集" class="headerlink" title="4. 列字符集"></a>4. 列字符集</h4><p>如果推测正确，同上</p>
+<p><img src="https://s2.loli.net/2024/10/23/CuQlkdKcW7jzNxR.png" srcset="/img/loading.gif" lazyload alt="image-20241021095729850"></p>
+<p><strong>那么到此为止，根据我们的推测，其实大概能知道了，真正的宽字节注入的前提，也就是那个gbk编码不能是数据存储编码，因为这个数据存储编码只是影响数据在数据库中怎么存储、排序、整理等等；那么我们继续大胆推测：真正影响宽字节注入的是数据传输编码，也就是服务器与数据库进行数据传输时的那个编码，只有这个编码才是既经过了服务器又经过了数据库的，并且不是数据库存储编码！</strong></p>
+<h4 id="5-character-set配置"><a href="#5-character-set配置" class="headerlink" title="5. character set配置"></a>5. <strong>character set</strong>配置</h4><p><img src="https://s2.loli.net/2024/10/23/9PEKdojga7VRSuM.png" srcset="/img/loading.gif" lazyload alt="image-20241021103927801"></p>
+<ol>
+<li><strong>character set client</strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：指定客户端（如应用程序）发送到服务器的数据的字符集。客户端会按照这个字符集对数据进行编码。</li>
+<li><strong>影响宽字节注入</strong>：如果客户端使用 GBK 编码发送数据，而服务器连接的编码是 GBK，可能导致宽字节注入的风险。</li>
+</ul>
+<ol start="2">
+<li><strong>character set connection</strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：指定服务器如何解码从客户端接收的数据。它决定了数据在进入数据库之前的解码方式。</li>
+<li><strong>影响宽字节注入：这非常关键。如果连接编码是 GBK，那么无论客户端发送的数据是什么编码，服务器都会按照 GBK 解码，这会影响到宽字节注入的可能性。</strong></li>
+</ul>
+<ol start="3">
+<li><strong>character set database</strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：指定数据库内部使用的字符集，决定数据如何存储在数据库中。</li>
+<li><strong>影响宽字节注入</strong>：这不会直接影响宽字节注入，因为它只影响数据存储方式，<strong>与数据的传输过程无关。</strong></li>
+</ul>
+<ol start="4">
+<li><strong>character set filesystem</strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：指定文件系统字符集，通常用于处理文件名。</li>
+<li><strong>影响宽字节注入</strong>：一般不会影响数据库操作或宽字节注入。</li>
+</ul>
+<ol start="5">
+<li><strong>character set results</strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：指定服务器返回给客户端的数据的字符集。</li>
+<li><strong>影响宽字节注入</strong>：这主要影响<strong>客户端接收到数据的编码方式，不会影响宽字节注入。</strong></li>
+</ul>
+<ol start="6">
+<li><strong>character set server</strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：指定数据库服务器内部使用的字符集，影响数据库内部的操作和存储。</li>
+<li><strong>影响宽字节注入</strong>：同样，<strong>影响数据的存储和处理，但与数据传输无关。</strong></li>
+</ul>
+<ol start="7">
+<li><strong>character set system</strong></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：表示系统默认的字符集，<strong>通常用于内部系统操作。</strong></li>
+<li><strong>影响宽字节注入</strong>：不会直接影响数据库操作或宽字节注入。</li>
+</ul>
+<p><strong>由此可见，这些 character set 变量中实际影响宽字节注入的是character set connection和character set client编码，而其他的编码都是数据存储类的编码，只会影响数据库本身</strong></p>
+<h4 id="6-数据库传输编码配置"><a href="#6-数据库传输编码配置" class="headerlink" title="6. 数据库传输编码配置"></a>6. 数据库传输编码配置</h4><p>demo</p>
+<p><img src="https://s2.loli.net/2024/10/23/yGOwcTJReWuDUt4.png" srcset="/img/loading.gif" lazyload alt="image-20241021133642813"></p>
+<p>sqli-labs-less-32-源码</p>
+<p><img src="https://s2.loli.net/2024/10/23/UsqnDYOH3x47SG9.png" srcset="/img/loading.gif" lazyload alt="image-20241021133739650"></p>
+<p>可以看到这两个宽字节的源码，都有这一个配置</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-title function_ invoke__">mysql_query</span>(<span class="hljs-string">&quot;SET NAMES gbk&quot;</span>);<br><span class="hljs-variable">$conn</span>-&gt;<span class="hljs-title function_ invoke__">set_charset</span>(<span class="hljs-string">&quot;gbk&quot;</span>); <br></code></pre></td></tr></table></figure>
+
+<p><code>mysql_query(&quot;SET NAMES gbk&quot;);</code> 和 <code>$conn-&gt;set_charset(&quot;gbk&quot;);</code> <strong>都是用于设置 MySQL 数据库连接的字符集</strong>，但它们在使用的上下文和方法上有所不同。</p>
+<ol>
+<li><code>mysql_query(&quot;SET NAMES gbk&quot;);</code></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：这是一个旧的 MySQL 函数，用于在<strong>建立连接后设置字符集</strong>，告诉 MySQL 使用 <code>gbk</code> 编码来处理接下来的有查询。</li>
+<li><strong>上下文</strong>：它通常在使用 <code>mysql_*</code> 函数（已废弃）时使用。这个设置会影响当前会话的字符集。</li>
+</ul>
+<ol start="2">
+<li><code>$conn-&gt;set_charset(&quot;gbk&quot;);</code></li>
+</ol>
+<ul>
+<li><strong>作用</strong>：这是一个面向对象的方法，属于 MySQLi（MySQL Improved）扩展，<strong>用于设置连接的字符集。</strong></li>
+<li><strong>上下文</strong>：用于使用 MySQLi <strong>连接数据库时</strong>，推荐使用这个方法，因为它是现代 PHP 版本中使用的更安全、更高效的接口。</li>
+</ul>
+<p><strong>关键关系</strong></p>
+<ul>
+<li><strong>两者的影响</strong>：无论是使用 <code>SET NAMES gbk</code> 还是 <code>$conn-&gt;set_charset(&quot;gbk&quot;)</code>，它们都将连接的字符集设置为 <code>gbk</code>，这将影响到从客户端发送到服务器的所有数据的编码和解码。</li>
+<li><strong>宽字节注入的影响</strong>：无论使用哪种方法，<strong>只要连接的字符集被设置为 <code>gbk</code>，数据在传输时将会按 <code>gbk</code> 编码解析，可能导致宽字节注入问题。</strong></li>
+</ul>
+<p>也就是这<strong>两个配置都是设置连接数据库时的编码的</strong>，只是版本不同写法不同，也就是我们前面说的<strong>数据传输编码，而这才是影响宽字节注入的真正前提。</strong></p>
+<h5 id="与character-set配置的关系"><a href="#与character-set配置的关系" class="headerlink" title="与character set配置的关系"></a>与character set配置的关系</h5><p>这个配置其实就是设置了 <strong>MySQL 数据库连接的字符集</strong>，也就是 <strong><code>character set connection</code><strong>。</strong>这会直接覆盖掉默认的连接字符集设置，并且直接影响数据在传输和解析时的编码方式。</strong></p>
+<p><strong>关系说明</strong></p>
+<ol>
+<li><strong>覆盖默认设置</strong>:<ul>
+<li><strong>当使用 <code>$conn-&gt;set_charset(&quot;gbk&quot;);</code> 时，实际上是动态修改了当前连接的 <code>character set client</code> 和 <code>character set connection</code>。这意味着无论服务器或数据库的默认字符集配置是什么，这个设置会优先应用于当前连接。</strong></li>
+<li>这样做的效果是，所有从客户端（如 PHP 应用程序）发送的数据都会按照 <strong>GBK 编码</strong>进行解析，这可能会导致宽字节注入风险。</li>
+</ul>
+</li>
+<li><strong>对其他配置的影响</strong>:<ul>
+<li><strong><code>character set client</code></strong> 和 <strong><code>character set connection</code></strong> 被设置为 <code>GBK</code> 后，<strong>意味着从 PHP 发送的数据会以 GBK 编码发送，并且在服务器接收时，也会按照 GBK 编码进行解码。</strong></li>
+<li><strong><code>character set results</code></strong> 会自动跟随 <code>GBK</code> 设置，这意味着服务器返回的结果也会以 GBK 编码传输。</li>
+<li><strong>其他配置如 <code>character set database</code> 和 <code>character set server</code> 不会直接受此影响，因为这些配置影响的是数据库内部的数据存储，而非连接传输。</strong></li>
+</ul>
+</li>
+</ol>
+<p>总结</p>
+<p><strong>使用 <code>$conn-&gt;set_charset(&quot;gbk&quot;);</code> 会改变当前连接的字符集，使其按 GBK 编码进行传输和解析数据。这种配置直接影响到宽字节注入的可行性，因为宽字节注入的关键在于数据库连接时编码的特性（如 GBK 允许双字节字符的解析）。其他配置如数据库字符集则不会直接影响到这一点。</strong></p>
+<h3 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h3><blockquote>
+<p>以上内容都是基于理论推测得出的结论，还不能就此确定宽字节注入的关键是否真的是数据传输（连接）编码，于是下面做实验验证：</p>
+</blockquote>
+<h4 id="1-把所有的上述变量都设置为非gbk编码，比如utf-8编码"><a href="#1-把所有的上述变量都设置为非gbk编码，比如utf-8编码" class="headerlink" title="1. 把所有的上述变量都设置为非gbk编码，比如utf-8编码"></a>1. <strong>把所有的上述变量都设置为非gbk编码，比如utf-8编码</strong></h4><ul>
+<li>网站编码-utf-8</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/10/23/KwZoViPXcEdmrDY.png" srcset="/img/loading.gif" lazyload alt="image-20241021132824882"></p>
+<ul>
+<li>数据库编码-utf-8</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/10/23/nvaWK6loHA7jb4u.png" srcset="/img/loading.gif" lazyload alt="image-20241021133047363"></p>
+<ul>
+<li>表编码-utf-8</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/10/23/Dh3NSQUXtboHyBE.png" srcset="/img/loading.gif" lazyload alt="image-20241021133239317"></p>
+<ul>
+<li>列编码–utf-8</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/10/23/VsjwyWZGYnKcfeP.png" srcset="/img/loading.gif" lazyload alt="image-20241021133346689"></p>
+<ul>
+<li><strong>character set</strong>配置–utf-8</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/10/23/8uU3Nrjvolgm5xF.png" srcset="/img/loading.gif" lazyload alt="image-20241021133502852"></p>
+<ul>
+<li>demo中的数据库传输（连接）编码-utf-8</li>
+</ul>
+<p><img src="https://s2.loli.net/2024/10/23/yGOwcTJReWuDUt4.png" srcset="/img/loading.gif" lazyload alt="image-20241021133642813"></p>
+<h4 id="2-用demo尝试宽字节注入，做空白对照"><a href="#2-用demo尝试宽字节注入，做空白对照" class="headerlink" title="2. 用demo尝试宽字节注入，做空白对照"></a>2. <strong>用demo尝试宽字节注入，做空白对照</strong></h4><p><img src="https://s2.loli.net/2024/10/23/MnT7FwujZPGWE6a.png" srcset="/img/loading.gif" lazyload alt="image-20241021134047974"></p>
+<p>毫无疑问，这是不可能成功的，因为现在我们把所有能配置的编码都设置为了非gbk编码：utf-8编码</p>
+<h4 id="3-修改网站编码为gbk，排除该变量"><a href="#3-修改网站编码为gbk，排除该变量" class="headerlink" title="3. 修改网站编码为gbk，排除该变量"></a>3. 修改网站编码为gbk，排除该变量</h4><p><img src="https://s2.loli.net/2024/10/23/e96SBNvt5mar2Lc.png" srcset="/img/loading.gif" lazyload alt="image-20241021134338308"></p>
+<p><img src="https://s2.loli.net/2024/10/23/RFApQzmJjrNB9Sl.png" srcset="/img/loading.gif" lazyload alt="image-20241021134413120"></p>
+<p>ok，排除成功，<strong>成功验证了”网站编码是gbk”并不是宽字节注入的关键</strong></p>
+<h4 id="4-还原网站编码，修改数据库编码为gbk，排除该变量"><a href="#4-还原网站编码，修改数据库编码为gbk，排除该变量" class="headerlink" title="4. 还原网站编码，修改数据库编码为gbk，排除该变量"></a>4. 还原网站编码，修改数据库编码为gbk，排除该变量</h4><p>还原网站编码为utf-8，修改数据库编码为gbk</p>
+<p><img src="https://s2.loli.net/2024/10/23/wVfYFl15PsXLAao.png" srcset="/img/loading.gif" lazyload alt="image-20241021134943450"></p>
+<p><img src="https://s2.loli.net/2024/10/23/24V3f87dKgiLUpO.png" srcset="/img/loading.gif" lazyload alt="image-20241021135435176"></p>
+<p>ok，排除成功，<strong>成功验证了”数据库编码是gbk”并不是宽字节注入的关键</strong></p>
+<h4 id="5-还原数据库编码，修改表编码为gbk，排除该变量"><a href="#5-还原数据库编码，修改表编码为gbk，排除该变量" class="headerlink" title="5. 还原数据库编码，修改表编码为gbk，排除该变量"></a>5. 还原数据库编码，修改表编码为gbk，排除该变量</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">TABLE</span> users <span class="hljs-keyword">CONVERT</span> <span class="hljs-keyword">TO</span> <span class="hljs-type">CHARACTER</span> <span class="hljs-keyword">SET</span> gbk <span class="hljs-keyword">COLLATE</span> gbk_chinese_ci;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/10/23/YzsSghqwICZcFap.png" srcset="/img/loading.gif" lazyload alt="image-20241021135937223"></p>
+<p><img src="https://s2.loli.net/2024/10/23/24V3f87dKgiLUpO.png" srcset="/img/loading.gif" lazyload alt="image-20241021135435176"></p>
+<p>ok，排除成功，<strong>成功验证了”表编码是gbk”并不是宽字节注入的关键</strong></p>
+<h4 id="6-还原表编码，修改列编码为gbk，排除该变量"><a href="#6-还原表编码，修改列编码为gbk，排除该变量" class="headerlink" title="6. 还原表编码，修改列编码为gbk，排除该变量"></a>6. 还原表编码，修改列编码为gbk，排除该变量</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">ALTER</span> <span class="hljs-keyword">TABLE</span> users <br>    <span class="hljs-keyword">CONVERT</span> <span class="hljs-keyword">TO</span> <span class="hljs-type">CHARACTER</span> <span class="hljs-keyword">SET</span> gbk <span class="hljs-keyword">COLLATE</span> gbk_chinese_ci;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/10/23/Y1VeIJAaZ7f4oju.png" srcset="/img/loading.gif" lazyload alt="image-20241021140427954"></p>
+<p><img src="https://s2.loli.net/2024/10/23/24V3f87dKgiLUpO.png" srcset="/img/loading.gif" lazyload alt="image-20241021135435176"></p>
+<p>ok，排除成功，<strong>成功验证了”列编码是gbk”并不是宽字节注入的关键</strong></p>
+<h4 id="7-还原列编码，修改character-set配置为gbk"><a href="#7-还原列编码，修改character-set配置为gbk" class="headerlink" title="7. 还原列编码，修改character set配置为gbk"></a>7. 还原列编码，修改<strong>character set</strong>配置为gbk</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">SET</span> NAMES <span class="hljs-string">&#x27;gbk&#x27;</span>;<br><span class="hljs-keyword">SET</span> character_set_client <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;gbk&#x27;</span>;<br><span class="hljs-keyword">SET</span> character_set_connection <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;gbk&#x27;</span>;<br><span class="hljs-keyword">SET</span> character_set_results <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;gbk&#x27;</span>;<br><span class="hljs-keyword">SET</span> character_set_database <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;gbk&#x27;</span>;<br><span class="hljs-keyword">SET</span> character_set_server <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;gbk&#x27;</span>;<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/10/23/VbpZl6Jwg3v2PnO.png" srcset="/img/loading.gif" lazyload alt="image-20241021141633267"></p>
+<p><img src="https://s2.loli.net/2024/10/23/ap6svOIMugnEkH5.png" srcset="/img/loading.gif" lazyload alt="image-20241021141811287"></p>
+<p>???为什么呢，按照前文的推论，这里的<strong>character_set_client、gbk character_set_connection</strong> 就是数据库连接时的编码啊，也就是数据库传输的编码，为什么都设置为了gbk编码还是不能宽字节注入呢？？</p>
+<p>请看VCR：</p>
+<p>来到phpmyadmin，虽然编码都设置为了gbk，但是会话值仍然是utf-8！那么估计就是这个原因，后来我尝试了把所有能修改的地方全部改为了gbk编码，但是仍然还是不能将这个会话值修改为我们想要的gbk编码（会话值到底是个啥呀……）</p>
+<ul>
+<li>会话值</li>
+</ul>
+<p><strong>在 MySQL 中，会话值是与当前数据库连接（会话）相关的配置参数。这些参数只在该会话期间有效，不会影响其他会话或全局设置。当你连接到 MySQL 服务器时，会启动一个独立的会话，此时的会话值决定了这个连接中的具体行为，比如字符集、排序规则等。</strong></p>
+<p><strong><img src="https://s2.loli.net/2024/10/23/XCUFkmbMqhl96Zn.png" srcset="/img/loading.gif" lazyload alt="image-20241021142225884"></strong></p>
+<p>这是为什么呢？</p>
+<p>原来，在MySQL 中，字符集的设置分为会话级别和全局级别。<strong>会话级别的字符集会覆盖全局设置</strong>，如果会话值仍然是 <code>utf8</code>，可能是因为如下原因：</p>
+<ol>
+<li><strong>在客户端连接时指定了字符集</strong>：如果客户端（如 PHP、命令行等）在连接 MySQL 时明确指定了 <code>utf8</code>，那么会话级别的设置就会覆盖全局设置。</li>
+<li><strong>MySQL 配置文件没有完全配置</strong>：即使修改了 <code>my.cnf</code> 或 <code>my.ini</code> 中的配置项，也需要确保所有相关的字符集设置都配置正确。</li>
+</ol>
+<p>也就是这个会话值的优先级高于全局配置，如果在<strong>客户端连接时指定了字符集</strong>，那么会话值就是指定的字符集，且会直接覆盖全局配置</p>
+<p>至于这里为什么会话值仍然是utf-8，<strong>我推测会话值仍可能压根就直接默认使用 <code>utf8</code>，尤其是当客户端（如 PHP）连接时没有指定字符集的情况下，也就是只有我在php源码中手动指定为其他编码(gbk)时才会短暂改变！</strong></p>
+<p>问下GPT看看对不对？</p>
+<p><img src="https://s2.loli.net/2024/10/23/OKHSiEgnhGQW7ol.png" srcset="/img/loading.gif" lazyload alt="image-20241023160123715"></p>
+<p><strong>破案了，推测正确！所以，像这样在数据库全局配置中修改character set配置为gbk，其实不起实际作用，因为会话值会配盖全局配置，且会话值不能通过手动在数据库层面修改配置来改变，因为会话值却决于当前具体会话，却决于当先客户端实际连接指定的编码，而不是静态的全局配置，于是第七个变量其实就不起实验参考作用了，真正起决定性作用的是第八个实验变量–数据库传输（连接）编码为gbk</strong></p>
+<h4 id="8-还原character-set配置，修改数据库传输（连接）编码为gbk"><a href="#8-还原character-set配置，修改数据库传输（连接）编码为gbk" class="headerlink" title="8. 还原character set配置，修改数据库传输（连接）编码为gbk"></a>8. 还原<strong>character set</strong>配置，修改数据库传输（连接）编码为gbk</h4><p><img src="https://s2.loli.net/2024/10/23/21FOcdtI4kHVPUb.png" srcset="/img/loading.gif" lazyload alt="image-20241021143024890"></p>
+<p>单引号成功逃逸出来，宽字节注入成功！</p>
+<p><img src="https://s2.loli.net/2024/10/23/pIZntPYUgcRHmxG.png" srcset="/img/loading.gif" lazyload alt="image-20241021143057096"></p>
+<h2 id="得出结论"><a href="#得出结论" class="headerlink" title="得出结论"></a>得出结论</h2><p>所以，真正决定宽字节注入的成功与否的gbk编码是<strong>数据库连接时的那个gbk编码，也可以说是数据传输编码（可以在服务端中指定配置）</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-comment">//php中可以这样配置，区别是版本不同而已</span><br><span class="hljs-title function_ invoke__">mysql_query</span>(<span class="hljs-string">&quot;SET NAMES gbk&quot;</span>);<br><span class="hljs-variable">$conn</span>-&gt;<span class="hljs-title function_ invoke__">set_charset</span>(<span class="hljs-string">&quot;gbk&quot;</span>); <br></code></pre></td></tr></table></figure>
+
+<h2 id="探讨原理"><a href="#探讨原理" class="headerlink" title="探讨原理"></a>探讨原理</h2><p>前面先是进行了有理推测，后进行了控制变量的实验，得出了结论，但是为什么呢。为什么是数据库传输（连接）编码而不是其他的编码呢？其中的原理是什么？</p>
+<h3 id="为什么是数据库传输编码影响宽字节注入？"><a href="#为什么是数据库传输编码影响宽字节注入？" class="headerlink" title="为什么是数据库传输编码影响宽字节注入？"></a>为什么是数据库传输编码影响宽字节注入？</h3><ol>
+<li><strong>数据解析与解释的关键点</strong><ul>
+<li><strong>当客户端发送数据给数据库时，传输编码（即连接字符集）决定了数据库如何解析接收到的数据。如果传输编码设置为 <code>GBK</code>，数据库会把所有从客户端接收到的数据当作 <code>GBK</code> 编码的数据来处理。</strong></li>
+<li><strong>这种解析过程直接影响数据库如何理解和解析用户输入中的字符</strong>。例如，如果输入中有 <code>\x81\x27</code>（其中 <code>\x27</code> 是单引号 <code>&#39;</code> 的 ASCII 编码），<strong>在 <code>GBK</code> 编码下，可能被解析为一个合法的多字节字符，而不是一个单独的单引号字符。</strong></li>
+</ul>
+</li>
+<li><strong>宽字节注入的原理</strong><ul>
+<li>在宽字节编码（如 <code>GBK</code>、<code>Shift-JIS</code> 等）中，有些字符是由两个字节组成的。如果用户输入了某个特定的字节序列，数据库传输编码将会决定这个字节序列如何被解析。</li>
+<li>如果传输编码是 <code>GBK</code>，特定的两个字节可能会被解释为一个合法的多字节字符，即使其中的一个字节是 ASCII 字符 <code>\x27</code>（单引号 <code>&#39;</code>），而这就可能让恶意输入避开转义和检测，形成 SQL 注入。</li>
+</ul>
+</li>
+<li><strong>传输编码 vs. 其他编码</strong><ul>
+<li><strong>字符集 client</strong>：这是客户端如何编码发送到数据库的查询文本的方式。传输编码决定了数据库如何解释这些字符。如果编码和数据库解析不匹配，字符就可能会被错误地解释。</li>
+<li><strong>字符集 connection</strong>（传输编码）：在数据库会话中起到了最重要的作用，因为它直接决定了数据库如何从客户端接收和解析输入的数据。</li>
+<li><strong>字符集 server&#x2F;database</strong>：<strong>这些字符集主要影响数据在数据库中如何存储和处理，但与实时数据解析无关。因此，即使数据库存储使用了 <code>latin1</code> 或其他字符集，传输编码仍决定了如何解析传输的数据。</strong></li>
+</ul>
+</li>
+<li><strong>实际效果</strong><ul>
+<li><strong>如果数据库连接时使用 <code>GBK</code>，并且客户端发送的字符数据按 <code>GBK</code> 解析，攻击者就可以构造利用宽字节编码特性的攻击字符串。</strong></li>
+<li><strong>如果连接时使用 <code>UTF-8</code>，因为 <code>UTF-8</code> 的编码规则不同，就不会有类似的问题（即单字节不会被解析为多字节字符），这类攻击就难以成功。</strong></li>
+</ul>
+</li>
+</ol>
+<h3 id="综上"><a href="#综上" class="headerlink" title="综上"></a>综上</h3><p><strong>数据库传输编码决定了数据库如何解析客户端发送的数据。而宽字节注入攻击的本质是利用特定字符在多字节编码下的解析规则。因此，只有在传输编码设置为 <code>GBK</code> 或类似的多字节编码时，攻击者才能构造出可以绕过常规转义和检查的输入，从而实现注入攻击。这也是为什么在防御宽字节注入时，需要特别关注和控制数据库连接的传输编码。</strong></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/WEB%E6%94%BB%E9%98%B2/" class="category-chain-item">WEB攻防</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SQL%E6%B3%A8%E5%85%A5/" class="print-no-link">#SQL注入</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/09/10/%E6%B5%85%E8%B0%88SOAP-SQL%E6%B3%A8%E5%85%A5/" title="浅谈SOAP-SQL注入">
+                        <span class="hidden-mobile">浅谈SOAP-SQL注入</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","appKey":"M3h6WgzFRHqbQjc4e8jWn6Ix","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":true},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <div style="font-size: 0.85rem"> <span id="timeDate">载入天数...</span> <span id="times">载入时分秒...</span> <script src="/js/duration.js"></script> </div> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
