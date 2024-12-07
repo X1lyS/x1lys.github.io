@@ -1,0 +1,751 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="X1ly?S">
+  <meta name="keywords" content="网络安全 渗透测试">
+  
+    <meta name="description" content="前言：HOST碰撞的概念已提出很久了，但是网上的部分文章感觉都解释得不太详细，可能是作者水平比较高的缘故哈哈，自行省略了很多细节没谈。于是想写一篇新手师傅也能看懂的HOST碰撞的文章，解释清楚HOST碰撞到底原理是啥，怎么利用，怎么修复……  什么是反向代理解释HOST碰撞之前，先要理解反向代理的概念，这一点很重要。 反向代理是一种服务器配置，它代理客户端的请求并将其转发到一个或多个后端服务器。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何HOST碰撞挖掘隐蔽资产">
+<meta property="og:url" content="https://example.com/2024/12/07/%E5%A6%82%E4%BD%95HOST%E7%A2%B0%E6%92%9E%E6%8C%96%E6%8E%98%E9%9A%90%E8%94%BD%E8%B5%84%E4%BA%A7/index.html">
+<meta property="og:site_name" content="X1ly?S Blog">
+<meta property="og:description" content="前言：HOST碰撞的概念已提出很久了，但是网上的部分文章感觉都解释得不太详细，可能是作者水平比较高的缘故哈哈，自行省略了很多细节没谈。于是想写一篇新手师傅也能看懂的HOST碰撞的文章，解释清楚HOST碰撞到底原理是啥，怎么利用，怎么修复……  什么是反向代理解释HOST碰撞之前，先要理解反向代理的概念，这一点很重要。 反向代理是一种服务器配置，它代理客户端的请求并将其转发到一个或多个后端服务器。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://s2.loli.net/2024/12/07/Nqh5kwsczu7r26j.png">
+<meta property="og:image" content="https://s2.loli.net/2024/12/07/pkR5FL4iZX9aSPy.png">
+<meta property="article:published_time" content="2024-12-07T09:14:04.000Z">
+<meta property="article:modified_time" content="2024-12-07T09:14:35.151Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="网络安全 渗透测试">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://s2.loli.net/2024/12/07/Nqh5kwsczu7r26j.png">
+  
+  
+  
+  <title>如何HOST碰撞挖掘隐蔽资产 - X1ly?S Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"|","loop":"flase","scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"PYTHON"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":false,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","app_key":"M3h6WgzFRHqbQjc4e8jWn6Ix","server_url":"https://f0dhnqsc.lc-cn-n1-shared.com","path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<meta name="generator" content="Hexo 7.2.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>X1ly?S Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/links/" target="_self">
+                <i class="iconfont icon-link-fill"></i>
+                <span>友链</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="如何HOST碰撞挖掘隐蔽资产"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-author" aria-hidden="true"></i>
+        X1ly?S
+      </span>
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2024-12-07 17:14" pubdate>
+          2024年12月7日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          23 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">如何HOST碰撞挖掘隐蔽资产</h1>
+            
+              <p id="updated-time" class="note note-info" style="">
+                
+                  
+                    本文最后更新于 2024年12月7日 下午
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>前言：HOST碰撞的概念已提出很久了，但是网上的部分文章感觉都解释得不太详细，可能是作者水平比较高的缘故哈哈，自行省略了很多细节没谈。于是想写一篇新手师傅也能看懂的HOST碰撞的文章，解释清楚HOST碰撞到底原理是啥，怎么利用，怎么修复……</p>
+</blockquote>
+<h2 id="什么是反向代理"><a href="#什么是反向代理" class="headerlink" title="什么是反向代理"></a>什么是反向代理</h2><p>解释HOST碰撞之前，先要理解反向代理的概念，这一点很重要。</p>
+<p><strong>反向代理</strong>是一种服务器配置，它代理客户端的请求并将其转发到一个或多个后端服务器。在这种模式下，客户端不知道实际的后端服务器地址，所有的请求都由反向代理服务器接收并转发给后端服务器处理，然后将结果返回给客户端。</p>
+<p>与传统的正向代理（客户端请求通过代理访问外部资源）不同，反向代理的角色是隐藏后端服务器的存在，客户端只与代理服务器交互。反向代理通常用于负载均衡、提升安全性、缓存静态内容等场景。</p>
+<p>有点懵？没事，看图说话：举个例子</p>
+<p><img src="https://s2.loli.net/2024/12/07/Nqh5kwsczu7r26j.png" srcset="/img/loading.gif" lazyload alt="image-20241207120419622"></p>
+<p>比如我们作为客户端去访问a.test.com，在目标服务器没有使用反向代理的情况下，请求是直接到达服务器1的，也就是我们的客户端是直接与服务器进行交互的，此时去查询a.test.com的ip，就为DNS中解析绑定的IP，也就是服务器1的真实ip：210.120.1.111，并且也能直接使用其ip地址访问到服务器1！但是考虑到安全性，负载均衡，缓存机制等等问题，大部分企业在架构web服务时往往不会像这样直接把服务器1的真实ip暴露出来，而是在所有后端服务器之前，再架设一台Nginx反向代理服务器！</p>
+<p>在有反向代理服务器的情况下，我们再次请求a.test.com，那么请求就先经过Nginx反向代理服务器，经过反向代理服务器的绑定配置检查发现a.test.com对应210.120.111主机，于是把请求转发给210.120.111主机进行交互，210.120.111返回的响应，先返回给Nginx反向代理服务器，再由它返回给客户端，而如果直接使用服务器1的真实ip地址访问，则不会返回服务器1的内容，因为有Nginx反向代理的存在，它只允许我们使用正确的对应绑定的域名访问，也就是a.test.com，此时去查询其ip地址，就不再是210.120.111了，而是DNS解析绑定的210.120.1，也就是反向代理服务器的ip，而单独去访问这个210.120.1地址也看不到什么东西或者是一些默认界面（取决于怎么配置），于是就隐藏了后端服务的IP地址，让我们客户端或者攻击者请求a.test.com时不知道到底是哪一个服务器在与我们进行交互。</p>
+<p><strong>也就是，当客户端请求 <code>a.test.com</code> 时，DNS服务器会返回反向代理服务器的IP（例如 <code>210.120.1</code>）。反向代理服务器收到请求后，根据其配置文件中的规则（比如基于域名）将请求转发到正确的后端服务器（例如 <code>210.120.1.111</code>）。</strong></p>
+<p>相信师傅们在渗透中就经常遇到这样的情况，Apache默认界面，Nginx默认界面，404，403，400，空白界面等等；还有多个不同的域名去查询它们的ip地址居然都是相同的，但是访问这个ip地址又什么都没有……这些都很可能是使用了反向代理的情况</p>
+<h2 id="HOST碰撞的原理"><a href="#HOST碰撞的原理" class="headerlink" title="HOST碰撞的原理"></a>HOST碰撞的原理</h2><p>明白了反向代理，HOST碰撞就很好懂了。HOST碰撞其实就是反向代理配置不当导致的：</p>
+<p>比如我想给服务器1配置反向代理，使得外部只能通过a.test.com访问服务器1的地址210.120.1.111，而使用其真实ip访问是异常状态，则无法解析，我需要做这几步操作，第一，我首先得把a.test.com域名解析到210.120.1.1 IP地址，也就是反向代理的地址，让DNS服务器能解析a.test.com域名到反向代理服务器，然后第二步才是反向代理的配置，在反向代理服务器上，把a.test.com域名与210.120.1.111地址进行绑定，从而使得访问a.test.com时，反向代理能把请求正确地转发到210.120.1.111地址</p>
+<p>示例配置代码：&#x2F;etc&#x2F;nginx&#x2F;nginx.conf  在反向代理服务器210.120.1.1上配置</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;<br>    <span class="hljs-attribute">server_name</span> a.test.com;  <span class="hljs-comment"># 设置域名，确保 DNS 已将 a.test.com 指向你的服务器</span><br><br>    <span class="hljs-section">location</span> / &#123;<br>        <span class="hljs-attribute">proxy_pass</span> http://210.120.1.111;  <span class="hljs-comment"># 设置反向代理目标地址（IP地址）</span><br>        <span class="hljs-attribute">proxy_set_header</span> Host <span class="hljs-variable">$host</span>;  <span class="hljs-comment"># 保留原始请求头的 Host（确保目标服务器能识别到正确的域名）</span><br>        <span class="hljs-attribute">proxy_set_header</span> X-Real-IP <span class="hljs-variable">$remote_addr</span>;  <span class="hljs-comment"># 设置真实客户端 IP</span><br>        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-For <span class="hljs-variable">$proxy_add_x_forwarded_for</span>;  <span class="hljs-comment"># 传递客户端 IP 链</span><br>        <span class="hljs-attribute">proxy_set_header</span> X-Forwarded-Proto <span class="hljs-variable">$scheme</span>;  <span class="hljs-comment"># 传递协议（http 或 https）</span><br>    &#125;<br><br>    <span class="hljs-comment"># 可选：处理HTTPS的反向代理</span><br>    <span class="hljs-comment"># listen 443 ssl;</span><br>    <span class="hljs-comment"># ssl_certificate /path/to/certificate.crt;</span><br>    <span class="hljs-comment"># ssl_certificate_key /path/to/private.key;</span><br>    <span class="hljs-comment"># 其他 HTTPS 配置...</span><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>那么HOST碰撞怎么产生的呢？怎么利用它发现隐藏资产的呢？</p>
+<p>其实是这样的：以下是HOST碰撞的其中一种情况！</p>
+<p><strong>比如，我先给域名oa.admin.com配置DNS解析到反向代理服务器210.110.110.110，然后在反向代理服务器上配置把oa.admin.com域名与内网的192.168.1.1的web服务器绑定，这样使得外部只能通过oa.admin.com域名访问内部的192.168.1.1web服务器，但是假设某一天，内部发现该web系统存在一个漏洞，于是不能让外部再通过这个oa.admin.com域名访问该内网系统了，需要进行维护，于是就把原本会使得oa.admin.com解析到210.110.110.110的DNS域名解析给删除掉了，这样外部就无法通过oa.admin.com域名访问192.168.1.1内部系统了对吗，对个damn，如果仅仅这样做，恰好导致了HOST碰撞！为什么呢？不要忘了，我们虽然删掉了oa.admin.com到210.110.110.110域名解析，但是反向代理服务器本身的域名绑定还没有删除！！！也就是反向代理的功能仍然可用，仍然可以把来自oa.admin.com域名的请求，转发给配置里的192.168.1.1web服务器，只不过仅仅是oa.admin.com无法解析到反向代理服务器而已了，那么攻击者只需要做好信息收集，假设已经知道了oa.admin.com域名，不知道反向代理的ip，那么使用收集到的信息不断的给oa.admin.com域名匹配ip地址，不断尝试，直到能访问到某个正常系统为止，再手动把oa.admin.com解析到匹配的ip地址去，不就行了嘛，因为即使删除掉了DNS解析，我们也能自己在本地host文件中，手动解析过去啊，只要反向代理的绑定配置还未被删除，就存在这个漏洞。这就是HOST碰撞。总结起来其实就是两两碰撞域名与ip，看能不能解析到原本不能正常访问到的系统</strong></p>
+<h2 id="HOST碰撞利用"><a href="#HOST碰撞利用" class="headerlink" title="HOST碰撞利用"></a>HOST碰撞利用</h2><p>以上提到的情况只是HOST碰撞中的一种最常利用的情况，实际上这个概念还是比较宽泛的，不过其他情况都不太常见了于是不做讨论。</p>
+<p>理解了原理，那么怎么利用呢？其实上面也说了，主要依赖信息收集！</p>
+<ul>
+<li>第一步：收集反向代理服务器的ip</li>
+<li>第二步：收集解析异常的域名，能解析到内网中的域名</li>
+<li>第三步：手动把域名解析为某个ip，采用笛卡尔积碰撞，两两匹配，直到域名能访问出某个系统</li>
+</ul>
+<p>那么重点就是收集这些可能的ip+域名了，怎么找呢？就是用信息收集的方法啊</p>
+<ul>
+<li>可以边打边收集边筛选</li>
+<li>还可以写个脚本，批量地域名转换ip，并记录筛选出解析异常的域名。</li>
+<li>不嫌慢的话，也可以直接把收集到的全部域名+ip都拿去碰撞</li>
+</ul>
+<p>筛选出解析异常的域名的小脚本：读取subdomain.txt，输出result.txt</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> socket<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">check_domain_resolution</span>(<span class="hljs-params">domain</span>):<br>    <span class="hljs-keyword">try</span>:<br>        <span class="hljs-comment"># 尝试获取域名对应的IP地址</span><br>        ip = socket.gethostbyname(domain)<br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">True</span><br>    <span class="hljs-keyword">except</span> socket.gaierror:<br>        <span class="hljs-comment"># 如果发生解析错误，说明该域名无法解析</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-literal">False</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():<br>    <span class="hljs-comment"># 读取子域名文件</span><br>    input_file = <span class="hljs-string">&#x27;subdomain.txt&#x27;</span><br>    output_file = <span class="hljs-string">&#x27;result.txt&#x27;</span><br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(input_file, <span class="hljs-string">&#x27;r&#x27;</span>) <span class="hljs-keyword">as</span> file:<br>        domains = [line.strip() <span class="hljs-keyword">for</span> line <span class="hljs-keyword">in</span> file.readlines()]<br><br>    <span class="hljs-comment"># 检查每个域名的解析情况</span><br>    unresolved_domains = []<br>    <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> domains:<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> check_domain_resolution(domain):<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;无法解析的域名: <span class="hljs-subst">&#123;domain&#125;</span>&quot;</span>)<br>            unresolved_domains.append(domain)<br><br>    <span class="hljs-comment"># 将无法解析的域名写入到result.txt</span><br>    <span class="hljs-keyword">if</span> unresolved_domains:<br>        <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(output_file, <span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> result_file:<br>            <span class="hljs-keyword">for</span> domain <span class="hljs-keyword">in</span> unresolved_domains:<br>                result_file.write(<span class="hljs-string">f&quot;<span class="hljs-subst">&#123;domain&#125;</span>\n&quot;</span>)<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;解析异常的域名已写入 <span class="hljs-subst">&#123;output_file&#125;</span>&quot;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;所有域名均能解析&quot;</span>)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    main()<br></code></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/12/07/pkR5FL4iZX9aSPy.png" srcset="/img/loading.gif" lazyload alt="image-20241207170415710"></p>
+<p>可以使用这些工具，填入收集到的信息，就可以检测HOST碰撞了：</p>
+<ul>
+<li>HostCollision：<a target="_blank" rel="noopener" href="https://github.com/pmiaowu/HostCollision">https://github.com/pmiaowu/HostCollision</a></li>
+<li>Hosts_scan：<a target="_blank" rel="noopener" href="https://github.com/fofapro/Hosts_scan">https://github.com/fofapro/Hosts_scan</a></li>
+</ul>
+<h2 id="修复HOST碰撞"><a href="#修复HOST碰撞" class="headerlink" title="修复HOST碰撞"></a>修复HOST碰撞</h2><h3 id="1-检查DNS配置"><a href="#1-检查DNS配置" class="headerlink" title="1. 检查DNS配置"></a>1. <strong>检查DNS配置</strong></h3><p>确保DNS记录指向正确的IP地址。如果使用<code>/etc/hosts</code>文件进行域名映射，确保文件中没有重复的条目。</p>
+<ul>
+<li><p>查看 </p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">/etc/</span>hosts<br></code></pre></td></tr></table></figure>
+
+<p> 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cat</span> /etc/hosts<br></code></pre></td></tr></table></figure>
+</li>
+<li><p>删除或修正重复的域名映射。</p>
+</li>
+</ul>
+<h3 id="2-检查虚拟主机配置"><a href="#2-检查虚拟主机配置" class="headerlink" title="2. 检查虚拟主机配置"></a>2. <strong>检查虚拟主机配置</strong></h3><p>如果在Web服务器（如Apache或Nginx）中使用了虚拟主机配置，确保配置文件中没有冲突。例如，在Nginx中，可能会看到类似以下的配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;<br>    <span class="hljs-attribute">server_name</span> example.com;<br>    <span class="hljs-attribute">root</span> /var/www/example;<br>&#125;<br><br><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;<br>    <span class="hljs-attribute">server_name</span> example.com;  <span class="hljs-comment"># 这里会造成冲突</span><br>    <span class="hljs-attribute">root</span> /var/www/another_example;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>确保每个<code>server_name</code>是唯一的，或者如果像多个域名指向同一网站，使用通配符来避免冲突：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-section">server</span> &#123;<br>    <span class="hljs-attribute">listen</span> <span class="hljs-number">80</span>;<br>    <span class="hljs-attribute">server_name</span> <span class="hljs-regexp">*.example.com</span>;<br>    <span class="hljs-attribute">root</span> /var/www/example;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="5-检查反向代理配置"><a href="#5-检查反向代理配置" class="headerlink" title="5. 检查反向代理配置"></a>5. <strong>检查反向代理配置</strong></h3><p>如果使用反向代理服务器（例如Nginx或HAProxy），确保代理配置没有错误或冲突。例如，确保不同的后端服务没有使用相同的端口或路径。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+</div>
+
+
+              
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2024/12/06/%E4%BA%91%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%90%86%E7%BB%95%E8%BF%87IP%E5%B0%81%E9%94%81/" title="云函数实现代理绕过IP封锁">
+                        <span class="hidden-mobile">云函数实现代理绕过IP封锁</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"f0DHnqSCglihztWD5hnI8OS8-gzGzoHsz","appKey":"M3h6WgzFRHqbQjc4e8jWn6Ix","path":"window.location.pathname","placeholder":null,"avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":true,"recordIP":true,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":true},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <div style="font-size: 0.85rem"> <span id="timeDate">载入天数...</span> <span id="times">载入时分秒...</span> <script src="/js/duration.js"></script> </div> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
