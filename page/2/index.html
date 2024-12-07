@@ -266,6 +266,73 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2024/08/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E9%98%B2%E5%BE%A1/" target="_self">
+          <img src="/img/9.jpg" srcset="/img/loading.gif" lazyload alt="SQL注入的防御">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2024/08/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E9%98%B2%E5%BE%A1/" target="_self">
+          SQL注入的防御
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt " href="/2024/08/14/SQL%E6%B3%A8%E5%85%A5%E7%9A%84%E9%98%B2%E5%BE%A1/" target="_self">
+        <div>
+          参数加密只要攻击者无法知道参数的加密逻辑，就无法对参数进行SQL注入尝试。 但，虽然加密参数可以增加安全性，但它并不能完全替代其他安全措施。攻击者可能会尝试对加密的参数进行逆向，因此依赖加密而不使用其他防御措施是不足够的。于是参数加密只是增加了SQL注入的难度，没有完全防御SQL注入 严格的输入校验不使用黑名单校验，而是白名单校验。 检查内容的合法性与合理性，而不是一味地去过滤关键字、函数、符号，
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2024-08-14 10:49" pubdate>
+              2024-08-14
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/WEB%E6%94%BB%E9%98%B2/" class="category-chain-item">WEB攻防</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/SQL%E6%B3%A8%E5%85%A5/">#SQL注入</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2024/08/13/%E6%B5%85%E8%B0%88%E9%A2%84%E7%BC%96%E8%AF%91%E4%B9%8B%E4%BA%8ESQL%E6%B3%A8%E5%85%A5%E9%98%B2%E5%BE%A1/" target="_self">
           <img src="/img/9.jpg" srcset="/img/loading.gif" lazyload alt="浅谈预编译之于SQL注入防御">
         </a>
@@ -858,73 +925,6 @@
             <i class="iconfont icon-tags"></i>
             
               <a href="/tags/%E7%91%9E%E5%8F%8B%E5%A4%A9%E7%BF%BCRCE/">#瑞友天翼RCE</a>
-            
-          </div>
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2024/07/31/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%BA%8C/" target="_self">
-          <img src="/img/9.jpg" srcset="/img/loading.gif" lazyload alt="SRC挖掘思路清单二">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2024/07/31/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%BA%8C/" target="_self">
-          SRC挖掘思路清单二
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt " href="/2024/07/31/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%BA%8C/" target="_self">
-        <div>
-          信息搜集时用域名整理得到c段，使用ffuf+自写的批量脚本对c段批量目录扫描，且最好部署在vps上，后台运行脚本，保存扫描结果  对uplaod.php空白界面FUZZ参数名，爆破参数值，出现上传表单，上传shell，FUZZ上传路径  XSS-WAF绕过：输出在JS内的闭合与注释；Function()来代替eval()；atob解密base64加密的JS，绕过对alert()的过滤；4.反引号
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2024-07-31 17:07" pubdate>
-              2024-07-31
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95/" class="category-chain-item">SRC挖掘思路清单</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95/">#SRC挖掘思路清单</a>
             
           </div>
         
