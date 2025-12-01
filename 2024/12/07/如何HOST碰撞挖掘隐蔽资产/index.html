@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>如何HOST碰撞挖掘隐蔽资产 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言：HOST碰撞的概念已提出很久了，但是网上的部分文章感觉都解释得不太详细，可能是作者水平比较高的缘故哈哈，自行省略了很多细节没谈。于是想写一篇新手师傅也能看懂的HOST碰撞的文章，解释清楚HOST碰撞到底原理是啥，怎么利用，怎么修复……  什么是反向代理解释HOST碰撞之前，先要理解反向代理的概念，这一点很重要。 反向代理是一种服务器配置，它代理客户端的请求并将其转发到一个或多个后端服务器。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何HOST碰撞挖掘隐蔽资产">
+<meta property="og:url" content="https://x1lys.github.io/2024/12/07/%E5%A6%82%E4%BD%95HOST%E7%A2%B0%E6%92%9E%E6%8C%96%E6%8E%98%E9%9A%90%E8%94%BD%E8%B5%84%E4%BA%A7/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="前言：HOST碰撞的概念已提出很久了，但是网上的部分文章感觉都解释得不太详细，可能是作者水平比较高的缘故哈哈，自行省略了很多细节没谈。于是想写一篇新手师傅也能看懂的HOST碰撞的文章，解释清楚HOST碰撞到底原理是啥，怎么利用，怎么修复……  什么是反向代理解释HOST碰撞之前，先要理解反向代理的概念，这一点很重要。 反向代理是一种服务器配置，它代理客户端的请求并将其转发到一个或多个后端服务器。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2024-12-07T09:14:04.000Z">
+<meta property="article:modified_time" content="2024-12-07T09:19:32.921Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="网络安全 渗透测试 web安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2024/12/07/%E5%A6%82%E4%BD%95HOST%E7%A2%B0%E6%92%9E%E6%8C%96%E6%8E%98%E9%9A%90%E8%94%BD%E8%B5%84%E4%BA%A7/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '如何HOST碰撞挖掘隐蔽资产',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">如何HOST碰撞挖掘隐蔽资产</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">如何HOST碰撞挖掘隐蔽资产</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-07T09:14:04.000Z" title="发表于 2024-12-07 17:14:04">2024-12-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-12-07T09:19:32.921Z" title="更新于 2024-12-07 17:19:32">2024-12-07</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/12/07/%E5%A6%82%E4%BD%95HOST%E7%A2%B0%E6%92%9E%E6%8C%96%E6%8E%98%E9%9A%90%E8%94%BD%E8%B5%84%E4%BA%A7/#post-comment"><span class="waline-comment-count" data-path="/2024/12/07/%E5%A6%82%E4%BD%95HOST%E7%A2%B0%E6%92%9E%E6%8C%96%E6%8E%98%E9%9A%90%E8%94%BD%E8%B5%84%E4%BA%A7/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2024-12-07 17:19:32&quot;}" hidden></div><blockquote>
+<p>前言：HOST碰撞的概念已提出很久了，但是网上的部分文章感觉都解释得不太详细，可能是作者水平比较高的缘故哈哈，自行省略了很多细节没谈。于是想写一篇新手师傅也能看懂的HOST碰撞的文章，解释清楚HOST碰撞到底原理是啥，怎么利用，怎么修复……</p>
+</blockquote>
+<h2 id="什么是反向代理"><a href="#什么是反向代理" class="headerlink" title="什么是反向代理"></a>什么是反向代理</h2><p>解释HOST碰撞之前，先要理解反向代理的概念，这一点很重要。</p>
+<p><strong>反向代理</strong>是一种服务器配置，它代理客户端的请求并将其转发到一个或多个后端服务器。在这种模式下，客户端不知道实际的后端服务器地址，所有的请求都由反向代理服务器接收并转发给后端服务器处理，然后将结果返回给客户端。</p>
+<p>与传统的正向代理（客户端请求通过代理访问外部资源）不同，反向代理的角色是隐藏后端服务器的存在，客户端只与代理服务器交互。反向代理通常用于负载均衡、提升安全性、缓存静态内容等场景。</p>
+<p>有点懵？没事，看图说话：举个例子</p>
+<p><img src="https://s2.loli.net/2024/12/07/Nqh5kwsczu7r26j.png" alt="image-20241207120419622"></p>
+<p>比如我们作为客户端去访问a.test.com，在目标服务器没有使用反向代理的情况下，请求是直接到达服务器1的，也就是我们的客户端是直接与服务器进行交互的，此时去查询a.test.com的ip，就为DNS中解析绑定的IP，也就是服务器1的真实ip：210.120.1.111，并且也能直接使用其ip地址访问到服务器1！但是考虑到安全性，负载均衡，缓存机制等等问题，大部分企业在架构web服务时往往不会像这样直接把服务器1的真实ip暴露出来，而是在所有后端服务器之前，再架设一台Nginx反向代理服务器！</p>
+<p>在有反向代理服务器的情况下，我们再次请求a.test.com，那么请求就先经过Nginx反向代理服务器，经过反向代理服务器的绑定配置检查发现a.test.com对应210.120.111主机，于是把请求转发给210.120.111主机进行交互，210.120.111返回的响应，先返回给Nginx反向代理服务器，再由它返回给客户端，而如果直接使用服务器1的真实ip地址访问，则不会返回服务器1的内容，因为有Nginx反向代理的存在，它只允许我们使用正确的对应绑定的域名访问，也就是a.test.com，此时去查询其ip地址，就不再是210.120.111了，而是DNS解析绑定的210.120.1，也就是反向代理服务器的ip，而单独去访问这个210.120.1地址也看不到什么东西或者是一些默认界面（取决于怎么配置），于是就隐藏了后端服务的IP地址，让我们客户端或者攻击者请求a.test.com时不知道到底是哪一个服务器在与我们进行交互。</p>
+<p><strong>也就是，当客户端请求 <code>a.test.com</code> 时，DNS服务器会返回反向代理服务器的IP（例如 <code>210.120.1</code>）。反向代理服务器收到请求后，根据其配置文件中的规则（比如基于域名）将请求转发到正确的后端服务器（例如 <code>210.120.1.111</code>）。</strong></p>
+<p>相信师傅们在渗透中就经常遇到这样的情况，Apache默认界面，Nginx默认界面，404，403，400，空白界面等等；还有多个不同的域名去查询它们的ip地址居然都是相同的，但是访问这个ip地址又什么都没有……这些都很可能是使用了反向代理的情况</p>
+<h2 id="HOST碰撞的原理"><a href="#HOST碰撞的原理" class="headerlink" title="HOST碰撞的原理"></a>HOST碰撞的原理</h2><p>明白了反向代理，HOST碰撞就很好懂了。HOST碰撞其实就是反向代理配置不当导致的：</p>
+<p>比如我想给服务器1配置反向代理，使得外部只能通过a.test.com访问服务器1的地址210.120.1.111，而使用其真实ip访问是异常状态，则无法解析，我需要做这几步操作，第一，我首先得把a.test.com域名解析到210.120.1.1 IP地址，也就是反向代理的地址，让DNS服务器能解析a.test.com域名到反向代理服务器，然后第二步才是反向代理的配置，在反向代理服务器上，把a.test.com域名与210.120.1.111地址进行绑定，从而使得访问a.test.com时，反向代理能把请求正确地转发到210.120.1.111地址</p>
+<p>示例配置代码：&#x2F;etc&#x2F;nginx&#x2F;nginx.conf  在反向代理服务器210.120.1.1上配置</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> a.test.com;  <span class="comment"># 设置域名，确保 DNS 已将 a.test.com 指向你的服务器</span></span><br><span class="line"></span><br><span class="line">    <span class="section">location</span> / &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://210.120.1.111;  <span class="comment"># 设置反向代理目标地址（IP地址）</span></span><br><span class="line">        <span class="attribute">proxy_set_header</span> Host <span class="variable">$host</span>;  <span class="comment"># 保留原始请求头的 Host（确保目标服务器能识别到正确的域名）</span></span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Real-IP <span class="variable">$remote_addr</span>;  <span class="comment"># 设置真实客户端 IP</span></span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-For <span class="variable">$proxy_add_x_forwarded_for</span>;  <span class="comment"># 传递客户端 IP 链</span></span><br><span class="line">        <span class="attribute">proxy_set_header</span> X-Forwarded-Proto <span class="variable">$scheme</span>;  <span class="comment"># 传递协议（http 或 https）</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 可选：处理HTTPS的反向代理</span></span><br><span class="line">    <span class="comment"># listen 443 ssl;</span></span><br><span class="line">    <span class="comment"># ssl_certificate /path/to/certificate.crt;</span></span><br><span class="line">    <span class="comment"># ssl_certificate_key /path/to/private.key;</span></span><br><span class="line">    <span class="comment"># 其他 HTTPS 配置...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么HOST碰撞怎么产生的呢？怎么利用它发现隐藏资产的呢？</p>
+<p>其实是这样的：以下是HOST碰撞的其中一种情况！</p>
+<p><strong>比如，我先给域名oa.admin.com配置DNS解析到反向代理服务器210.110.110.110，然后在反向代理服务器上配置把oa.admin.com域名与内网的192.168.1.1的web服务器绑定，这样使得外部只能通过oa.admin.com域名访问内部的192.168.1.1web服务器，但是假设某一天，内部发现该web系统存在一个漏洞，于是不能让外部再通过这个oa.admin.com域名访问该内网系统了，需要进行维护，于是就把原本会使得oa.admin.com解析到210.110.110.110的DNS域名解析给删除掉了，这样外部就无法通过oa.admin.com域名访问192.168.1.1内部系统了对吗，对个damn，如果仅仅这样做，恰好导致了HOST碰撞！为什么呢？不要忘了，我们虽然删掉了oa.admin.com到210.110.110.110域名解析，但是反向代理服务器本身的域名绑定还没有删除！！！也就是反向代理的功能仍然可用，仍然可以把来自oa.admin.com域名的请求，转发给配置里的192.168.1.1web服务器，只不过仅仅是oa.admin.com无法解析到反向代理服务器而已了，那么攻击者只需要做好信息收集，假设已经知道了oa.admin.com域名，不知道反向代理的ip，那么使用收集到的信息不断的给oa.admin.com域名匹配ip地址，不断尝试，直到能访问到某个正常系统为止，再手动把oa.admin.com解析到匹配的ip地址去，不就行了嘛，因为即使删除掉了DNS解析，我们也能自己在本地host文件中，手动解析过去啊，只要反向代理的绑定配置还未被删除，就存在这个漏洞。这就是HOST碰撞。总结起来其实就是两两碰撞域名与ip，看能不能解析到原本不能正常访问到的系统</strong></p>
+<h2 id="HOST碰撞利用"><a href="#HOST碰撞利用" class="headerlink" title="HOST碰撞利用"></a>HOST碰撞利用</h2><p>以上提到的情况只是HOST碰撞中的一种最常利用的情况，实际上这个概念还是比较宽泛的，不过其他情况都不太常见了于是不做讨论。</p>
+<p>理解了原理，那么怎么利用呢？其实上面也说了，主要依赖信息收集！</p>
+<ul>
+<li>第一步：收集反向代理服务器的ip</li>
+<li>第二步：收集解析异常的域名，能解析到内网中的域名</li>
+<li>第三步：手动把域名解析为某个ip，采用笛卡尔积碰撞，两两匹配，直到域名能访问出某个系统</li>
+</ul>
+<p>那么重点就是收集这些可能的ip+域名了，怎么找呢？就是用信息收集的方法啊</p>
+<ul>
+<li>可以边打边收集边筛选</li>
+<li>还可以写个脚本，批量地域名转换ip，并记录筛选出解析异常的域名。</li>
+<li>不嫌慢的话，也可以直接把收集到的全部域名+ip都拿去碰撞</li>
+</ul>
+<p>筛选出解析异常的域名的小脚本：读取subdomain.txt，输出result.txt</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">check_domain_resolution</span>(<span class="params">domain</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 尝试获取域名对应的IP地址</span></span><br><span class="line">        ip = socket.gethostbyname(domain)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">    <span class="keyword">except</span> socket.gaierror:</span><br><span class="line">        <span class="comment"># 如果发生解析错误，说明该域名无法解析</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="comment"># 读取子域名文件</span></span><br><span class="line">    input_file = <span class="string">&#x27;subdomain.txt&#x27;</span></span><br><span class="line">    output_file = <span class="string">&#x27;result.txt&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(input_file, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">        domains = [line.strip() <span class="keyword">for</span> line <span class="keyword">in</span> file.readlines()]</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 检查每个域名的解析情况</span></span><br><span class="line">    unresolved_domains = []</span><br><span class="line">    <span class="keyword">for</span> domain <span class="keyword">in</span> domains:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> check_domain_resolution(domain):</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;无法解析的域名: <span class="subst">&#123;domain&#125;</span>&quot;</span>)</span><br><span class="line">            unresolved_domains.append(domain)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 将无法解析的域名写入到result.txt</span></span><br><span class="line">    <span class="keyword">if</span> unresolved_domains:</span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(output_file, <span class="string">&#x27;w&#x27;</span>) <span class="keyword">as</span> result_file:</span><br><span class="line">            <span class="keyword">for</span> domain <span class="keyword">in</span> unresolved_domains:</span><br><span class="line">                result_file.write(<span class="string">f&quot;<span class="subst">&#123;domain&#125;</span>\n&quot;</span>)</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;解析异常的域名已写入 <span class="subst">&#123;output_file&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;所有域名均能解析&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2024/12/07/pkR5FL4iZX9aSPy.png" alt="image-20241207170415710"></p>
+<p>可以使用这些工具，填入收集到的信息，就可以检测HOST碰撞了：</p>
+<ul>
+<li>HostCollision：<a target="_blank" rel="noopener" href="https://github.com/pmiaowu/HostCollision">https://github.com/pmiaowu/HostCollision</a></li>
+<li>Hosts_scan：<a target="_blank" rel="noopener" href="https://github.com/fofapro/Hosts_scan">https://github.com/fofapro/Hosts_scan</a></li>
+</ul>
+<h2 id="修复HOST碰撞"><a href="#修复HOST碰撞" class="headerlink" title="修复HOST碰撞"></a>修复HOST碰撞</h2><h3 id="1-检查DNS配置"><a href="#1-检查DNS配置" class="headerlink" title="1. 检查DNS配置"></a>1. <strong>检查DNS配置</strong></h3><p>确保DNS记录指向正确的IP地址。如果使用<code>/etc/hosts</code>文件进行域名映射，确保文件中没有重复的条目。</p>
+<ul>
+<li><p>查看 </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/hosts</span><br></pre></td></tr></table></figure>
+
+<p> 文件：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/hosts</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除或修正重复的域名映射。</p>
+</li>
+</ul>
+<h3 id="2-检查虚拟主机配置"><a href="#2-检查虚拟主机配置" class="headerlink" title="2. 检查虚拟主机配置"></a>2. <strong>检查虚拟主机配置</strong></h3><p>如果在Web服务器（如Apache或Nginx）中使用了虚拟主机配置，确保配置文件中没有冲突。例如，在Nginx中，可能会看到类似以下的配置：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> example.com;</span><br><span class="line">    <span class="attribute">root</span> /var/www/example;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> example.com;  <span class="comment"># 这里会造成冲突</span></span><br><span class="line">    <span class="attribute">root</span> /var/www/another_example;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>确保每个<code>server_name</code>是唯一的，或者如果像多个域名指向同一网站，使用通配符来避免冲突：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">server_name</span> <span class="regexp">*.example.com</span>;</span><br><span class="line">    <span class="attribute">root</span> /var/www/example;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-检查反向代理配置"><a href="#3-检查反向代理配置" class="headerlink" title="3. 检查反向代理配置"></a>3. <strong>检查反向代理配置</strong></h3><p>如果使用反向代理服务器（例如Nginx或HAProxy），确保代理配置没有错误或冲突。例如，确保不同的后端服务没有使用相同的端口或路径。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2024/12/07/%E5%A6%82%E4%BD%95HOST%E7%A2%B0%E6%92%9E%E6%8C%96%E6%8E%98%E9%9A%90%E8%94%BD%E8%B5%84%E4%BA%A7/">https://x1lys.github.io/2024/12/07/如何HOST碰撞挖掘隐蔽资产/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/12/07/%E6%B7%B1%E5%BA%A6%E5%88%A9%E7%94%A8Github%E5%AF%BB%E6%89%BE%E6%95%8F%E6%84%9F%E4%BF%A1%E6%81%AF/" title="深度利用Github寻找敏感信息"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">深度利用Github寻找敏感信息</div></div><div class="info-2"><div class="info-item-1">深度利用Github寻找敏感信息 前言：水一篇文章，没啥技术含量，会用就行  Github语法利用Github语法检索敏感信息 1234567891011121314151617181920212223242526272829303132333435363738in:name test			  #仓库标题搜索含有关键字in:descripton test         #仓库描述搜索含有关键字in:readme test             #Readme文件搜素含有关键字stars:&gt;3000 test           #stars数量大于3000的搜索关键字stars:1000..3000 test      #stars数量大于1000小于3000的搜索关键字forks:&gt;1000 test           #forks数量大于1000的搜索关键字forks:1000..3000 test      #forks数量大于1000小于3000的搜索关键字size:&gt;=5000 test          ...</div></div></div></a><a class="pagination-related" href="/2024/12/06/%E4%BA%91%E5%87%BD%E6%95%B0%E5%AE%9E%E7%8E%B0%E4%BB%A3%E7%90%86%E7%BB%95%E8%BF%87IP%E5%B0%81%E9%94%81/" title="云函数实现代理绕过IP封锁"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">云函数实现代理绕过IP封锁</div></div><div class="info-2"><div class="info-item-1">云函数简介云函数（Serverless Functions）是一种事件驱动的计算服务，允许开发者编写和部署代码，而无需管理底层服务器资源。通过云函数，开发者可以专注于业务逻辑的实现，不必关心基础设施的运维和扩展问题。它属于 无服务器架构 的一种形式，通常与云平台（如 AWS Lambda、阿里云函数计算等）紧密集成。 云函数的特点 无服务器管理：用户不需要管理或维护服务器。云平台自动处理函数的执行环境、资源分配、负载均衡和自动扩展。 按需计费：云函数的计费方式通常是基于实际执行的计算资源和时间，按调用次数和执行时长收费。这种按需计费模式帮助用户避免不必要的资源浪费，特别适合处理间歇性或低延迟的请求。 事件驱动：云函数通常会被某些事件触发，如 HTTP...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86"><span class="toc-number">1.</span> <span class="toc-text">什么是反向代理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HOST%E7%A2%B0%E6%92%9E%E7%9A%84%E5%8E%9F%E7%90%86"><span class="toc-number">2.</span> <span class="toc-text">HOST碰撞的原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HOST%E7%A2%B0%E6%92%9E%E5%88%A9%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">HOST碰撞利用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E5%A4%8DHOST%E7%A2%B0%E6%92%9E"><span class="toc-number">4.</span> <span class="toc-text">修复HOST碰撞</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%A3%80%E6%9F%A5DNS%E9%85%8D%E7%BD%AE"><span class="toc-number">4.1.</span> <span class="toc-text">1. 检查DNS配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E6%A3%80%E6%9F%A5%E8%99%9A%E6%8B%9F%E4%B8%BB%E6%9C%BA%E9%85%8D%E7%BD%AE"><span class="toc-number">4.2.</span> <span class="toc-text">2. 检查虚拟主机配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E6%A3%80%E6%9F%A5%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86%E9%85%8D%E7%BD%AE"><span class="toc-number">4.3.</span> <span class="toc-text">3. 检查反向代理配置</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

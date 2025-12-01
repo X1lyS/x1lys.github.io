@@ -1,0 +1,391 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>六爻初级笔记 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="五行初识五行易学的五行顺序不是金-&gt;木-&gt;水-&gt;火-&gt;土，而是木-&gt;火-&gt;土-&gt;金-&gt;水，是按照五行相生的顺序来的 木：代表东方；早晨；春天；温和，温暖；生长，希望；绿色 火：代表南方；炎热，夏天；光芒；热情；升腾；红色 土：代表中央；四季；包容；养育；黄色 金：代表西方；清凉；肃杀；秋天；严厉；收敛；白色 水：代表北方；寒冷；冰霜；潮湿；聪慧；冬天">
+<meta property="og:type" content="article">
+<meta property="og:title" content="六爻初级笔记">
+<meta property="og:url" content="https://x1lys.github.io/2025/01/21/%E5%85%AD%E7%88%BB%E5%88%9D%E7%BA%A7%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="五行初识五行易学的五行顺序不是金-&gt;木-&gt;水-&gt;火-&gt;土，而是木-&gt;火-&gt;土-&gt;金-&gt;水，是按照五行相生的顺序来的 木：代表东方；早晨；春天；温和，温暖；生长，希望；绿色 火：代表南方；炎热，夏天；光芒；热情；升腾；红色 土：代表中央；四季；包容；养育；黄色 金：代表西方；清凉；肃杀；秋天；严厉；收敛；白色 水：代表北方；寒冷；冰霜；潮湿；聪慧；冬天">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-01-21T10:08:42.000Z">
+<meta property="article:modified_time" content="2025-01-24T22:57:23.851Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="六爻入门">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2025/01/21/%E5%85%AD%E7%88%BB%E5%88%9D%E7%BA%A7%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '六爻初级笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">六爻初级笔记</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">六爻初级笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-01-21T10:08:42.000Z" title="发表于 2025-01-21 18:08:42">2025-01-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-01-24T22:57:23.851Z" title="更新于 2025-01-25 06:57:23">2025-01-25</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%85%AD%E7%88%BB/">六爻</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">869</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2025/01/21/%E5%85%AD%E7%88%BB%E5%88%9D%E7%BA%A7%E7%AC%94%E8%AE%B0/#post-comment"><span class="waline-comment-count" data-path="/2025/01/21/%E5%85%AD%E7%88%BB%E5%88%9D%E7%BA%A7%E7%AC%94%E8%AE%B0/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-01-25 06:57:23&quot;}" hidden></div><h2 id="五行"><a href="#五行" class="headerlink" title="五行"></a>五行</h2><h3 id="初识五行"><a href="#初识五行" class="headerlink" title="初识五行"></a>初识五行</h3><p>易学的五行顺序不是金-&gt;木-&gt;水-&gt;火-&gt;土，而是<strong>木-&gt;火-&gt;土-&gt;金-&gt;水</strong>，是按照五行相生的顺序来的</p>
+<p><strong>木：代表东方；早晨；春天；温和，温暖；生长，希望；绿色</strong></p>
+<p><strong>火：代表南方；炎热，夏天；光芒；热情；升腾；红色</strong></p>
+<p><strong>土：代表中央；四季；包容；养育；黄色</strong></p>
+<p><strong>金：代表西方；清凉；肃杀；秋天；严厉；收敛；白色</strong></p>
+<p><strong>水：代表北方；寒冷；冰霜；潮湿；聪慧；冬天；黑色</strong></p>
+<h3 id="相生相克"><a href="#相生相克" class="headerlink" title="相生相克"></a>相生相克</h3><blockquote>
+<p>五行相生相克口诀</p>
+</blockquote>
+<ul>
+<li><strong>顺相生，隔相克</strong></li>
+<li><strong>木生火，火生土，土生金，金生水，水生木</strong></li>
+<li><strong>火克金，金克木，木克土，土克水，水克火</strong></li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/08/KXwOC8hbvsTtHqx.png" alt="Snipaste_2025-01-08_17-07-36"></p>
+<ul>
+<li>举例</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/08/WQVrgNTzq5yCajZ.png" alt="image-20250108210617456"></p>
+<p>其他的生克都很好理解，主要是”金生水”不好理解:</p>
+<blockquote>
+<p>金生水的理解</p>
+</blockquote>
+<ul>
+<li>在自然界中，金属受热会融化并形成液体，这种变化与“水”的形态相似6-+</li>
+<li>此外，也有观点认为金属可以凝结露水（古人对自然现象的观察）</li>
+</ul>
+<h2 id="八卦"><a href="#八卦" class="headerlink" title="八卦"></a>八卦</h2><p>阳爻，阴爻</p>
+<p><img src="https://s2.loli.net/2025/01/08/BiJCGUx5PT1kw4Y.png" alt="image-20250108213259914"></p>
+<blockquote>
+<p>八卦卦象口诀</p>
+</blockquote>
+<ul>
+<li><strong>乾三连，坤六断</strong></li>
+<li><strong>震仰盂，艮覆碗</strong></li>
+<li><strong>离中虚，坎中满</strong></li>
+<li><strong>兑上缺，巽下断</strong></li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/08/14lAPiVBne8GWmY.png" alt="image-20250108213018181"></p>
+<blockquote>
+<p>八卦代表的自然</p>
+</blockquote>
+<ul>
+<li><strong>乾为天，坤为地</strong></li>
+<li><strong>震为雷，巽为风</strong></li>
+<li><strong>坎为水，离为火</strong></li>
+<li><strong>艮为山，兑为泽</strong></li>
+</ul>
+<blockquote>
+<p>八卦象类图</p>
+</blockquote>
+<p><img src="https://s2.loli.net/2025/01/08/FK8uWsGBEzpQfVq.png" alt="image-20250108214006647"></p>
+<h3 id="六十四卦"><a href="#六十四卦" class="headerlink" title="六十四卦"></a>六十四卦</h3><p>就是两个八卦的卦象组合，外卦在上，内卦在下拼接而成的</p>
+<p><img src="https://s2.loli.net/2025/01/08/LPVz2jyUu7cJgEH.png" alt="image-20250108214445359"></p>
+<blockquote>
+<p>六十四卦图</p>
+</blockquote>
+<p><img src="https://s2.loli.net/2025/01/08/4Xfh3pzqskjVAgY.png" alt="image-20250108214608046"></p>
+<h2 id="天干"><a href="#天干" class="headerlink" title="天干"></a>天干</h2><p><strong>甲 乙 丙 丁 戊 己 庚 辛 壬 癸</strong></p>
+<h2 id="地支"><a href="#地支" class="headerlink" title="地支"></a>地支</h2><p><strong>子丑寅卯 辰巳午未 申酉戌亥</strong></p>
+<ul>
+<li>地支掌决</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/11/Vrz3nMcqKhJwo61.png" alt="image-20250110232908648"></p>
+<ul>
+<li>地支五行</li>
+</ul>
+<p><strong>子水 	丑土	 寅木 卯木 	辰土	 巳火 午火	 未土	 申金 酉金	 戌土	 亥水</strong></p>
+<p> <strong>丑土 	寅木 卯木 	辰土 	巳火 午火	 未土 	申金 酉金	 戌土	 子水 亥水</strong> </p>
+<p><img src="https://s2.loli.net/2025/01/11/apQREtNv4M9HrfW.png" alt="image-20250110233455950"></p>
+<p><img src="https://s2.loli.net/2025/01/11/xeb7X68fjL4IlFP.png" alt="image-20250110233446702"></p>
+<ul>
+<li>地支对应的五脏</li>
+</ul>
+<p><strong>水对应肾 土对应胃 木对应肝 火对应心 金对应肺</strong></p>
+<p><strong>水肾 土胃 木肝 火心 金肺</strong></p>
+<p><img src="https://s2.loli.net/2025/01/11/5pY6uS2HIL8MrD7.png"></p>
+<ul>
+<li>地支对应的生肖</li>
+</ul>
+<p><strong>子鼠丑牛 寅虎卯兔 辰龙巳蛇 午马未羊 申猴酉鸡 戌狗亥猪</strong></p>
+<blockquote>
+<p>注意：生肖更新不是按照大年三十来算的，而是立春那一天</p>
+</blockquote>
+<p><img src="https://s2.loli.net/2025/01/11/kEq8s1cCUp94wLM.png" alt="image-20250110234051742"></p>
+<ul>
+<li>十二时辰</li>
+</ul>
+<p><strong>从子开始数，23:00-1:00，以此类推</strong></p>
+<p><strong>古时候的一天的分界点是23:00，一个时辰是2个小时</strong></p>
+<p><img src="https://s2.loli.net/2025/01/11/8XtVlYQ1HgIzf5n.png" alt="image-20250110234506857"></p>
+<ul>
+<li>地支对应的月份</li>
+</ul>
+<p>从寅月开始是正月，子月是十一月 丑是十二月</p>
+<p>寅卯辰是春天 巳午未是夏天 申酉戌是秋天 亥子丑是冬天</p>
+<p><img src="https://s2.loli.net/2025/01/11/D9dY3fhVvC6l21A.png" alt="image-20250110235700625"></p>
+<p><img src="https://s2.loli.net/2025/01/11/djgcm1IArbYCkxQ.png" alt="image-20250111000105867"></p>
+<ul>
+<li>二十四节气</li>
+</ul>
+<p><strong>春雨惊春清谷天，夏满芒夏暑相连</strong></p>
+<p><strong>秋处露秋寒霜降，冬雪雪冬小大寒</strong></p>
+<p><img src="https://s2.loli.net/2025/01/11/aLch2EnyxIqdkgr.png" alt="image-20250111000137205"></p>
+<ul>
+<li>小结</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/11/UO6gJ4uWxRMKGmV.png" alt="image-20250111000625304"></p>
+<ul>
+<li>地支生克</li>
+</ul>
+<p><strong>其实就是五行的生克</strong></p>
+<p><strong>把五行的生克加上五行对应的地支，就是地支的生克了</strong></p>
+<p><img src="https://s2.loli.net/2025/01/14/fh6XeCj48sYVNnm.png" alt="image-20250111005700096"></p>
+<ul>
+<li>地支相合</li>
+</ul>
+<p>子丑 寅亥 卯戌 辰酉 巳申 午未</p>
+<p><img src="https://s2.loli.net/2025/01/11/CqecotvasuRzkEI.png" alt="image-20250111000808785"></p>
+<ul>
+<li>地支相冲</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/11/xvYsH1JjQzXShFV.png" alt="image-20250111001438085"></p>
+<h2 id="地支深化"><a href="#地支深化" class="headerlink" title="地支深化"></a>地支深化</h2><p>地支结合上五行，看生克时就只看五行，看相合时就只看地支</p>
+<p>一共有三种组合关系：生合 平合 克合</p>
+<p><img src="https://s2.loli.net/2025/01/14/AlUo26KaBCmtjhG.png" alt="Snipaste_2025-01-11_01-02-15"></p>
+<p><img src="https://s2.loli.net/2025/01/14/naO3cH9PDvrZlk5.png" alt="Snipaste_2025-01-11_01-03-16"></p>
+<h2 id="起卦"><a href="#起卦" class="headerlink" title="起卦"></a>起卦</h2><ul>
+<li>注意：心诚则灵，无事不起卦，心不诚不起卦</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/14/ad3l6qxKfYUpRZH.png" alt="Snipaste_2025-01-11_01-32-55"></p>
+<ul>
+<li>手摇起卦，三枚铜钱，摇六次，记录花面的个数，从下往上排卦</li>
+<li>一个花面为1，称为阳爻</li>
+<li>两个花面为2，称为阴爻</li>
+<li>三个花面为3，称为老阳，动爻</li>
+<li>零个花面为0，称为老阴，动爻</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/14/b1DPYpK5uryZwJ4.png" alt="Snipaste_2025-01-11_01-21-21"></p>
+<p><img src="https://s2.loli.net/2025/01/14/MIvGNwszyoxbD8P.png" alt="Snipaste_2025-01-11_01-17-13"></p>
+<p><img src="https://s2.loli.net/2025/01/14/yxRdecrFfMwmgqa.png" alt="Snipaste_2025-01-11_01-18-21"></p>
+<p><img src="https://s2.loli.net/2025/01/14/nMIWgzh2tNQSOX4.png" alt="Snipaste_2025-01-11_01-21-36"></p>
+<ul>
+<li>排卦是从下往上，读卦是从上往下</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/14/wqhyLNExumFQzGX.png" alt="Snipaste_2025-01-11_01-27-05"></p>
+<ul>
+<li>排卦例子</li>
+</ul>
+<p><img src="https://s2.loli.net/2025/01/14/svnxNSZcb542tTh.png" alt="Snipaste_2025-01-11_01-29-51"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2025/01/21/%E5%85%AD%E7%88%BB%E5%88%9D%E7%BA%A7%E7%AC%94%E8%AE%B0/">https://x1lys.github.io/2025/01/21/六爻初级笔记/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%85%AD%E7%88%BB%E5%85%A5%E9%97%A8/">六爻入门</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/01/24/%E7%BA%A2%E6%97%A5%E4%BB%A3%E5%AE%A1-Day3-SimpleXMLElement%E5%8E%9F%E7%94%9F%E7%B1%BB%E6%94%BB%E5%87%BB/" title="红日代审-Day3-SimpleXMLElement原生类攻击"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">红日代审-Day3-SimpleXMLElement原生类攻击</div></div><div class="info-2"><div class="info-item-1">class-exists1class_exists(string $class, bool $autoload = true): bool  $class 为类的名字，在匹配的时候不区分大小写。默认情况下 $autoload 为 true ，当 $autoload 为 true 时，会自动加载本程序中的 __autoload 函数；当 $autoload 为 false 时，则不调用 __autoload 函数。 也就是说class_exists接收的第一个参数class，在默认$autoload为true时，会自动传递给__autoload 函数加载 参数 class 类名。名称以不区分大小写的方式匹配  autoload 如果尚未加载，是否自动加载   返回值如果 class 是已经定义的类，则返回 **true**，否则返回 false 示例1234567&lt;?php// 在尝试使用前检查类是否存在if (class_exists(&#x27;MyClass&#x27;)) &#123;    $myclass = new...</div></div></div></a><a class="pagination-related" href="/2025/01/18/%E4%BA%91%E5%8E%9F%E7%94%9F%E7%BD%91%E5%85%B3Apisix%E6%89%93%E6%B3%95/" title="云原生网关Apisix打法"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">云原生网关Apisix打法</div></div><div class="info-2"><div class="info-item-1"> 本文没什么技术含量，Nday会打就行，于是直接照抄vulhub了  简介APIsix 是一个高性能、开源的云原生 API 网关，广泛应用于微服务架构中，它能够处理 API 请求并提供各种 API 管理功能，如负载均衡、API 认证、路由、限流、监控、日志记录等。APIsix 设计上考虑了云原生环境，支持高度的可扩展性、可配置性和插件化，能够无缝集成到容器化和 Kubernetes 环境中。 典型应用场景  微服务架构：在微服务环境中，APIsix 可作为前端 API 网关，负责流量控制、负载均衡、认证授权等功能。 多协议支持：适用于需要支持多种协议（如 HTTP、WebSocket、gRPC）的应用场景。 高可用架构：通过支持高并发和高性能，APIsix 可以在高可用的架构中，提供流量分发和服务治理的功能。  核心组件  APIsix Gateway：处理实际的请求流，执行路由、负载均衡、插件逻辑等。 Admin API：提供用于管理和配置网关的接口，通常用于动态更新路由规则、插件配置等。 ETCD：APIsix 使用 Etcd...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E8%A1%8C"><span class="toc-number">1.</span> <span class="toc-text">五行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9D%E8%AF%86%E4%BA%94%E8%A1%8C"><span class="toc-number">1.1.</span> <span class="toc-text">初识五行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E7%94%9F%E7%9B%B8%E5%85%8B"><span class="toc-number">1.2.</span> <span class="toc-text">相生相克</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%AB%E5%8D%A6"><span class="toc-number">2.</span> <span class="toc-text">八卦</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%AD%E5%8D%81%E5%9B%9B%E5%8D%A6"><span class="toc-number">2.1.</span> <span class="toc-text">六十四卦</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%A9%E5%B9%B2"><span class="toc-number">3.</span> <span class="toc-text">天干</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%B0%E6%94%AF"><span class="toc-number">4.</span> <span class="toc-text">地支</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%B0%E6%94%AF%E6%B7%B1%E5%8C%96"><span class="toc-number">5.</span> <span class="toc-text">地支深化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%B5%B7%E5%8D%A6"><span class="toc-number">6.</span> <span class="toc-text">起卦</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

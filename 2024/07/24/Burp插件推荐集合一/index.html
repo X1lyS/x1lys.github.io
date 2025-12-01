@@ -1,0 +1,279 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Burp插件推荐集合一 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言：推荐一些挖洞时常用的burp插件，用上它们包嘎嘎出货！  RouteVulScan简介RouteVulScan是使用java语言基于burpsuite api开发的可以递归检测脆弱路径的burp插件。 插件可以通过被动扫描的方式，递归对每一层路径进行路径探测，并通过设定好的正则表达式匹配响应包的关键字，展示在VulDisplay界面。可以自定义相关路径、匹配信息、与漏洞名称等。 插件重点是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Burp插件推荐集合一">
+<meta property="og:url" content="https://x1lys.github.io/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="前言：推荐一些挖洞时常用的burp插件，用上它们包嘎嘎出货！  RouteVulScan简介RouteVulScan是使用java语言基于burpsuite api开发的可以递归检测脆弱路径的burp插件。 插件可以通过被动扫描的方式，递归对每一层路径进行路径探测，并通过设定好的正则表达式匹配响应包的关键字，展示在VulDisplay界面。可以自定义相关路径、匹配信息、与漏洞名称等。 插件重点是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2024-07-24T06:09:12.000Z">
+<meta property="article:modified_time" content="2024-10-21T13:29:44.829Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="Burp插件推荐">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Burp插件推荐集合一',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">Burp插件推荐集合一</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">Burp插件推荐集合一</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-07-24T06:09:12.000Z" title="发表于 2024-07-24 14:09:12">2024-07-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-21T13:29:44.829Z" title="更新于 2024-10-21 21:29:44">2024-10-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">799</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>2分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/#post-comment"><span class="waline-comment-count" data-path="/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2024-10-21 21:29:44&quot;}" hidden></div><blockquote>
+<p>前言：推荐一些挖洞时常用的burp插件，用上它们包嘎嘎出货！</p>
+</blockquote>
+<h2 id="RouteVulScan"><a href="#RouteVulScan" class="headerlink" title="RouteVulScan"></a>RouteVulScan</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>RouteVulScan是使用java语言基于burpsuite api开发的可以递归检测脆弱路径的burp插件。</p>
+<p>插件可以通过被动扫描的方式，递归对每一层路径进行路径探测，并通过设定好的正则表达式匹配响应包的关键字，展示在VulDisplay界面。可以自定义相关路径、匹配信息、与漏洞名称等。</p>
+<p>插件重点是那些简单而有害的漏洞。这些漏洞通常不是固定路径，但可能位于路径的任何层。在这种情况下，非常容易忽视这些漏洞，而如果使用路径爆破，则非常耗时和麻烦。</p>
+<p>所以插件主打是发送数量小、准确的payload，尽可能覆盖面广的探测一些容易忽略的漏洞。</p>
+<h3 id="使用截图"><a href="#使用截图" class="headerlink" title="使用截图"></a>使用截图</h3><p><img src="https://s2.loli.net/2024/10/21/P3jIipVUhmWct8K.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/bdz5haqeIXCgmOu.png" alt="image"></p>
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/F6JO/RouteVulScan">https://github.com/F6JO/RouteVulScan</a></p>
+<h2 id="TsojanScan"><a href="#TsojanScan" class="headerlink" title="TsojanScan"></a>TsojanScan</h2><h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>一个集成的BurpSuite漏洞探测插件，本着市面上各大漏洞探测插件的功能比较单一，因此与<a target="_blank" rel="noopener" href="https://github.com/Tsojan">TsojanSecTeam</a>成员决定在已有框架的基础上修改并增加常用的漏洞探测POC，它会以最少的数据包请求来准确检测各漏洞存在与否，你只需要这一个足矣。</p>
+<h3 id="使用截图-1"><a href="#使用截图-1" class="headerlink" title="使用截图"></a>使用截图</h3><p><img src="https://s2.loli.net/2024/10/21/xH2qUvXJziDyNLd.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/hL1EmaUjR4zOteZ.png" alt="image"></p>
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/Tsojan/TsojanScan">https://github.com/Tsojan/TsojanScan</a></p>
+<h2 id="BurpFingerPrint"><a href="#BurpFingerPrint" class="headerlink" title="BurpFingerPrint"></a>BurpFingerPrint</h2><h3 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h3><p>攻击过程中，我们通常会用浏览器访问一些资产，该BurpSuite插件实现被动指纹识别+网站提取链接+OA爆破，可帮助我们发现更多资产</p>
+<ul>
+<li>浏览器被动指纹识别，已集成Ehole指纹识别库</li>
+<li>提取网站的URL链接和解析JS文件中的URL链接后进行指纹识别</li>
+<li>开界面进行指纹库修改，可导入、导出、重置</li>
+<li>优化已有指纹库，区分重点指纹和常见指纹，补充部分实战热门漏洞的指纹，方便直接一键getshell</li>
+</ul>
+<h3 id="使用截图-2"><a href="#使用截图-2" class="headerlink" title="使用截图"></a>使用截图</h3><p><img src="https://s2.loli.net/2024/10/21/gxdiUQNwlePOKSD.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/Ne7kch8vB1uCYgJ.png" alt="image"></p>
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/shuanx/BurpFingerPrint/tree/main">https://github.com/shuanx/BurpFingerPrint/tree/main</a></p>
+<h2 id="BurpAPIFinder"><a href="#BurpAPIFinder" class="headerlink" title="BurpAPIFinder"></a>BurpAPIFinder</h2><h3 id="简介-3"><a href="#简介-3" class="headerlink" title="简介"></a>简介</h3><p>攻防演练过程中，我们通常会用浏览器访问一些资产，但很多未授权&#x2F;敏感信息&#x2F;越权隐匿在已访问接口过html、JS文件等，通过该BurpAPIFinder插件我们可以：</p>
+<ul>
+<li>发现通过某接口可以进行未授权&#x2F;越权获取到所有的账号密码、私钥、凭证</li>
+<li>发现通过某接口可以枚举用户信息、密码修改、用户创建接口</li>
+<li>发现登陆后台网址</li>
+<li>发现在html、JS中泄漏账号密码或者云主机的Access Key和SecretKey</li>
+<li>自动提取js、html中路径进行访问，也支持自定义父路径访问 …</li>
+</ul>
+<h3 id="使用截图-3"><a href="#使用截图-3" class="headerlink" title="使用截图"></a>使用截图</h3><p><img src="https://s2.loli.net/2024/10/21/UrVdD9uabBypm3P.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/uMdKWsPF6D2tSnY.png" alt="image"></p>
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/shuanx/BurpAPIFinder">https://github.com/shuanx/BurpAPIFinder</a></p>
+<h2 id="xia-SQL-瞎注"><a href="#xia-SQL-瞎注" class="headerlink" title="xia SQL (瞎注)"></a>xia SQL (瞎注)</h2><h3 id="简介-4"><a href="#简介-4" class="headerlink" title="简介"></a>简介</h3><p>本插件仅只插入单引号，在每个参数后面填加一个单引号，两个单引号,如果值为纯数字则多加一个-1、-0，没有其他盲注啥的，且返回的结果需要人工介入去判断是否存在注入，如果需要所有注入都测试，请把burp的流量转发到xray</p>
+<p><img src="https://s2.loli.net/2024/10/21/LIR87lwATcf6ZWh.png" alt="image"></p>
+<p>地址：<a target="_blank" rel="noopener" href="https://github.com/smxiazi/xia_sql">https://github.com/smxiazi/xia_sql</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2024/07/24/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90%E9%9B%86%E5%90%88%E4%B8%80/">https://x1lys.github.io/2024/07/24/Burp插件推荐集合一/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Burp%E6%8F%92%E4%BB%B6%E6%8E%A8%E8%8D%90/">Burp插件推荐</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/07/26/%E9%87%8D%E6%8B%BEXXE%E6%BC%8F%E6%B4%9E/" title="重拾XXE漏洞"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">重拾XXE漏洞</div></div><div class="info-2"><div class="info-item-1"> 前言：XXE漏洞是很久之前学的，由于没遇到多少实战案例，XXE漏洞逐渐被我搁置，没有好好重视，于是本文简单再复习一下  XML基础什么是XMLXML可扩展标记语言（Extensible Markup Language）。XML用于标记电子文件使其具有结构性的 标记语言，可以用来标记数据、定义数据类型，是一种允许用户对自己的标记语言进行定义的源语言。XML在web中的应用已十分广泛。XML是各种应用程序 之间数据传输最常用的格式。 与HTML的区别在于一个被设计用来展示数据，一个用来传输数据。 XML 标签没有被预定义，需要自行定义标签 XML文档结构包括：XML声明（可选）、DTD文档类型定义（非必要）、文档元素。下面是一个XML文档 实例： 123456789&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt; &lt;!--XML 声明--&gt;&lt;girls&gt; &lt;girl&gt; &lt;hair&gt;短头发&lt;/hair&gt;...</div></div></div></a><a class="pagination-related" href="/2024/07/23/python-day1-API%E6%8E%A5%E5%8F%A3%E6%8F%90%E5%8F%96%E5%99%A81-0/" title="python-day1-API接口提取器1.0"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">python-day1-API接口提取器1.0</div></div><div class="info-2"><div class="info-item-1"> 前言：本系列主要是从0开始训练python脚本编写的能力，编写一些实用的小脚本解决挖洞中遇到的问题，之后的目标是能独立完成一款不错的安全工具  设计思路控制台接收目标URL，从网站的JS文件中匹配类似于URL路径的字符串，并打印，输出API接口文件  requests模块请求目标网站 re模块匹配js文件链接 re模块匹配URL路径 打印，输出结果文件  代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263import requestsimport reimport warningsimport argparsefrom urllib.parse import urljoinfrom urllib3.exceptions import InsecureRequestWarning# 忽略 InsecureRequestWarning...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#RouteVulScan"><span class="toc-number">1.</span> <span class="toc-text">RouteVulScan</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="toc-number">1.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%88%AA%E5%9B%BE"><span class="toc-number">1.2.</span> <span class="toc-text">使用截图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TsojanScan"><span class="toc-number">2.</span> <span class="toc-text">TsojanScan</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-1"><span class="toc-number">2.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%88%AA%E5%9B%BE-1"><span class="toc-number">2.2.</span> <span class="toc-text">使用截图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BurpFingerPrint"><span class="toc-number">3.</span> <span class="toc-text">BurpFingerPrint</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-2"><span class="toc-number">3.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%88%AA%E5%9B%BE-2"><span class="toc-number">3.2.</span> <span class="toc-text">使用截图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#BurpAPIFinder"><span class="toc-number">4.</span> <span class="toc-text">BurpAPIFinder</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-3"><span class="toc-number">4.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%88%AA%E5%9B%BE-3"><span class="toc-number">4.2.</span> <span class="toc-text">使用截图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#xia-SQL-%E7%9E%8E%E6%B3%A8"><span class="toc-number">5.</span> <span class="toc-text">xia SQL (瞎注)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AE%80%E4%BB%8B-4"><span class="toc-number">5.1.</span> <span class="toc-text">简介</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

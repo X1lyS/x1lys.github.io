@@ -1,0 +1,332 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>SRC挖掘思路清单一 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="弱cookie导致的篡改 Cookie 实现任意用户伪造  前端检验关键数据(如：手机号)导致任意换绑从而任意用户密码重置  存储型XSS与换绑的验证码输出在前端的组合拳实现任意账户无感换绑  前端数据截图伪造与水平越权数据泄露的组合拳实现退款欺骗  OAuth缺陷导致CSRF任意用户换绑从而实现任意用户接管  四舍五入数据处理不当导致支付逻辑漏洞  四舍五入数据处理不当导致越权逻辑漏洞  并发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SRC挖掘思路清单一">
+<meta property="og:url" content="https://x1lys.github.io/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="弱cookie导致的篡改 Cookie 实现任意用户伪造  前端检验关键数据(如：手机号)导致任意换绑从而任意用户密码重置  存储型XSS与换绑的验证码输出在前端的组合拳实现任意账户无感换绑  前端数据截图伪造与水平越权数据泄露的组合拳实现退款欺骗  OAuth缺陷导致CSRF任意用户换绑从而实现任意用户接管  四舍五入数据处理不当导致支付逻辑漏洞  四舍五入数据处理不当导致越权逻辑漏洞  并发">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2024-07-19T11:10:16.000Z">
+<meta property="article:modified_time" content="2024-07-19T11:11:26.445Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="SRC挖掘思路清单">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SRC挖掘思路清单一',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">SRC挖掘思路清单一</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">SRC挖掘思路清单一</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-07-19T11:10:16.000Z" title="发表于 2024-07-19 19:10:16">2024-07-19</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-07-19T11:11:26.445Z" title="更新于 2024-07-19 19:11:26">2024-07-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95/">SRC挖掘思路清单</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.1k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>3分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/#post-comment"><span class="waline-comment-count" data-path="/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2024-07-19 19:11:26&quot;}" hidden></div><ul>
+<li><p>弱cookie导致的篡改 Cookie 实现任意用户伪造</p>
+</li>
+<li><p>前端检验关键数据(如：手机号)导致任意换绑从而任意用户密码重置</p>
+</li>
+<li><p>存储型XSS与换绑的验证码输出在前端的组合拳实现任意账户无感换绑</p>
+</li>
+<li><p>前端数据截图伪造与水平越权数据泄露的组合拳实现退款欺骗</p>
+</li>
+<li><p>OAuth缺陷导致CSRF任意用户换绑从而实现任意用户接管</p>
+</li>
+<li><p>四舍五入数据处理不当导致支付逻辑漏洞</p>
+</li>
+<li><p>四舍五入数据处理不当导致越权逻辑漏洞</p>
+</li>
+<li><p>并发漏洞导致的各种重放攻击</p>
+</li>
+<li><p>前端校验数据伪造数据导致的各种问题</p>
+</li>
+<li><p>用户名枚举时还可使用fuzz模块生成二到三位的简单用户名</p>
+</li>
+<li><p>用户名枚举时还可使用使用TOP中文名汉字字典</p>
+</li>
+<li><p>Goole黑语法搜寻学号，默认密码</p>
+</li>
+<li><p>Github语法找CMS源码，项目源码，敏感信息</p>
+</li>
+<li><p>熟悉目标的整个业务流程，功能点很重要</p>
+</li>
+<li><p>前端泄露调试器全局搜索key、security、ak、sk、password、username、&#x2F;*、&#x2F;&#x2F;、默认</p>
+</li>
+<li><p>F12 XHR 截取异步流量(接口信息) 获取请求的API接口</p>
+</li>
+<li><p>参数遍历寻找隐藏商品、赠品、附属商品实现0元购</p>
+</li>
+<li><p>越权测试时不要嫌麻烦，注册两个账号测试</p>
+</li>
+<li><p>尝试购买售罄的商品</p>
+</li>
+<li><p>优惠劵多次复用</p>
+</li>
+<li><p>看响应包长度时，看最大、最小、临界值</p>
+</li>
+<li><p>找未授权接口时，若大多数是404说明可能接口有前缀，F12翻找js进行前缀拼接；如果接口跳转，开启bp拦截，再次看发送是否加载新的接口</p>
+</li>
+<li><p>找未授权接口时，405 改POST、GET、OPTIONS、PUT、HAED</p>
+</li>
+<li><p>找未授权接口时，5xx可能是参数缺失，F12前端去找参数或者FUZZ参数</p>
+</li>
+<li><p>找未授权接口时，Unsupportted Media Type 不支持内容类型，FUZZ媒体类型</p>
+<p>text&#x2F;html：HTML 文档<br>application&#x2F;json：JSON 数据<br>application&#x2F;xml：XML 数据<br>image&#x2F;jpeg：JPEG 图像<br>image&#x2F;png：PNG 图像<br>application&#x2F;pdf：PDF 文档<br>application&#x2F;octet-stream：二进制数据流<br>application&#x2F;x-www-form-urlencoded：用于表单数据的 URL 编码格式<br>multipart&#x2F;form-data：用于表单数据的多部分数据格式</p>
+</li>
+<li><p>找未授权接口时 403时，继续FUZZ 爆破次级目录，或者403 Bypass</p>
+</li>
+<li><p>爆破密码时有次数限制时，横向爆破用户名；爆破密码，达到错误阈值，再使用正确密码登录，看是否是虚假锁定</p>
+</li>
+<li><p>看前端是否对控制错误尝试的校验字段可控，从而绕过限制</p>
+</li>
+<li><p>校验过程与处理过程业务分离，导致通过一次校验后，得到处理过程，之后可跳过校验过程直接进行处理过程</p>
+</li>
+<li><p>验证码未绑定，只校验此时数据库中的该验证码是否有效，导致的任意用户登录</p>
+</li>
+<li><p>在代码层未考虑NULL的情况导致的验证码可删除从而绕过校验</p>
+</li>
+<li><p>仅仅只对输入校验过滤导致的二次注入、二次XSS</p>
+</li>
+<li><p>MySQL中insert into数据长度溢出时截断数据的特性导致的注册时的任意用户覆盖</p>
+</li>
+<li><p>没有流程凭证(session)，业务流程步骤未校验是否上一步骤是否完成，导致中间流程被跳过导致的未授权访问</p>
+</li>
+<li><p>流程凭证未绑定账号信息，导致的任意有效流程凭证可复用，从而实现任意用户密码重置</p>
+</li>
+<li><p>密保问题简单可猜解</p>
+</li>
+<li><p>密保问题答案泄露在前端</p>
+</li>
+<li><p>验证码4-5位可爆破</p>
+</li>
+<li><p>验证码回显在响应的set-cookie中</p>
+</li>
+<li><p>万能、默认验证码</p>
+</li>
+<li><p>未使用的token不过期，且不包含用户凭证信息，导致的任意用户越权操作</p>
+</li>
+<li><p>token可猜解，可预测，导致token伪造实现任意用户越权操作</p>
+</li>
+<li><p>邮箱密码重置链接中的凭证不包含账号信息或者叫凭证不会账号做校验，则可通过修改账号ID，实现任意用户密码重置</p>
+</li>
+<li><p>账号激活邮箱链接未加密且参数简单，无需登录他人邮箱就可以构造激活链接导致的任意用户注册</p>
+</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2024/07/19/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%B8%80/">https://x1lys.github.io/2024/07/19/SRC挖掘思路清单一/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95/">SRC挖掘思路清单</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/07/19/SRC%E6%A1%88%E4%BE%8B-%E7%94%A8%E7%BB%84%E5%90%88%E6%8B%B3%E5%9C%A8SRC%E5%AE%98%E7%BD%91%E7%9B%97%E8%B5%B0%E4%BD%A0%E7%9A%84%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF/" title="SRC案例-用组合拳在SRC官网盗走你的个人信息"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">SRC案例-用组合拳在SRC官网盗走你的个人信息</div></div><div class="info-2"><div class="info-item-1"> 声明：本SRC案例来自J0神，此处只是做学习研究之用  漏洞发现 先是在某SRC官网FUZZ出一处图片显示接口，发现image__name参数是图片路径，那么有几个可尝试的点：文件包含getshell；目录穿越；ssrf……  1https://xxx.cn/xxxx/ueditor?image_name=/xxx.png   经过尝试，文件包含、ssrf都不行，只是拼接读取了远程资源站的图⽚。但在给路径后加上”+”后，奇迹出现了：  1https://xxx.cn/xxxx/ueditor?image_name=/xxx.png+   图⽚被意外的解析成了HTML⻚⾯，此处存在文件解析漏洞！  既然能把png解析为html，那么我们构造一个带有JS代码的图片，访问路径，加上”+”，就构成了存储型XSS 继续尝试目录穿越，&#x2F;..&#x2F;..&#x2F;3.png，出现了自研WAF，拦截了    没事，使用burp FUZZ一下就bypass了  1Payload:...</div></div></div></a><a class="pagination-related" href="/2024/07/17/Apache-ActiveMQ%E6%BC%8F%E6%B4%9E-%E4%B8%8A/" title="Apache_ActiveMQ漏洞-上"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">Apache_ActiveMQ漏洞-上</div></div><div class="info-2"><div class="info-item-1">Apache ActiveMQ 简介ActiveMQ 是一个开源的消息中间件，主要用于实现消息的异步传递和处理。它支持多种消息协议（如 JMS、AMQP 和 MQTT），使得不同的应用程序能够在不同的平台之间进行通信 主要特点 高性能：支持高吞吐量和低延迟的消息传递，适用于需要高并发的应用场景。 支持多种协议：除了 JMS，ActiveMQ 还支持多种协议，方便与其他系统集成。 可靠性：提供消息持久化功能，确保消息在系统故障时不会丢失。 可扩展性：可以根据需求水平扩展，适应不同规模的应用。 易于使用：提供丰富的管理工具和易于理解的配置文件，使得部署和管理相对简单。 集成能力：能够与 Spring、Apache Camel 等框架无缝集成，增强应用的灵活性。  应用场景 实时数据处理 微服务架构中的服务间通信 事件驱动架构 系统解耦合  Apache ActiveMQ漏洞Apache ActiveMQ未授权 没有配置密码，直接访问&#x2F;admin，可进入后台   Apache...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2024/07/31/SRC%E6%8C%96%E6%8E%98%E6%80%9D%E8%B7%AF%E6%B8%85%E5%8D%95%E4%BA%8C/" title="SRC挖掘思路清单二"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-31</div><div class="info-item-2">SRC挖掘思路清单二</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>免杀Day-1 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="杀毒软件检测⽅式静态查杀特征码扫描机制：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。 优点：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。 缺点：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。 ⽂件校验和每个文">
+<meta property="og:type" content="article">
+<meta property="og:title" content="免杀Day-1">
+<meta property="og:url" content="https://x1lys.github.io/2024/08/18/%E5%85%8D%E6%9D%80Day-1/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="杀毒软件检测⽅式静态查杀特征码扫描机制：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。 优点：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。 缺点：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。 ⽂件校验和每个文">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2024-08-18T10:10:43.000Z">
+<meta property="article:modified_time" content="2024-08-20T08:36:37.719Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="免杀">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2024/08/18/%E5%85%8D%E6%9D%80Day-1/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '免杀Day-1',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">免杀Day-1</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">免杀Day-1</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-18T10:10:43.000Z" title="发表于 2024-08-18 18:10:43">2024-08-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-08-20T08:36:37.719Z" title="更新于 2024-08-20 16:36:37">2024-08-20</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%85%8D%E6%9D%80/">免杀</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">5.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>16分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/08/18/%E5%85%8D%E6%9D%80Day-1/#post-comment"><span class="waline-comment-count" data-path="/2024/08/18/%E5%85%8D%E6%9D%80Day-1/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2024-08-20 16:36:37&quot;}" hidden></div><h2 id="杀毒软件检测⽅式"><a href="#杀毒软件检测⽅式" class="headerlink" title="杀毒软件检测⽅式"></a>杀毒软件检测⽅式</h2><h3 id="静态查杀"><a href="#静态查杀" class="headerlink" title="静态查杀"></a>静态查杀</h3><h4 id="特征码扫描"><a href="#特征码扫描" class="headerlink" title="特征码扫描"></a>特征码扫描</h4><p><strong>机制</strong>：杀毒软件使用病毒数据库中的特征码（也称为病毒指纹）来检测已知的恶意软件。当杀毒软件扫描系统中的文件时，它会将文件的内容与特征码进行比对。如果匹配成功，文件将被标记为恶意软件。</p>
+<p><strong>优点</strong>：特征码扫描对已知的恶意软件非常有效，能够快速检测和处理。</p>
+<p><strong>缺点</strong>：对于未知或变种的恶意软件，特征码扫描可能无法检测到，因为这些恶意软件可能不包含数据库中的特征码。</p>
+<h4 id="⽂件校验和"><a href="#⽂件校验和" class="headerlink" title="⽂件校验和"></a>⽂件校验和</h4><p>每个文件都可以通过特定的哈希算法（如 MD5、SHA-1、SHA-256）生成一个唯一的校验和（哈希值）。如果文件被恶意软件篡改，即使只是一个字节的变化，其哈希值也会发生显著变化。</p>
+<p><strong>机制</strong>：杀毒软件在首次扫描系统时，会计算并保存每个文件的校验和值。在后续的扫描中，它会重新计算文件的哈希值并与之前保存的值进行比较。如果发现哈希值发生了变化，可能表明该文件已被篡改或感染恶意软件，从而提示用户注意</p>
+<h4 id="云查杀"><a href="#云查杀" class="headerlink" title="云查杀"></a>云查杀</h4><p>云查杀利用云计算技术，通过将可疑文件或行为信息上传至云端服务器，借助强大的云端资源进行分析。</p>
+<p><strong>云端威胁数据库</strong>：相比本地数据库，云端的威胁数据库可以更加庞大且实时更新。杀毒软件客户端会将可疑文件的哈希值或行为日志上传到云端，与最新的威胁数据库进行匹配。</p>
+<p><strong>云端分析</strong>：云端可以执行更复杂的分析任务，如利用大数据技术分析大量的恶意软件样本，或通过机器学习模型识别新的威胁模式。</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>云查杀能够利用最新的威胁情报和更强大的计算资源，提高检测准确性和效率。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>需要网络连接才能发挥作用，且涉及隐私和数据安全问题。</li>
+</ul>
+<h4 id="启发式分析"><a href="#启发式分析" class="headerlink" title="启发式分析"></a>启发式分析</h4><p>但是面对未知的病毒，换个模样杀软就认不出了吗？所以安全厂商研究出了启发式算法</p>
+<p>启发式则是将一类病毒总结后，归纳其特征，其后的演变都为一类病毒，这就是启发式算法。具体启发式算法可以由杀软来定，比如可以使用机器学习把家族病毒聚类，或简单的通过使用通用型yara规则，例如文件大小小于100kb，且没有图标则可以识别为病毒，以此达到查杀病毒。</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>能够发现未知的恶意软件，尤其是那些通过修改或变种试图规避特征码扫描的威胁。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>启发式分析可能会产生误报，即将合法软件误判为恶意软件。</li>
+<li>需要消耗更多的计算资源和时间。</li>
+</ul>
+<h3 id="动态查杀"><a href="#动态查杀" class="headerlink" title="动态查杀"></a>动态查杀</h3><h4 id="行为分析"><a href="#行为分析" class="headerlink" title="行为分析"></a>行为分析</h4><p><strong>行为监控</strong>：杀毒软件会在后台实时监控所有正在运行的程序和进程，观察其行为。如果某个程序执行了与恶意软件相关的操作（如试图未经授权访问系统关键文件、篡改注册表、劫持浏览器设置等），它将被标记为可疑。</p>
+<p><strong>行为评分系统</strong>：某些杀毒软件会为每个程序的行为打分，基于其行为的潜在威胁程度。如果一个程序的行为评分超过了预设阈值，杀毒软件会触发警报或自动阻止该程序的运行。</p>
+<p><strong>优点</strong>：能够及时检测和阻止恶意软件在系统中的运行，即使是那些尚未被列入病毒数据库的恶意软件。</p>
+<p><strong>缺点</strong>：对计算资源的需求较高，可能影响系统性能。也可能出现误报，将正常程序的某些行为误判为恶意行为。</p>
+<h4 id="沙盒技术"><a href="#沙盒技术" class="headerlink" title="沙盒技术"></a>沙盒技术</h4><p>沙箱技术通过将可疑文件在一个隔离的虚拟环境中运行，以便观察其行为而不影响实际系统。</p>
+<ul>
+<li><strong>隔离执行</strong>：沙箱提供一个与操作系统隔离的虚拟环境，文件可以在其中自由运行，而不对系统造成任何实际的修改或破坏。</li>
+<li><strong>行为分析</strong>：在沙箱中运行的程序如果表现出恶意行为（如试图修改系统文件、窃取用户信息、尝试自我复制等），杀毒软件可以在不危及系统安全的前提下，对这些行为进行记录和分析。</li>
+</ul>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>能够检测到潜伏的恶意软件，不会对系统安全构成威胁。</li>
+<li>提高了对复杂和高级持续性威胁（APT）的检测能力。</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>运行沙箱需要大量的计算资源，可能导致系统性能下降。</li>
+</ul>
+<h2 id="常见免杀方式"><a href="#常见免杀方式" class="headerlink" title="常见免杀方式"></a>常见免杀方式</h2><p><strong>免杀的最基本思想就是破坏特征，这个特征有可能是特征码，有可能是⾏为特征， 只要破坏了病毒与⽊⻢所固有的特征，并保证其原有功能没有改变，⼀次免杀就能 完成了</strong></p>
+<h3 id="修改特征码"><a href="#修改特征码" class="headerlink" title="修改特征码"></a>修改特征码</h3><p>找到杀软查杀的特征码，修改，替换，编码等等在不影响程序运行的情况下，把特征码改的面目全非，删掉也可以。</p>
+<p>但是这种定位特征码的办法只能针对本地病毒库，面对云查杀会束手无策，云查杀会产生越来越多的特征码，这种情况可以改为内存加载，在内存里面做免杀，或者利用白加黑…….</p>
+<h3 id="花指令免杀"><a href="#花指令免杀" class="headerlink" title="花指令免杀"></a>花指令免杀</h3><p>花指令其实就是⼀段毫⽆意义的指令，也可以称之为垃圾指令。</p>
+<p>花指令是否存在对 程序的执⾏结果没有影响，所以它存在的唯⼀⽬的就是阻⽌反汇编程序，或对反汇编设置障碍。 ⼤多数反病毒软件是靠特征码来判断⽂件是否有毒的，⽽为了提⾼精度，现在的特 征码都是在⼀定偏移量限制之内的，否则会对反病毒软件的效率产⽣严重的影响！ </p>
+<p>⽽在⿊客们为⼀个程序添加⼀段花指令之后，程序的部分偏移会受到影响，如果反病毒软件不能识别这段花指令，那么它检测特征码的偏移量会整体位移⼀段位置， ⾃然也就⽆法正常检测⽊⻢了。</p>
+<p><strong>动态分析的有效性</strong>：花指令免杀对静态分析效果较好，但如果杀毒软件或分析工具使用动态分析技术（在运行时分析程序的行为），则花指令的作用可能有限，因为在运行时这些指令通常不会影响恶意行为的检测。</p>
+<p><strong>增加代码大小</strong>：大量的花指令会使恶意软件的代码变得更大，这可能会引起某些杀毒软件的注意，特别是那些检查异常代码大小或结构的工具。</p>
+<p><strong>难以应对复杂检测方法</strong>：随着安全技术的发展，现代杀毒软件可能会结合多种检测技术，如启发式分析、行为分析、机器学习等，这些方法能够识别出花指令的使用并将其归类为试图绕过检测的特征。</p>
+<h3 id="加壳免杀"><a href="#加壳免杀" class="headerlink" title="加壳免杀"></a>加壳免杀</h3><p>加壳免杀（Packers&#x2F;Crypters）的原理是通过将恶意代码进行加密或压缩，并在运行时解密或解压缩，以躲避杀毒软件的静态分析和签名检测。这种技术通过改变恶意软件的外在特征，使得杀毒软件难以直接识别出其中的恶意内容。</p>
+<p><strong>加壳免杀的原理</strong></p>
+<ol>
+<li><strong>代码加密或压缩</strong>：<ul>
+<li>加壳工具会先对恶意代码进行加密或压缩，将其变成难以辨认的二进制数据。这些数据在未解密或解压缩之前，无法被简单的二进制分析工具或杀毒软件识别为恶意代码。</li>
+</ul>
+</li>
+<li><strong>注入解壳程序</strong>：<ul>
+<li>加壳工具在对恶意代码加密或压缩后，会在程序的入口点注入一个解壳程序。这个解壳程序负责在程序执行时，首先解密或解压缩恶意代码，然后将其加载到内存中执行。由于解壳程序通常较小且不包含明显的恶意行为，静态分析工具可能不会将其标记为威胁。</li>
+</ul>
+</li>
+<li><strong>改变文件特征</strong>：<ul>
+<li>通过加壳，恶意软件的外观和文件结构发生了变化，生成的新文件具有与原始文件不同的特征。这使得基于签名检测的杀毒软件无法直接匹配到已知的恶意软件签名。</li>
+</ul>
+</li>
+<li><strong>反调试与反分析</strong>：<ul>
+<li>一些高级的加壳工具还会加入反调试、反虚拟化或反沙盒技术，以防止恶意软件在被分析环境中暴露。这些技术可以让恶意软件识别出是否在被调试或运行于虚拟化环境中，并采取相应的措施（如自我销毁或暂停执行）。</li>
+</ul>
+</li>
+<li><strong>多层加壳</strong>：<ul>
+<li>为了提高免杀效果，恶意软件作者有时会对同一个文件进行多次加壳，即在一个解壳程序之上再套一层壳。这样，分析人员或杀毒软件需要多次解壳才能还原出原始代码，增加了检测的难度。</li>
+</ul>
+</li>
+</ol>
+<p><strong>加壳免杀的优势</strong></p>
+<ul>
+<li><strong>绕过静态分析</strong>：由于加壳后的文件不再具有原始恶意代码的特征，杀毒软件的静态分析工具很难直接识别出其恶意性。</li>
+<li><strong>隐蔽恶意行为</strong>：加壳可以隐藏恶意代码的具体实现细节，使得逆向工程变得更加困难，增加了安全研究人员分析恶意软件的难度。</li>
+<li><strong>多样性</strong>：通过使用不同的加壳工具或方法，攻击者可以生成外观完全不同的恶意文件，即使这些文件的核心代码相同，也难以通过传统的签名检测方法识别。</li>
+</ul>
+<p><strong>加壳免杀的局限性</strong></p>
+<ul>
+<li><strong>动态分析的威胁</strong>：虽然加壳能够绕过静态分析，但在执行时，恶意代码最终仍需解壳并在内存中运行，这时动态分析工具可以检测到恶意行为。一些杀毒软件会使用行为监控和沙盒技术来识别加壳后的恶意代码。</li>
+<li><strong>被解壳工具破解</strong>：安全研究人员和杀毒软件厂商也开发了各种解壳工具，能够自动或手动解开常见的壳，将加密或压缩的恶意代码还原为可分析的形式。</li>
+<li><strong>性能开销</strong>：加壳增加了恶意软件的复杂性，在某些情况下可能导致性能下降或引发异常行为，这有时会引起用户或系统管理员的注意。</li>
+</ul>
+<h3 id="内存免杀"><a href="#内存免杀" class="headerlink" title="内存免杀"></a>内存免杀</h3><p>内存免杀的原理</p>
+<ol>
+<li><strong>避免磁盘落地</strong>：<ul>
+<li>传统的恶意软件往往通过将自身或其组件写入磁盘来执行，这样的文件可以被杀毒软件通过文件扫描功能识别和拦截。内存免杀则完全绕过磁盘，通过各种技术直接将恶意代码注入内存并在其中运行，避免产生任何可能被静态分析捕获的文件。</li>
+</ul>
+</li>
+<li><strong>内存注入技术</strong>：<ul>
+<li>内存免杀通常使用内存注入技术，将恶意代码注入到一个合法进程的内存空间中。例如，使用 API 函数如 <code>WriteProcessMemory</code> 和 <code>CreateRemoteThread</code>，恶意软件可以将代码注入到其他进程的内存中，并启动执行。这种方法不仅隐藏了恶意软件的存在，还利用了合法进程的掩护，增加了检测的难度。</li>
+</ul>
+</li>
+<li><strong>内存加载（Reflective DLL Injection）</strong>：<ul>
+<li>反射式 DLL 注入是一种常见的内存免杀技术，它允许恶意 DLL 在目标进程内存中自行加载而不依赖操作系统的标准加载机制。通过这种方式，恶意软件可以将 DLL 加载到内存中，并在不触碰磁盘的情况下执行代码。</li>
+</ul>
+</li>
+<li><strong>代码自解压&#x2F;自解密</strong>：<ul>
+<li>恶意软件可能使用加密或压缩技术将自身嵌入到一个合法进程中，并在运行时通过解密或解压缩将恶意代码载入内存。这种方法不仅改变了恶意代码的外观，避免静态检测，还确保只有在执行时才会暴露恶意行为。</li>
+</ul>
+</li>
+<li><strong>反调试与反内存分析</strong>：<ul>
+<li>为了防止内存分析和调试，内存免杀技术可能会加入反调试措施。例如，恶意软件可以检测是否处于调试环境中，或者不断地对内存进行随机化处理（如不断移动代码块的位置），以干扰调试和内存分析工具。</li>
+</ul>
+</li>
+<li><strong>代码签名伪装</strong>：<ul>
+<li>有些内存免杀技术会伪装恶意代码的签名或使用合法代码的签名，从而混淆内存扫描工具。这种伪装增加了检测的难度，尤其是在动态分析中。</li>
+</ul>
+</li>
+</ol>
+<p>内存免杀的优势</p>
+<ul>
+<li><strong>绕过静态检测</strong>：由于内存免杀技术避免了在磁盘上留下恶意代码的痕迹，传统的基于文件签名和哈希的静态分析方法很难检测到这种威胁。</li>
+<li><strong>隐蔽性高</strong>：恶意代码直接在内存中执行，不留存于磁盘，且通常依附于合法进程，进一步增加了隐蔽性，难以被安全工具和用户发现。</li>
+<li><strong>即时性</strong>：内存免杀技术通常与远程攻击结合使用，恶意代码可以通过网络传播并直接在目标机器的内存中运行，实现攻击的即时性。</li>
+</ul>
+<p>内存免杀的局限性</p>
+<ul>
+<li><strong>依赖内存检测工具</strong>：尽管内存免杀技术可以绕过静态文件检测，但一些高级的杀毒软件和安全工具能够对内存中的活动进行实时监控和分析，从而识别出异常行为。</li>
+<li><strong>持久性问题</strong>：由于内存中的数据在系统重启或进程结束后会被清除，内存免杀的恶意代码无法持久驻留在系统中。因此，这种技术通常与其他持久化方法结合使用，以确保恶意软件在系统重启后能够重新感染。</li>
+<li><strong>内存分析能力的提升</strong>：现代安全产品越来越多地采用内存分析技术，能够动态检测内存中运行的代码，识别注入或加载的恶意模块，这在一定程度上削弱了内存免杀的有效性。</li>
+</ul>
+<h3 id="二次编译免杀"><a href="#二次编译免杀" class="headerlink" title="二次编译免杀"></a>二次编译免杀</h3><p>二次编译免杀的原理</p>
+<ol>
+<li><strong>代码重编译</strong>：<ul>
+<li>将原始恶意代码在不同的编译环境中重新编译。由于编译器的优化策略、目标平台、编译器版本、编译选项等因素的不同，即使源代码完全相同，生成的二进制文件在指令集、代码排列和函数调用顺序等方面也会有所不同。</li>
+</ul>
+</li>
+<li><strong>改变文件特征</strong>：<ul>
+<li>重新编译的二进制文件通常在文件特征上与原始文件有所不同，如字符串位置、函数地址、代码段排列顺序、节的对齐方式等。这种变化使得基于文件特征（如哈希值或二进制签名）的杀毒软件难以将新文件与已知恶意软件匹配。</li>
+</ul>
+</li>
+<li><strong>混淆与优化</strong>：<ul>
+<li>在重编译过程中，可以利用编译器的混淆选项或手动添加混淆代码，增加恶意软件的复杂性，使其更难被逆向工程或静态分析工具分析。例如，重命名变量、函数混淆、插入无意义的代码等。</li>
+</ul>
+</li>
+<li><strong>控制流图变化</strong>：<ul>
+<li>重新编译可能导致程序的控制流图（Control Flow Graph, CFG）发生变化，特别是当编译器优化策略不同的情况下。控制流图的变化使得基于CFG分析的检测技术更难识别出已知的恶意代码。</li>
+</ul>
+</li>
+<li><strong>定制编译器或工具链</strong>：<ul>
+<li>恶意软件开发者可能使用定制编译器或修改后的工具链，以生成具有不同结构或独特特征的二进制文件。这样生成的文件更难被通用的杀毒软件检测。</li>
+</ul>
+</li>
+<li><strong>去除调试信息</strong>：<ul>
+<li>重编译时可以选择去除或修改编译产生的调试信息，这些信息在文件中通常包含函数名、变量名和源代码文件路径等细节。去除这些信息可以进一步隐藏恶意软件的意图。</li>
+</ul>
+</li>
+</ol>
+<p>二次编译免杀的优势</p>
+<ul>
+<li><strong>多样性</strong>：重新编译后的二进制文件在结构和内容上与原始文件有所不同，形成了新的独特性。这使得基于签名检测的杀毒软件难以识别。</li>
+<li><strong>灵活性</strong>：通过不同的编译选项和环境，开发者可以生成多个版本的恶意软件，增加其在不同系统上的存活机会。</li>
+<li><strong>降低被动检测概率</strong>：由于重编译后的代码与原始代码存在差异，传统的静态分析方法和基于签名的检测技术难以有效识别这些变化。</li>
+</ul>
+<p>二次编译免杀的局限性</p>
+<ul>
+<li><strong>动态分析的挑战</strong>：尽管重新编译改变了静态特征，但在执行时，恶意行为依然会被动态分析工具监测到。一些杀毒软件会利用行为分析和沙盒技术，识别程序运行时的恶意活动。</li>
+<li><strong>复杂性与成本</strong>：需要额外的资源和技术知识来设置不同的编译环境，并调整编译选项来确保免杀效果。此外，重编译的过程可能会增加开发和维护恶意软件的成本。</li>
+<li><strong>易受基因检测技术影响</strong>：一些现代杀毒软件已经能够通过基因检测（基于代码行为和特征的模式分析）来识别恶意软件，即使经过重新编译，它们仍然可能被检测出来。</li>
+</ul>
+<h3 id="分离免杀"><a href="#分离免杀" class="headerlink" title="分离免杀"></a>分离免杀</h3><p>分离免杀的原理</p>
+<ol>
+<li><strong>代码分解</strong>：<ul>
+<li>恶意软件被分解成多个独立的组件或片段。每个组件在单独存在时不会表现出任何恶意行为，因而难以被杀毒软件识别。这些组件可以是不同的文件、代码段、脚本或资源文件。</li>
+</ul>
+</li>
+<li><strong>分散加载</strong>：<ul>
+<li>这些分解后的组件可以分别通过不同的载体或途径加载到目标系统中。例如，恶意软件的核心功能可能通过一个看似正常的程序部分加载，其他功能或数据则通过远程服务器、文件下载或用户交互逐步获取。</li>
+</ul>
+</li>
+<li><strong>动态组合</strong>：<ul>
+<li>当所有必要的组件被加载到系统中后，它们会通过某种方式（如代码链接、脚本执行、内存注入等）被组合或重新组装，形成完整的恶意软件。这种组合通常在内存中进行，以避免磁盘上的静态分析。</li>
+</ul>
+</li>
+<li><strong>延迟执行</strong>：<ul>
+<li>分离的组件可能在不同时间点被执行，或者在特定的条件下才会触发恶意行为。这种延迟执行进一步增加了检测的难度，因为杀毒软件需要持续监控系统的动态变化。</li>
+</ul>
+</li>
+<li><strong>模块化设计</strong>：<ul>
+<li>恶意软件可能被设计为模块化结构，每个模块负责不同的功能，如信息窃取、持久化、传播等。这些模块可以独立存在或与其他模块在运行时动态协作，从而隐藏恶意意图。</li>
+</ul>
+</li>
+<li><strong>异构环境部署</strong>：<ul>
+<li>分离免杀技术也可以利用异构环境，如将不同组件部署在不同的系统或设备上，只有当所有相关设备或系统同时协作时，恶意行为才会触发。这种方式尤其适用于复杂的攻击场景，如分布式攻击或多阶段攻击。</li>
+</ul>
+</li>
+</ol>
+<p>分离免杀的优势</p>
+<ul>
+<li><strong>难以检测</strong>：由于每个分离组件在单独存在时无害，杀毒软件难以通过传统的签名检测和静态分析发现整个恶意软件。</li>
+<li><strong>动态灵活性</strong>：分离免杀技术允许恶意软件在目标系统中逐步组装和执行，增加了分析和检测的复杂性。</li>
+<li><strong>规避行为监控</strong>：通过将恶意行为分散到不同的时间点或触发条件，分离免杀技术能够绕过许多行为监控机制。</li>
+</ul>
+<p>分离免杀的局限性</p>
+<ul>
+<li><strong>依赖于组件组合</strong>：恶意软件的整体功能依赖于所有组件的成功加载和组合。如果其中一个组件被拦截或识别，整个攻击可能会失败。</li>
+<li><strong>执行复杂性</strong>：分离免杀技术需要精确的时间控制和组件管理，这增加了恶意软件开发的复杂性和执行中的不确定性。</li>
+<li><strong>动态分析的挑战</strong>：高级杀毒软件和安全工具可以通过监控系统行为、进程间通信和内存活动来识别分离组件的组合行为。</li>
+</ul>
+<h3 id="资源修改"><a href="#资源修改" class="headerlink" title="资源修改"></a>资源修改</h3><p>有些杀软会设置有扫描⽩名单，⽐如之前把程序图标替换为360安全卫⼠图标就能 过360的查杀。 </p>
+<p>加资源</p>
+<p>使⽤ResHacker对⽂件进⾏资源操作，找来多个正常软件，将它们的资源加⼊到⾃ ⼰软件，如图⽚，版本信息，对话框等。 </p>
+<p>替换资源</p>
+<p>使⽤ResHacker替换⽆⽤的资源（Version等</p>
+<p>加签名</p>
+<p>使⽤签名伪造⼯具，将正常软件的签名信息加⼊到⾃⼰软件中。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2024/08/18/%E5%85%8D%E6%9D%80Day-1/">https://x1lys.github.io/2024/08/18/免杀Day-1/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%85%8D%E6%9D%80/">免杀</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/08/20/%E4%BB%8EJS%E6%8E%A5%E5%8F%A3%E5%88%B0%E6%8B%BF%E4%B8%8B%E5%A4%A7%E9%87%8F%E5%AD%A6%E6%A0%A1%E7%9A%84%E8%B6%85%E7%BA%A7%E7%AE%A1%E7%90%86%E5%91%98%E6%9D%83%E9%99%90/" title="从JS接口到拿下大量学校的超级管理员权限"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">从JS接口到拿下大量学校的超级管理员权限</div></div><div class="info-2"><div class="info-item-1">信息收集首先通过网站标题搞清楚了网站的性质，是一个某地的站群系统，集合管理着大量的子网站  通过Wappalyzer了解使用的重点技术有：Java、Swagger-UI、Spring、Vue.js、Webpack 而常用的前后端分离架构正是Vue.js + Java(SpringBoot) 于是可以初步判断该站点是前后端分离架构的 而前后端分离的架构，常涉及到前后端之间的数据的传递与调用，如果接口鉴权未做好，很容易出现API接口未授权的安全漏洞 基本测试流程简单的信息收集之后，接下来开始走一遍登录框的基本测试流程 万能密码 弱口令 用户名枚举...</div></div></div></a><a class="pagination-related" href="/2024/08/15/EDUSRC%E6%8C%96%E6%8E%98%E6%8A%80%E5%B7%A7-1/" title="EDUSRC挖掘技巧-1"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">EDUSRC挖掘技巧-1</div></div><div class="info-2"><div class="info-item-1"> 如何找通杀漏洞，快速上分  EDUSRC挖掘技巧-1：如何找通杀漏洞，快速上分？ 思路一：从开发商入手这里有开发商的排行榜，那么如果我们找到了某开发商的某产品的一个漏洞，那么不就对使用该产品的所有学校造成了通杀吗？  确定好一个开发商，对其产品进行信息收集，以上海慧泉软件科技有限公司为例 第一种方法：直接用FOFA搜索 这里就基本可以看到一些该公司的产品了 第二种方法：小蓝本查看知识产权但是有些时候这里看不到或者不全，还可以使用小蓝本查看知识产权    这些都是公司的产品，都有可能找到漏洞，造成通杀 接着就是对这些系统一个一个去找找漏洞咯 思路二：从指纹入手使用FOFA语句 1(&quot;系统&quot; || &quot;登录&quot; || &quot;后台&quot; || &quot;管理&quot;) &amp;&amp; org=&quot;China Education and Research Network...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%80%E6%AF%92%E8%BD%AF%E4%BB%B6%E6%A3%80%E6%B5%8B%E2%BD%85%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">杀毒软件检测⽅式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%9F%A5%E6%9D%80"><span class="toc-number">1.1.</span> <span class="toc-text">静态查杀</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%89%B9%E5%BE%81%E7%A0%81%E6%89%AB%E6%8F%8F"><span class="toc-number">1.1.1.</span> <span class="toc-text">特征码扫描</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E2%BD%82%E4%BB%B6%E6%A0%A1%E9%AA%8C%E5%92%8C"><span class="toc-number">1.1.2.</span> <span class="toc-text">⽂件校验和</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%91%E6%9F%A5%E6%9D%80"><span class="toc-number">1.1.3.</span> <span class="toc-text">云查杀</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%90%AF%E5%8F%91%E5%BC%8F%E5%88%86%E6%9E%90"><span class="toc-number">1.1.4.</span> <span class="toc-text">启发式分析</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A8%E6%80%81%E6%9F%A5%E6%9D%80"><span class="toc-number">1.2.</span> <span class="toc-text">动态查杀</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A1%8C%E4%B8%BA%E5%88%86%E6%9E%90"><span class="toc-number">1.2.1.</span> <span class="toc-text">行为分析</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B2%99%E7%9B%92%E6%8A%80%E6%9C%AF"><span class="toc-number">1.2.2.</span> <span class="toc-text">沙盒技术</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B8%B8%E8%A7%81%E5%85%8D%E6%9D%80%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">常见免杀方式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E7%89%B9%E5%BE%81%E7%A0%81"><span class="toc-number">2.1.</span> <span class="toc-text">修改特征码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8A%B1%E6%8C%87%E4%BB%A4%E5%85%8D%E6%9D%80"><span class="toc-number">2.2.</span> <span class="toc-text">花指令免杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%A0%E5%A3%B3%E5%85%8D%E6%9D%80"><span class="toc-number">2.3.</span> <span class="toc-text">加壳免杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%85%8D%E6%9D%80"><span class="toc-number">2.4.</span> <span class="toc-text">内存免杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E6%AC%A1%E7%BC%96%E8%AF%91%E5%85%8D%E6%9D%80"><span class="toc-number">2.5.</span> <span class="toc-text">二次编译免杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%86%E7%A6%BB%E5%85%8D%E6%9D%80"><span class="toc-number">2.6.</span> <span class="toc-text">分离免杀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%84%E6%BA%90%E4%BF%AE%E6%94%B9"><span class="toc-number">2.7.</span> <span class="toc-text">资源修改</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

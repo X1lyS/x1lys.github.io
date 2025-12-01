@@ -1,0 +1,319 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>beef一款XSS神器 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="beef简介xss平台师傅们都用过吧，beef呢其实也相当于一个xss平台，只是功能更强大一些，它有一个hook.js钩子，只要把这段代码插入到存在存储型xss漏洞的网站，那么访问者的浏览器就会沦陷，通过hook.js钩子，访问者的浏览器会被持续化的控制住，利用beef可以执行很多强大的模块，进一步获取敏感信息，钓鱼，探测内网等等 beef的特点是有个缓存污染机制。目标网站只要触发过一次XSS，就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="beef一款XSS神器">
+<meta property="og:url" content="https://x1lys.github.io/2024/08/06/beef%E4%B8%80%E6%AC%BEXSS%E7%A5%9E%E5%99%A8/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="beef简介xss平台师傅们都用过吧，beef呢其实也相当于一个xss平台，只是功能更强大一些，它有一个hook.js钩子，只要把这段代码插入到存在存储型xss漏洞的网站，那么访问者的浏览器就会沦陷，通过hook.js钩子，访问者的浏览器会被持续化的控制住，利用beef可以执行很多强大的模块，进一步获取敏感信息，钓鱼，探测内网等等 beef的特点是有个缓存污染机制。目标网站只要触发过一次XSS，就">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2024-08-06T07:06:49.000Z">
+<meta property="article:modified_time" content="2024-10-22T10:54:34.741Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="beef">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2024/08/06/beef%E4%B8%80%E6%AC%BEXSS%E7%A5%9E%E5%99%A8/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'beef一款XSS神器',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">beef一款XSS神器</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">beef一款XSS神器</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-08-06T07:06:49.000Z" title="发表于 2024-08-06 15:06:49">2024-08-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2024-10-22T10:54:34.741Z" title="更新于 2024-10-22 18:54:34">2024-10-22</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">1.6k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>5分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2024/08/06/beef%E4%B8%80%E6%AC%BEXSS%E7%A5%9E%E5%99%A8/#post-comment"><span class="waline-comment-count" data-path="/2024/08/06/beef%E4%B8%80%E6%AC%BEXSS%E7%A5%9E%E5%99%A8/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2024-10-22 18:54:34&quot;}" hidden></div><h2 id="beef简介"><a href="#beef简介" class="headerlink" title="beef简介"></a>beef简介</h2><p>xss平台师傅们都用过吧，beef呢其实也相当于一个xss平台，只是功能更强大一些，它有一个hook.js钩子，只要把这段代码插入到存在存储型xss漏洞的网站，那么访问者的浏览器就会沦陷，通过hook.js钩子，访问者的浏览器会被持续化的控制住，利用beef可以执行很多强大的模块，进一步获取敏感信息，钓鱼，探测内网等等</p>
+<p>beef的特点是有个缓存污染机制。目标网站只要触发过一次XSS，就会被污染缓存，目标下次访问这个网站，还是会一直上线。而且目标只要开着这个网页，那么就会一直在线上，除非目标专门清理缓存，不然很难摆脱beef</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2196746">https://cloud.tencent.com/developer/article/2196746</a></p>
+<h2 id="基本界面介绍"><a href="#基本界面介绍" class="headerlink" title="基本界面介绍"></a>基本界面介绍</h2><p>可以看看这个从0到1简单的熟悉一下基本操作：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/smli_ng/article/details/106067842">https://blog.csdn.net/smli_ng/article/details/106067842</a></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>在本地搭建beef，使用自带的demo演示一些<strong>好玩</strong>的功能嘿嘿</p>
+<h3 id="执行任意JS"><a href="#执行任意JS" class="headerlink" title="执行任意JS"></a>执行任意JS</h3><p>Raw JavaScript 实用功能，在目标页面上实时执行JS代码</p>
+<p><img src="https://s2.loli.net/2024/10/21/ycOvmVHoCXz96j7.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/gudAQezyX9KsVfB.png" alt="image"></p>
+<h3 id="弹窗诱导"><a href="#弹窗诱导" class="headerlink" title="弹窗诱导"></a>弹窗诱导</h3><p>Create Alert Dialog，弹窗，懂得都懂</p>
+<p><img src="https://s2.loli.net/2024/10/22/3fmzxV1TiKlMGFO.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/cfjCvUGgl5Wkt9x.png" alt="image"></p>
+<p>可以改为一些有诱导性的话，作为钓鱼的跳板</p>
+<h3 id="cookie盗取"><a href="#cookie盗取" class="headerlink" title="cookie盗取"></a>cookie盗取</h3><p>这里可以直接看</p>
+<p><img src="https://s2.loli.net/2024/10/22/WIPK4g2nCvOdpVs.png" alt="image"></p>
+<p>或者使用模块</p>
+<p><img src="https://s2.loli.net/2024/10/22/srcP6ZgpBJmzqDO.png" alt="image"></p>
+<h3 id="绕过HttpOnly限制"><a href="#绕过HttpOnly限制" class="headerlink" title="绕过HttpOnly限制"></a>绕过HttpOnly限制</h3><p>Apache Tomcat RequestHeaderExample Cookie Disclosure，这个是用来绕过HttpOnly机制获取Cookie的,r也就是即使网站使用了HttpOnly机制也能盗取到cookie</p>
+<p><img src="https://s2.loli.net/2024/10/22/SwncCiUEqeTJZa2.png" alt="image"></p>
+<h3 id="劫持输入表单"><a href="#劫持输入表单" class="headerlink" title="劫持输入表单"></a>劫持输入表单</h3><p>Get Form Values，此模块检索页面上所有输入字段的名称、类型和值</p>
+<p>这个就有意思了，如果是账号密码表单，那不就……，还可以配合一些比较真实的钓鱼网站，要求输入什么什么密码，使用这个模块很优雅的就把这些敏感值截获了</p>
+<p><img src="https://s2.loli.net/2024/10/21/TMcLOyg4Bqpzi1b.png" alt="image"></p>
+<h3 id="截获触发点处HTML源码"><a href="#截获触发点处HTML源码" class="headerlink" title="截获触发点处HTML源码"></a>截获触发点处HTML源码</h3><p><strong>Get Page HTML</strong>，这个模块允许我们获取XSS触发点处页面的整个HTML，一般都能找到一些敏感信息</p>
+<p><img src="https://s2.loli.net/2024/10/22/bRvuqj8lSBMQtEK.png" alt="image"></p>
+<h3 id="截获当前HTML源码"><a href="#截获当前HTML源码" class="headerlink" title="截获当前HTML源码"></a>截获当前HTML源码</h3><p><strong>Get Page and iframe HTML</strong>，这个模块和上面很像，但它是从当前页面和任何iframe（具有相同来源）中检索HTML</p>
+<p>这个功能比刚刚那个强大，因为后端用iframe引入别的页面其实是很常见的，比方说留言查看、系统管理、用户管理这三个页面用iframe引入。如果我们在留言处触发了XSS，用Get Page HTML模块的话，只能获取留言这个界面的HTML，但如果用Get Page and iframe HTML，受害者此时在浏览某某模块，我们就能直接获取到某某界面的HTML，只要这个页面是使用iframe引入的</p>
+<p><img src="https://s2.loli.net/2024/10/22/jxDarIsJYfRCFum.png" alt="image"></p>
+<p>由于demo没有涉及iframe引入所以看不出差别</p>
+<h3 id="跳转批量篡改"><a href="#跳转批量篡改" class="headerlink" title="跳转批量篡改"></a>跳转批量篡改</h3><p>Link Rewrite这个模块会把页面上所有网址都替换成你指定的网址，比方说有个跳转本来是跳转到<a target="_blank" rel="noopener" href="http://test.com的,你可以让它跳转到http//evil.com">http://test.com的，你可以让它跳转到Http://evil.com</a></p>
+<p><img src="https://s2.loli.net/2024/10/22/UwaD6H7ylKtIA8m.png" alt="image"></p>
+<h3 id="Play-Sound"><a href="#Play-Sound" class="headerlink" title="Play Sound"></a>Play Sound</h3><p>看起来是一个恶搞功能，在目标页面上播放指定的音频</p>
+<p><img src="https://s2.loli.net/2024/10/22/GCbUi7JHd6E2jw5.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/b9MlU4VWBXQmNLZ.png" alt="image"></p>
+<p>果然听到了，哈哈有趣</p>
+<h3 id="浏览器监视"><a href="#浏览器监视" class="headerlink" title="浏览器监视"></a>浏览器监视</h3><p>Spyder Eye 直接截取目标浏览器当前在浏览什么页面，不管是否被挂了钩子！相当于浏览器被监视了哈哈</p>
+<p><img src="https://s2.loli.net/2024/10/22/5qzX7v8h1Lys2Mm.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/iAvGzoTpYkqf5VF.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/mqfzIHp1WuDUxln.png" alt="image"></p>
+<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>Redirect Browser，重定向，懂得都懂，把当前页面重定向到指定页面</p>
+<p>这个就更直接了，骗都不带骗一下的，直接就把你重定向到某个指定网页了哈哈</p>
+<p><img src="https://s2.loli.net/2024/10/21/cuBCqkafmpDWvPS.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/SU6CyVEop9ghA2R.png" alt="image"></p>
+<h3 id="重定向-pro"><a href="#重定向-pro" class="headerlink" title="重定向-pro"></a>重定向-pro</h3><p>Redirect Browser(iFrame)，和上面效果类似，但是这个是用iFrame引入一个页面，然后覆盖当前页面，用户当前的URL不变，还可以指定网站的图标，比较具有迷惑性，更适合用于钓鱼</p>
+<p><img src="https://s2.loli.net/2024/10/22/ygVYCafh2AJWHtS.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/22/MvqPhWkITSRELUB.png" alt="image"></p>
+<p>URL不变</p>
+<p><img src="https://s2.loli.net/2024/10/21/bUvu38LR5GDTNnI.png" alt="image"></p>
+<h3 id="批量页面挂钩"><a href="#批量页面挂钩" class="headerlink" title="批量页面挂钩"></a>批量页面挂钩</h3><p>Inject BeEF，在所有选项卡上都注入BeEF的Hook，看样子是个很厉害的功能，可以一下对多个页面进行权限维持</p>
+<p><img src="https://s2.loli.net/2024/10/21/38TqB1Hdh5UrZiW.png" alt="image"></p>
+<h3 id="默认PDF浏览器挂钩"><a href="#默认PDF浏览器挂钩" class="headerlink" title="默认PDF浏览器挂钩"></a>默认PDF浏览器挂钩</h3><p>Hook default browser，执行时打开一个pdf，如果打开pdf的默认浏览器是另外一个浏览器，那么这个浏览器也将被挂钩！</p>
+<p><img src="https://s2.loli.net/2024/10/21/SQFp41Y9qcDkX5G.png" alt="image"></p>
+<h3 id="浏览器截图"><a href="#浏览器截图" class="headerlink" title="浏览器截图"></a>浏览器截图</h3><p>Screenshot 获取当前页面的截图</p>
+<p><img src="https://s2.loli.net/2024/10/21/LxOGuRv58CaBEe6.png" alt="image"></p>
+<h3 id="窃取浏览器保存凭据"><a href="#窃取浏览器保存凭据" class="headerlink" title="窃取浏览器保存凭据"></a>窃取浏览器保存凭据</h3><p>Get Autocomplete Credentials，窃取火狐和谷歌浏览器保存的凭据，有版本限制</p>
+<p><img src="https://s2.loli.net/2024/10/21/65p8zvVkd7IZFfs.png" alt="image"></p>
+<h3 id="获取本地存储"><a href="#获取本地存储" class="headerlink" title="获取本地存储"></a>获取本地存储</h3><p>Get Local Storage，从本地存储中获得数据</p>
+<p><img src="https://s2.loli.net/2024/10/21/FN8pn9qKBOP2CsL.png" alt="image"></p>
+<h3 id="Redis攻击"><a href="#Redis攻击" class="headerlink" title="Redis攻击"></a>Redis攻击</h3><p>用受害者的浏览器发送redis服务的操作数据，隔空打Redis</p>
+<p><img src="https://s2.loli.net/2024/10/21/G37gUK6dcraxyO5.png" alt="image"></p>
+<h3 id="内网探测"><a href="#内网探测" class="headerlink" title="内网探测"></a>内网探测</h3><p>Port Scanner，通过受害者浏览器对内网进行扫描，后面那个功能和它类似，但是会顺便进行指纹识别</p>
+<p><img src="https://s2.loli.net/2024/10/21/beuwd8Eqsv5T79N.png" alt="image"></p>
+<h3 id="小界面权限维持"><a href="#小界面权限维持" class="headerlink" title="小界面权限维持"></a>小界面权限维持</h3><p><strong>Create Pop Under</strong>，弹出一个在角落的不起眼的小页面，这个页面里包含了我们的恶意JS代码，这个也是用于权限维持的，因为目标关闭当前页面就会导致BeEF的会话掉线，但如果目标没有关掉小窗口，那么会话就还是会一直在线</p>
+<p><img src="https://s2.loli.net/2024/10/21/Ttd8grF9AOfM4Qp.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/egqI3RzlitcuVp1.png" alt="image"></p>
+<p>这个小窗非常不起眼，不注意很难发现，用来BeEF权限维持很舒服</p>
+<h3 id="XSS代理"><a href="#XSS代理" class="headerlink" title="XSS代理"></a>XSS代理</h3><p>只要受害者会话不掉，我们就可以把他的浏览器作为HTTP代理，我们可以用其浏览器发送任意web请求，甚至直接访问受害者内网的WEB服务，<strong>可以说这个功能把XSS的危害提升到了极致</strong></p>
+<p>我们选择一个会话，然后点击Use as proxy，就可以用受害者浏览器开启一个代理</p>
+<p><img src="https://s2.loli.net/2024/10/21/vkGRUNwodZMmY3h.png" alt="image"></p>
+<p>点击之后我们就可以开始使用了，先来介绍一下最基础的功能，就是使用受害者浏览器发送HTTP&#x2F;S请求</p>
+<p><img src="https://s2.loli.net/2024/10/21/py2Jkx3mG8gz1uA.png" alt="image"></p>
+<p><img src="https://s2.loli.net/2024/10/21/EhMdyQUraJg8YIZ.png" alt="image"></p>
+<p>如果是非跨域的请求，还可以看到响应包</p>
+<p><img src="https://s2.loli.net/2024/10/21/iPWOV9NcFbHEXzL.png" alt="image"></p>
+<p>beef太强大了，功能远远不止这些，本文并没有对此写得很详细，是想留给师傅们自己去试试看，很好玩的哈哈</p>
+<p>有兴趣的话，还可以看看官方文档，或者直接翻译模块旁边的解释试着用用，也能学到一些更有趣的功能</p>
+<blockquote>
+<p>官方文档：<a target="_blank" rel="noopener" href="https://github.com/beefproject/beef/wiki">https://github.com/beefproject/beef/wiki</a></p>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2024/08/06/beef%E4%B8%80%E6%AC%BEXSS%E7%A5%9E%E5%99%A8/">https://x1lys.github.io/2024/08/06/beef一款XSS神器/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/beef/">beef</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related" href="/2024/08/08/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%AF%B9%E6%9F%90%E6%A3%8B%E7%89%8C%E7%B3%BB%E7%BB%9F%E5%A4%B1%E8%B4%A5%E7%9A%84%E6%B8%97%E9%80%8F/" title="记一次对某棋牌系统失败的渗透"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of previous post"><div class="info"><div class="info-1"><div class="info-item-1">上一篇</div><div class="info-item-2">记一次对某棋牌系统失败的渗透</div></div><div class="info-2"><div class="info-item-1">...</div></div></div></a><a class="pagination-related" href="/2024/08/02/JS%E9%80%86%E5%90%91%E5%AE%9E%E6%88%98-%E6%88%BF%E5%A4%A9%E4%B8%8B%E7%99%BB%E5%BD%95%E7%B3%BB%E7%BB%9F/" title="JS逆向实战-房天下登录系统"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">JS逆向实战-房天下登录系统</div></div><div class="info-2"><div class="info-item-1">加密发现开局一个登录框，开逆！  输入任意账号密码登录，抓包，看看载荷  pwd是密码参数，被前端加密了 密码合法性前端校验如果我输入一长串密码，点击登录，发现抓不到登录包，为什么呢？  来看看js怎么写的吧，多半是有前端的密码合法性校验，只有先通过了前端的合法性校验，数据包才能发给服务器，才能被抓到包  好家伙，一眼就找到了，原来是限制了密码的位数6-16位，否则就不发包，over 逆向加密过程ok，进入正题 全局搜索pwd，寻找pwd的加密入口点，我自称加密点  看到了”encrypt”多半就是这里了，点击跟进，为了确定加密点就是这里，可以在这里下个断，再点击登录触发加密流程，看看是否程序会停在这里，调试一下值，看看是否真的是在经过这个点之后，pwd就由明文变为密文了 （由于我登录次数太多，被封了24h，就没办法放调试结果的截图了，但之前我调试成功了）  经测试，这里的确是加密点，分析一下 1encryptedString(key_to_encode,...</div></div></div></a></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">95</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">51</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#beef%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">beef简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%89%E8%A3%85"><span class="toc-number">2.</span> <span class="toc-text">安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E6%9C%AC%E7%95%8C%E9%9D%A2%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">基本界面介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">4.</span> <span class="toc-text">使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E4%BB%BB%E6%84%8FJS"><span class="toc-number">4.1.</span> <span class="toc-text">执行任意JS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%B9%E7%AA%97%E8%AF%B1%E5%AF%BC"><span class="toc-number">4.2.</span> <span class="toc-text">弹窗诱导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#cookie%E7%9B%97%E5%8F%96"><span class="toc-number">4.3.</span> <span class="toc-text">cookie盗取</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%95%E8%BF%87HttpOnly%E9%99%90%E5%88%B6"><span class="toc-number">4.4.</span> <span class="toc-text">绕过HttpOnly限制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8A%AB%E6%8C%81%E8%BE%93%E5%85%A5%E8%A1%A8%E5%8D%95"><span class="toc-number">4.5.</span> <span class="toc-text">劫持输入表单</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%AA%E8%8E%B7%E8%A7%A6%E5%8F%91%E7%82%B9%E5%A4%84HTML%E6%BA%90%E7%A0%81"><span class="toc-number">4.6.</span> <span class="toc-text">截获触发点处HTML源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%AA%E8%8E%B7%E5%BD%93%E5%89%8DHTML%E6%BA%90%E7%A0%81"><span class="toc-number">4.7.</span> <span class="toc-text">截获当前HTML源码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%B3%E8%BD%AC%E6%89%B9%E9%87%8F%E7%AF%A1%E6%94%B9"><span class="toc-number">4.8.</span> <span class="toc-text">跳转批量篡改</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Play-Sound"><span class="toc-number">4.9.</span> <span class="toc-text">Play Sound</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9B%91%E8%A7%86"><span class="toc-number">4.10.</span> <span class="toc-text">浏览器监视</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91"><span class="toc-number">4.11.</span> <span class="toc-text">重定向</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91-pro"><span class="toc-number">4.12.</span> <span class="toc-text">重定向-pro</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%B9%E9%87%8F%E9%A1%B5%E9%9D%A2%E6%8C%82%E9%92%A9"><span class="toc-number">4.13.</span> <span class="toc-text">批量页面挂钩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%BB%98%E8%AE%A4PDF%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8C%82%E9%92%A9"><span class="toc-number">4.14.</span> <span class="toc-text">默认PDF浏览器挂钩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E6%88%AA%E5%9B%BE"><span class="toc-number">4.15.</span> <span class="toc-text">浏览器截图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AA%83%E5%8F%96%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BF%9D%E5%AD%98%E5%87%AD%E6%8D%AE"><span class="toc-number">4.16.</span> <span class="toc-text">窃取浏览器保存凭据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%9C%AC%E5%9C%B0%E5%AD%98%E5%82%A8"><span class="toc-number">4.17.</span> <span class="toc-text">获取本地存储</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%E6%94%BB%E5%87%BB"><span class="toc-number">4.18.</span> <span class="toc-text">Redis攻击</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E7%BD%91%E6%8E%A2%E6%B5%8B"><span class="toc-number">4.19.</span> <span class="toc-text">内网探测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%95%8C%E9%9D%A2%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81"><span class="toc-number">4.20.</span> <span class="toc-text">小界面权限维持</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#XSS%E4%BB%A3%E7%90%86"><span class="toc-number">4.21.</span> <span class="toc-text">XSS代理</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="JS逆向- 0基础JS逆向练习题解"/></a><div class="content"><a class="title" href="/2025/12/01/JS%E9%80%86%E5%90%91-%E7%A0%81%E4%B8%8A%E7%88%AC%E9%A2%98%E8%A7%A3/" title="JS逆向- 0基础JS逆向练习题解">JS逆向- 0基础JS逆向练习题解</a><time datetime="2025-12-01T13:51:03.000Z" title="发表于 2025-12-01 21:51:03">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例"/></a><div class="content"><a class="title" href="/2025/06/14/%E5%AE%9E%E6%88%98URL%E6%A0%A1%E9%AA%8Cbypass-%E6%B5%85%E8%B0%88%E9%9D%99%E6%80%81DNS%E8%A7%A3%E6%9E%90%E5%A7%BF%E5%8A%BF%E4%B8%8ECAS%E7%A5%A8%E6%8D%AE%E5%8A%AB%E6%8C%81%E6%A1%88%E4%BE%8B/" title="实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例">实战URL校验bypass:浅谈静态DNS解析姿势与CAS票据劫持案例</a><time datetime="2025-06-14T04:29:52.000Z" title="发表于 2025-06-14 12:29:52">2025-06-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从XSS到RCE的PC端利用链构建"/></a><div class="content"><a class="title" href="/2025/06/12/%E4%BB%8EXSS%E5%88%B0RCE%E7%9A%84PC%E7%AB%AF%E5%88%A9%E7%94%A8%E9%93%BE%E6%9E%84%E5%BB%BA/" title="从XSS到RCE的PC端利用链构建">从XSS到RCE的PC端利用链构建</a><time datetime="2025-06-12T04:49:36.000Z" title="发表于 2025-06-12 12:49:36">2025-06-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="从登录封锁到打穿内网沦陷整个C段"/></a><div class="content"><a class="title" href="/2025/05/12/%E4%BB%8E%E7%99%BB%E5%BD%95%E5%B0%81%E9%94%81%E5%88%B0%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91%E6%B2%A6%E9%99%B7%E6%95%B4%E4%B8%AAC%E6%AE%B5/" title="从登录封锁到打穿内网沦陷整个C段">从登录封锁到打穿内网沦陷整个C段</a><time datetime="2025-05-12T05:42:02.000Z" title="发表于 2025-05-12 13:42:02">2025-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="Elasticsearch未授权访问"/></a><div class="content"><a class="title" href="/2025/05/01/Elasticsearch%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE/" title="Elasticsearch未授权访问">Elasticsearch未授权访问</a><time datetime="2025-05-01T03:31:57.000Z" title="发表于 2025-05-01 11:31:57">2025-05-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
